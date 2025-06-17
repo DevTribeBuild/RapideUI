@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@apollo/client": "^3.13.8",
     "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.14.0",
     "@emotion/server": "^11.11.0",
@@ -21,6 +22,7 @@
     "apexcharts": "4.7.0",
     "eslint": "8.46.0",
     "eslint-config-next": "13.4.12",
+    "graphql": "^16.11.0",
     "lodash": "^4.17.21",
     "next": "^15.1.7",
     "react": "19.1.0",
@@ -33,5 +35,6 @@
   "devDependencies": {
     "@types/lodash": "4.14.196",
     "@types/react-syntax-highlighter": "^15.5.13"
-  }
+  },
+  "packageManager": "yarn@4.9.2+sha512.1fc009bc09d13cfd0e19efa44cbfc2b9cf6ca61482725eb35bbc5e257e093ebf4130db6dfe15d604ff4b79efd8e1e8e99b25fa7d0a6197c9f9826358d4d65c3c"
 }

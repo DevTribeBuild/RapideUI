@@ -40,20 +40,6 @@ const Menuitems = [
     userType: "USER",
   },
   {
-    id: uniqueId(),
-    title: "Cart",
-    icon: IconLayoutDashboard,
-    href: "/cart",
-    userType: "USER",
-  },
-  {
-    id: uniqueId(),
-    title: "My Orders",
-    icon: IconLayoutDashboard,
-    href: "/orders",
-    userType: "USER",
-  },
-  {
     navlabel: true,
     subheader: "UTILITIES",
   },
