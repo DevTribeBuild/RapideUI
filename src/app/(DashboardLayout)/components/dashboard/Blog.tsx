@@ -1,5 +1,6 @@
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   CardContent,
   Typography,
@@ -54,6 +55,7 @@ const ecoCard = [
 ];
 
 const Blog = () => {
+  const router = useRouter();
   return (
     <Grid container spacing={3}>
       {ecoCard.map((product, index) => (
@@ -65,7 +67,7 @@ const Blog = () => {
             lg: 3
           }}>
           <BlankCard>
-            <Typography component={Link} href="/">
+            <Typography component={Link} href="/cart">
               <Avatar
                 src={product.photo} variant="square"
                 sx={{
@@ -75,13 +77,15 @@ const Blog = () => {
                 
               />
             </Typography>
-            <Tooltip title="Add To Cart">
+            <Tooltip title="Add To Cart"
+               onClick={() => router.push("/cart")}
+            >
               <Fab
                 size="small"
                 color="primary"
                 sx={{ bottom: "75px", right: "15px", position: "absolute" }}
               >
-                <IconBasket size="16" />
+                <IconBasket size="16"/>
               </Fab>
             </Tooltip>
             <CardContent sx={{ p: 3, pt: 2 }}>
