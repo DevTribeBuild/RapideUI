@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import { useMutation } from "@apollo/client";
 import { LOGIN_MUTATION, REQUEST_OTP_MUTATION } from "@/graphql/mutations";
