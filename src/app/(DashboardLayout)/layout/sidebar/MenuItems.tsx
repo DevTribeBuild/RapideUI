@@ -1,3 +1,4 @@
+"use client";
 import {
   IconAperture,
   IconCopy,
@@ -6,7 +7,9 @@ import {
   IconMoodHappy,
   IconTypography,
   IconUserPlus,
-} from "@tabler/icons-react";
+  IconBasket
+ } from "@tabler/icons-react";
+
 
 import { uniqueId } from "lodash";
 
@@ -42,15 +45,15 @@ const Menuitems = [
   {
     id: uniqueId(),
     title: "Cart",
-    icon: IconLayoutDashboard,
+    icon: IconBasket,
     href: "/cart",
     userType: "USER",
   },
   {
     id: uniqueId(),
     title: "My Orders",
-    icon: IconLayoutDashboard,
-    href: "/orders",
+    icon: IconMoodHappy,
+    href: "/cart/orders",
     userType: "USER",
   },
   {
