@@ -3,11 +3,8 @@ import { gql } from "@apollo/client";
 export const REQUEST_OTP_MUTATION = gql`
   mutation RequestOtp($requestOtp: RequestOtpDTO!) {
     requestOtp(requestOtp: $requestOtp) {
-      token
-      status
-      user {
-        email
-      }
+      msg
+      expiresAt
     }
   }
 `;
@@ -36,15 +33,25 @@ export const REGISTER_MUTATION = gql`
     register(registerRequest: $registerRequest) {
       expiresAt
       msg
-      status
-      token
-      user {
-        email
-        id
-        updatedAt
-        userType
-        walletAddress
-      }
     }
   }
+`;
+
+export const VERIFY_OTP_MUTATION = gql`
+    mutation VerifyOtp($email: String!, $otp: String!) {
+        verifyOtp(email: $email, otp: $otp) {
+            expiresAt
+            msg
+            status
+            token
+            user {
+                createdAt
+                email
+                id
+                updatedAt
+                userType
+                walletAddress
+            }
+        }
+    }
 `;

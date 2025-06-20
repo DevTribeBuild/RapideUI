@@ -7,7 +7,9 @@ import {
   Divider,
   Box,
   Avatar,
-  Button
+  Stepper,
+  Step,
+  StepLabel
 } from "@mui/material";
 import OrderStatusStepper from "@/app/(DashboardLayout)/components/shared/OrderStatusStepper";
 
@@ -57,7 +59,7 @@ const TrackingPage = () => {
           <Typography variant="h4" fontWeight="bold" gutterBottom>
             Order Tracking
           </Typography>
-            <OrderStatusStepper status="On the way" />
+            <OrderStatusStepper status="Completed" />
 
           <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2} sx={{ mb: 3 }}>
@@ -102,13 +104,9 @@ const TrackingPage = () => {
           </Grid>
 
           <Typography variant="h6" sx={{ mt: 3 }}>
-            Rider's Real-Time Location
+            Order Received
           </Typography>
-          <RiderMap lat={rider.currentLocation.lat} lng={rider.currentLocation.lng} />
-          <br/><br/>
-          <Button variant="contained" href="/cart/received"   disableElevation color="primary" >
-            Mark as Received
-          </Button>
+          {/* <RiderMap lat={rider.currentLocation.lat} lng={rider.currentLocation.lng} /> */}
         </Paper>
       </Grid>
     </Grid>

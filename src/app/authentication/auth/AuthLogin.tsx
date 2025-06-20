@@ -15,7 +15,7 @@ import {
   TextField,
 } from "@mui/material";
 import Link from "next/link";
-import CustomTextField from "@/app/(DashboardLayout)/components/forms/theme-elements/CustomTextField";
+import useAuthStore from '@/stores/useAuthStore'
 
 interface loginType {
   title?: string;
@@ -24,6 +24,7 @@ interface loginType {
 }
 
 const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
+  const { setToken, setUser } = useAuthStore.getState();
   const router = useRouter();
   const [step, setStep] = useState<"REQUEST_OTP" | "LOGIN">("REQUEST_OTP");
   const [email, setEmail] = useState("");
@@ -53,8 +54,8 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
         },
       });
       if (res.data?.login?.token) {
-        localStorage.setItem("token", res.data.login.token);
-        localStorage.setItem("user", JSON.stringify(res.data.login.user));
+        setToken(res.data.login.token);
+        setUser(res.data.login.user);
         // Redirect or update UI as needed
         //redirect to dashboard or home page
         if (res.data.login.user.userType === "ADMIN") {
