@@ -2,7 +2,7 @@
 import React from 'react';
 import { Stepper, Step, StepLabel } from '@mui/material';
 
-type OrderStatus = 'Order Placed' | 'On the way' | 'Delivered';
+type OrderStatus = 'Order Placed' | 'On the way' | 'Delivered' | 'Completed';
 
 interface OrderStatusStepperProps {
   status: OrderStatus;
@@ -18,6 +18,8 @@ const getActiveStep = (status: OrderStatus): number => {
       return 1;
     case 'Delivered':
       return 2;
+    case 'Completed':
+      return 3;
     default:
       return 0;
   }

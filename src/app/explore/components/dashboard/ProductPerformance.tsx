@@ -54,7 +54,7 @@ const ProductPerformance = () => {
     return (
 
         <DashboardCard title="Product Performance">
-            <Box sx={{ overflow: 'auto', width: { xs: '280px', sm: 'auto' } }}>
+            <Box sx={{ overflow: 'auto', width: { xs: '280px', sm: 'auto' }}}>
                 <Table
                     aria-label="simple table"
                     sx={{

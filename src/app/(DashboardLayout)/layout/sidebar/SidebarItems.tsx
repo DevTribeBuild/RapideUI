@@ -1,5 +1,7 @@
-import React from "react";
-import Menuitems from "./MenuItems";
+import React, {useState,  useEffect} from "react";
+import { getMenuItems } from "./MenuItems";
+import useAppStore from "@/stores/useAuthStore"
+
 import { Box, Typography } from "@mui/material";
 import {
   Logo,
@@ -13,6 +15,23 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Upgrade } from "./Updrade";
 import Image from "next/image";
+
+import { IconProps } from "@tabler/icons-react";
+import { ForwardRefExoticComponent, RefAttributes } from "react";
+
+type MenuItem =
+  | {
+      navlabel: true;
+      subheader: string;
+    }
+  | {
+      id: string;
+      title: string;
+      icon: ForwardRefExoticComponent<IconProps & RefAttributes<SVGSVGElement>>;
+      href: string;
+      userType?: string;
+    };
+
 
 
 const renderMenuItems = (items: any, pathDirect: any) => {
@@ -71,6 +90,17 @@ const renderMenuItems = (items: any, pathDirect: any) => {
 const SidebarItems = () => {
   const pathname = usePathname();
   const pathDirect = pathname;
+   const user = useAppStore((state) => state.user);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  useEffect(() => {
+    try{
+      console.log("user", user?.userType || "");
+      const items = getMenuItems(user);
+      setMenuItems(items);
+    } catch(error) {
+      console.error("Error fetching menu items", error);
+    }
+  }, []);
 
   return (
     < >
@@ -83,7 +113,7 @@ const SidebarItems = () => {
           width={200}
           height={70}
         />
-        {renderMenuItems(Menuitems, pathDirect)}
+        {renderMenuItems(menuItems, pathDirect)}
         <Box px={2}>
           <Upgrade />
         </Box>

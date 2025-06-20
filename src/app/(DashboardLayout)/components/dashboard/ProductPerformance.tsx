@@ -1,4 +1,5 @@
 
+"use client";
 import {
     Typography, Box,
     Table,
@@ -9,6 +10,7 @@ import {
     Chip
 } from '@mui/material';
 import DashboardCard from '@/app/(DashboardLayout)//components/shared/DashboardCard';
+import { useRouter } from 'next/navigation';
 
 const products = [
     {
@@ -51,10 +53,14 @@ const products = [
 
 
 const ProductPerformance = () => {
+    const router = useRouter();
+    const proceedToTracking = () => {
+        router.push('/cart/tracking');
+    };
     return (
 
         <DashboardCard title="Product Performance">
-            <Box sx={{ overflow: 'auto', width: { xs: '280px', sm: 'auto' } }}>
+            <Box sx={{ overflow: 'auto', width: { xs: '280px', sm: 'auto' }}}>
                 <Table
                     aria-label="simple table"
                     sx={{
@@ -93,7 +99,7 @@ const ProductPerformance = () => {
                     </TableHead>
                     <TableBody>
                         {products.map((product) => (
-                            <TableRow key={product.name}>
+                            <TableRow key={product.name} onClick={proceedToTracking} sx={{ cursor: 'pointer', '&:hover': { backgroundColor: '#f5f5f5' } }}>
                                 <TableCell>
                                     <Typography
                                         sx={{
