@@ -5,6 +5,10 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 type User = {
   id: string
   email: string
+  userType: string
+  createdAt: string
+  updatedAt: string
+  walletAddress: string
 }
 
 type AppState = {
