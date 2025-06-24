@@ -1,7 +1,7 @@
 {
-  "name": "worker-name",
-  "compatibility_date": "2025-06-24",
-  "assets": {
-    "directory": "./dist"
-  }
+    "name": "swifteroute",
+    "compatibility_date": "2025-06-24",
+    "assets": {
+        "directory": "./public"
+    }
 }
