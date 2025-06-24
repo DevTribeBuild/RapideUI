@@ -7,6 +7,7 @@ import { useMutation } from '@apollo/client';
 import { REGISTER_MUTATION, VERIFY_OTP_MUTATION } from '@/graphql/mutations';
 import { useRouter } from 'next/navigation';
 import useAuthStore from '@/stores/useAuthStore'
+import { handleLoginHelper } from '@/helpers/authHelper';
 
 interface registerType {
         title?: string;
@@ -56,6 +57,7 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
                         console.log("OTP verification response:", res.data);
                         if (res.data?.verifyOtp) {
                             setToken(res.data.verifyOtp.token);
+                            await handleLoginHelper(res.data.verifyOtp.token);
                             setUser(res.data.verifyOtp.user);
                             router.push("/explore");
                         }

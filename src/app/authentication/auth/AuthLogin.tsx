@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useMutation } from "@apollo/client";
 import { LOGIN_MUTATION, REQUEST_OTP_MUTATION } from "@/graphql/mutations";
 import { useRouter } from "next/navigation";
+import { handleLoginHelper } from "@/helpers/authHelper";
 import {
   Box,
   Typography,
@@ -55,18 +56,15 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
       });
       if (res.data?.login?.token) {
         setToken(res.data.login.token);
+        await handleLoginHelper(res.data.login.token);
         setUser(res.data.login.user);
-        // Redirect or update UI as needed
-        //redirect to dashboard or home page
         if (res.data.login.user.userType === "ADMIN") {
-          // router.push("/admin/dashboard"); // Use router to navigate
           router.push("/"); // Use router to navigate
         } else {
           router.push("/explore"); // Use router to navigate
         }
       }
     } catch {
-      // Error handled by Apollo
     }
   };
 
