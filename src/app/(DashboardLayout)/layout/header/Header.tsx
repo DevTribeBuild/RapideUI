@@ -5,6 +5,7 @@ import Link from 'next/link';
 // components
 import Profile from './Profile';
 import { IconBellRinging, IconMenu } from '@tabler/icons-react';
+import useAuthStore from '@/stores/useAuthStore'
 
 interface ItemType {
   toggleMobileSidebar:  (event: React.MouseEvent<HTMLElement>) => void;
@@ -25,6 +26,9 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
       minHeight: '70px',
     },
   }));
+
+    const user = useAuthStore((state) => state.user)
+    const token = useAuthStore((state) => state.token) 
   const ToolbarStyled = styled(Toolbar)(({ theme }) => ({
     width: '100%',
     color: theme.palette.text.secondary,
@@ -62,10 +66,14 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
         </IconButton>
         <Box flexGrow={1} />
         <Stack spacing={1} direction="row" alignItems="center">
-          <Button variant="contained" component={Link} href="/authentication/login"   disableElevation color="primary" >
-            Login
-          </Button>
-          <Profile />
+           {!user?.email && (
+            <Button variant="contained" component={Link} href="/authentication/login"   disableElevation color="primary" >
+              Login
+            </Button>
+           )}
+          {user && (
+            <Profile />
+          )}
         </Stack>
       </ToolbarStyled>
     </AppBarStyled>
