@@ -20,16 +20,14 @@ import { IconProps } from "@tabler/icons-react";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
 
 type MenuItem =
-  | {
-      navlabel: true;
-      subheader: string;
-    }
-  | {
-      id: string;
-      title: string;
-      icon: ForwardRefExoticComponent<IconProps & RefAttributes<SVGSVGElement>>;
-      href: string;
-      userType?: string;
+    {
+      id?: string;
+      navlabel?: boolean;
+      subheader?: string;
+      title?: string;
+      icon?: ForwardRefExoticComponent<IconProps & RefAttributes<any>>;
+      href?: string;
+      userType?: string[];
     };
 
 

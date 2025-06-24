@@ -29,7 +29,7 @@ export const getMenuItems = (user: { userType?: string } | null) => {
       title: "Dashboard",
       icon: IconLayoutDashboard,
       href: "/",
-      userType: ["ADMIN"],
+      userType: ["ADMIN", "RIDER"],
     },
     {
       id: uniqueId(),
@@ -64,7 +64,7 @@ export const getMenuItems = (user: { userType?: string } | null) => {
       title: "My Orders",
       icon: IconMoodHappy,
       href: "/cart/orders",
-      userType: ["USER"],
+      userType: ["USER", "RIDER"],
     },
     {
       id: uniqueId(),

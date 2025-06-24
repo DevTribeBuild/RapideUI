@@ -109,8 +109,10 @@ const WalletPage = () => {
 
     const handleCloseModal = () => setModalOpen(false);
 
-    const handleAssetChange = (e: React.ChangeEvent<{ value: unknown }>) => {
-        const val = e.target.value as string;
+    const handleAssetChange = (
+        event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<{ value: unknown }> | any
+    ) => {
+        const val = event.target.value as string;
         const [type, currency] = val.split(":");
         setSelectedAsset({ type, currency });
     };
