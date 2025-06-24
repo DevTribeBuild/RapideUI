@@ -98,7 +98,7 @@ const SidebarItems = () => {
     } catch(error) {
       console.error("Error fetching menu items", error);
     }
-  }, []);
+  }, [user]);
 
   return (
     < >

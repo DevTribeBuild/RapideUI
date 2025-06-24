@@ -23,6 +23,7 @@ import {
 import OrderStatusStepper from "@/app/(DashboardLayout)/components/shared/OrderStatusStepper";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import PageContainer from "@/app/(DashboardLayout)/components/container/PageContainer";
+import Image from 'next/image';
 
 const CartPage: React.FC = () => {
     const router = useRouter();
@@ -145,9 +146,11 @@ const CartPage: React.FC = () => {
                                             </Typography>
                                         </Grid>
                                         <Grid size={5}>
-                                            <img
+                                            <Image
                                                 src={`https://via.placeholder.com/120x120?text=${encodeURIComponent(previewItem.name)}`}
                                                 alt={previewItem.name}
+                                                width={120}
+                                                height={120}
                                                 style={{ width: '100%', borderRadius: 8, objectFit: 'cover' }}
                                             />
                                         </Grid>
