@@ -25,3 +25,39 @@ export const GET_ALL_USERS = gql`
         }
     }
 `;
+
+export const GET_ME = gql`
+  query {
+    me {
+      id
+      email
+      firstName
+      lastName
+      username
+      createdAt
+      updatedAt
+      fiatWallet {
+        id
+        balance
+        createdAt
+        updatedAt
+        Currency {
+          createdAt
+          code
+          name
+          rateToUSD
+          symbol
+        }
+      }
+      cryptoWallet {
+        accounts {
+          id
+          address
+          cryptoWalletId
+          createdAt
+          updatedAt
+        }
+      }
+    }
+  }
+`;

@@ -30,6 +30,8 @@ import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import EuroIcon from "@mui/icons-material/Euro";
 import CurrencyFrancIcon from "@mui/icons-material/CurrencyFranc";
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer } from "recharts";
+import useAppStore from "@/stores/useAuthStore"
+
 
 // Example wallet data (replace with real data/fetch from API or store)
 const wallet = {
@@ -95,6 +97,8 @@ const assetOptions = [
 ];
 
 const WalletPage = () => {
+    const userDetails:any = useAppStore((state) => state.userDetails);
+    console.log("User Details: ****", userDetails);
     const [modalOpen, setModalOpen] = useState(false);
     const [modalType, setModalType] = useState<"Deposit" | "Withdraw">("Deposit");
     const [selectedAsset, setSelectedAsset] = useState(assetOptions[0]);
@@ -199,6 +203,60 @@ const WalletPage = () => {
                             </Box>
                         </CardContent>
                     </Card>
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                    <Paper sx={{ p: 2, minHeight: 200, overflow: "auto" }}>
+                        <Typography variant="h6" gutterBottom>
+                            Crypto Wallet Accounts
+                        </Typography>
+                        <Divider sx={{ mb: 2 }} />
+                        <Grid  container spacing={2}>
+                            {userDetails?.cryptoWallet?.accounts.map((account) => (
+                                <Grid size={{ xs:12, md:6, }} key={account.id}>
+                                    <Card>
+                                        <CardContent>
+                                        <Typography variant="h6" gutterBottom>
+                                            Account Address
+                                        </Typography>
+                                        <Typography variant="body2" sx={{ wordBreak: "break-all" }}>
+                                            {account.address}
+                                        </Typography>
+                                        <Typography variant="caption" color="text.secondary">
+                                            Created At: {new Date(account.createdAt).toLocaleString()}
+                                        </Typography>
+                                        </CardContent>
+                                    </Card>
+                                </Grid>
+                            ))}
+                        </Grid>
+                    </Paper>
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                    <Paper sx={{ p: 2, minHeight: 200, overflow: "auto" }}>
+                        <Typography variant="h6" gutterBottom>
+                            Fiat Wallet Accounts
+                        </Typography>
+                        <Divider sx={{ mb: 2 }} />
+                        <Grid  container spacing={2}>
+                            {userDetails?.cryptoWallet?.accounts.map((account) => (
+                                <Grid size={{ xs:12, md:6, }} key={account.id}>
+                                    <Card>
+                                        <CardContent>
+                                        <Typography variant="h6" gutterBottom>
+                                            Account Address
+                                        </Typography>
+                                        <Typography variant="body2" sx={{ wordBreak: "break-all" }}>
+                                            {account.address}
+                                        </Typography>
+                                        <Typography variant="caption" color="text.secondary">
+                                            Created At: {new Date(account.createdAt).toLocaleString()}
+                                        </Typography>
+                                        </CardContent>
+                                    </Card>
+                                </Grid>
+                            ))}
+                        </Grid>
+                    </Paper>
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
                     <Paper sx={{ p: 2, height: 400 }}>
