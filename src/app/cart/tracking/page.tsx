@@ -102,7 +102,7 @@ const TrackingPage = () => {
           </Grid>
 
           <Typography variant="h6" sx={{ mt: 3 }}>
-            Rider's Real-Time Location
+            Rider&apos;s Real-Time Location
           </Typography>
           <RiderMap lat={rider.currentLocation.lat} lng={rider.currentLocation.lng} />
           <br/><br/>
