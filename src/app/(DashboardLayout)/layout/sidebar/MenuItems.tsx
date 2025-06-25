@@ -36,7 +36,6 @@ export const getMenuItems = (user: { userType?: string } | null) => {
       title: "Explore",
       icon: IconLayoutDashboard,
       href: "/explore",
-      userType: ["USER"],
     },
     {
       id: uniqueId(),
@@ -83,24 +82,28 @@ export const getMenuItems = (user: { userType?: string } | null) => {
     {
       navlabel: true,
       subheader: "UTILITIES",
+      userType: ["ADMIN", "USER", "RIDER"],
     },
     {
       id: uniqueId(),
       title: "My Profile",
       icon: IconUser,
-      href: "/utilities/typography",
+      href: "/profile",
+      userType: ["ADMIN", "USER", "RIDER"],
     },
     {
       id: uniqueId(),
       title: "Wallet",
       icon: IconWallet,
       href: "/wallet",
+      userType: ["ADMIN", "USER", "RIDER"],
     },
     {
       id: uniqueId(),
       title: "Settings",
       icon: IconSettings,
       href: "/utilities/shadow",
+      userType: ["ADMIN", "USER", "RIDER"],
     },
     // {
     //   navlabel: true,
@@ -122,7 +125,7 @@ export const getMenuItems = (user: { userType?: string } | null) => {
     // },
     {
       navlabel: true,
-      subheader: " EXTRA",
+      subheader: "GUIDE",
     },
     {
       id: uniqueId(),

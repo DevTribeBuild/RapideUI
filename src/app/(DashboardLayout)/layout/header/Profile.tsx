@@ -10,10 +10,16 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-
+import { useRouter } from "next/navigation";
+import useAppStore from "@/stores/useAuthStore";
 import { IconListCheck, IconMail, IconUser } from "@tabler/icons-react";
 
 const Profile = () => {
+  const { clearAuth } = useAppStore();
+  const logout = () => {
+    clearAuth();
+    router.push("/authentication/login");
+  }
   const [anchorEl2, setAnchorEl2] = useState(null);
   const handleClick2 = (event: any) => {
     setAnchorEl2(event.currentTarget);
@@ -21,6 +27,13 @@ const Profile = () => {
   const handleClose2 = () => {
     setAnchorEl2(null);
   };
+  const router = useRouter();
+
+  const handleNavigate = (link) => {
+    handleClose2();
+    router.push(link);
+  }
+  
 
   return (
     <Box>
@@ -63,30 +76,29 @@ const Profile = () => {
           },
         }}
       >
-        <MenuItem>
+        <MenuItem onClick={() => handleNavigate("/profile")}>
           <ListItemIcon>
             <IconUser width={20} />
           </ListItemIcon>
           <ListItemText>My Profile</ListItemText>
         </MenuItem>
-        <MenuItem>
+        <MenuItem onClick={() => handleNavigate("/wallet")}>
           <ListItemIcon>
             <IconMail width={20} />
           </ListItemIcon>
-          <ListItemText>My Account</ListItemText>
+          <ListItemText>Wallet</ListItemText>
         </MenuItem>
-        <MenuItem>
+        <MenuItem onClick={() => handleNavigate("/cart")}>
           <ListItemIcon>
             <IconListCheck width={20} />
           </ListItemIcon>
-          <ListItemText>My Tasks</ListItemText>
+          <ListItemText>Cart</ListItemText>
         </MenuItem>
         <Box mt={1} py={1} px={2}>
           <Button
-            href="/authentication/login"
+            onClick={logout}
             variant="outlined"
             color="primary"
-            component={Link}
             fullWidth
           >
             Logout

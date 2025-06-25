@@ -11,8 +11,8 @@ import {
 import { IconPoint } from '@tabler/icons-react';
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Upgrade } from "./Updrade";
 import Image from "next/image";
+import Upgrade from "./Updrade";
 
 
 const renderMenuItems = (items: any, pathDirect: any) => {

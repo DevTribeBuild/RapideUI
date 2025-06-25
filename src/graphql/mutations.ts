@@ -55,3 +55,35 @@ export const VERIFY_OTP_MUTATION = gql`
         }
     }
 `;
+
+export const UPDATE_USER_MUTATION = gql`
+  mutation UpdateUser($updateUserInput: UpdateUserInput!) {
+    updateUser(updateUserInput: $updateUserInput) {
+      cryptoWallet {
+        accounts {
+          address
+          createdAt
+          cryptoWalletId
+        }
+      }
+      email
+      fiatWallet {
+        Currency {
+          createdAt
+          code
+          decimals
+          id
+          name
+          rateToUSD
+          symbol
+          updatedAt
+        }
+      }
+      firstName
+      id
+      lastName
+      username
+      walletAddress
+    }
+  }
+`;
