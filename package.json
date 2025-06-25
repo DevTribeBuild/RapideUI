@@ -27,6 +27,7 @@
     "graphql": "^16.11.0",
     "lodash": "^4.17.21",
     "next": "^15.1.7",
+    "prop-types": "^15.8.1",
     "react": "19.1.0",
     "react-apexcharts": "1.7.0",
     "react-dom": "19.1.0",
@@ -40,6 +41,7 @@
   "devDependencies": {
     "@cloudflare/next-on-pages": "^1.13.12",
     "@types/lodash": "4.14.196",
+    "@types/prop-types": "^15",
     "@types/react": "19.1.8",
     "@types/react-syntax-highlighter": "^15.5.13",
     "wrangler": "^4.21.1"
