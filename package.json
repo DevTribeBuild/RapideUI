@@ -46,6 +46,5 @@
     "@types/react": "19.1.8",
     "@types/react-syntax-highlighter": "^15.5.13",
     "wrangler": "^4.21.1"
-  },
-  "packageManager": "yarn@4.9.2"
+  }
 }
