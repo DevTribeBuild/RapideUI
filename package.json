@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "postbuild": "next-on-pages",
+    "deploy": "wranglerdeploy",
     "start": "next start",
     "lint": "next lint"
   },
@@ -25,18 +27,25 @@
     "graphql": "^16.11.0",
     "lodash": "^4.17.21",
     "next": "^15.1.7",
+    "prop-types": "^15.8.1",
     "react": "19.1.0",
     "react-apexcharts": "1.7.0",
     "react-dom": "19.1.0",
+    "react-hot-toast": "^2.5.2",
     "react-mui-sidebar": "^1.6.3",
+    "react-redux": "^9.2.0",
     "react-syntax-highlighter": "^15.6.1",
     "recharts": "^2.15.3",
     "typescript": "5.7.3",
     "zustand": "^5.0.5"
   },
   "devDependencies": {
+    "@cloudflare/next-on-pages": "^1.13.12",
     "@types/lodash": "4.14.196",
-    "@types/react-syntax-highlighter": "^15.5.13"
+    "@types/prop-types": "^15",
+    "@types/react": "19.1.8",
+    "@types/react-syntax-highlighter": "^15.5.13",
+    "wrangler": "^4.21.1"
   },
-  "packageManager": "yarn@4.9.2+sha512.1fc009bc09d13cfd0e19efa44cbfc2b9cf6ca61482725eb35bbc5e257e093ebf4130db6dfe15d604ff4b79efd8e1e8e99b25fa7d0a6197c9f9826358d4d65c3c"
+  "packageManager": "yarn@4.9.2"
 }

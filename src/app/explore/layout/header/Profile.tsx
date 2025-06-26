@@ -12,15 +12,24 @@ import {
 } from "@mui/material";
 
 import { IconListCheck, IconMail, IconUser } from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
+import useAppStore from "@/stores/useAuthStore";
 
 const Profile = () => {
   const [anchorEl2, setAnchorEl2] = useState(null);
+  const { clearAuth } = useAppStore();
   const handleClick2 = (event: any) => {
     setAnchorEl2(event.currentTarget);
   };
   const handleClose2 = () => {
     setAnchorEl2(null);
   };
+
+  const router = useRouter();
+  const logout = () => {
+    clearAuth
+    router.push("/authentication/login");
+  }
 
   return (
     <Box>
@@ -83,7 +92,7 @@ const Profile = () => {
         </MenuItem>
         <Box mt={1} py={1} px={2}>
           <Button
-            href="/authentication/login"
+            onClick={() => logout()}
             variant="outlined"
             color="primary"
             component={Link}

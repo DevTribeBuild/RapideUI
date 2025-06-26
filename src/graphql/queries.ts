@@ -61,3 +61,64 @@ export const GET_ME = gql`
     }
   }
 `;
+
+export const GET_MY_TRANSACTIONS = gql`
+query Query($isTest: Boolean!, $skip: Float!, $take: Float!) {
+  myCryptoTransactions(isTest: $isTest, skip: $skip, take: $take) {
+    blockNumber
+    confirmations
+    createdAt
+    errorMessage
+    fee
+    from
+    gas
+    gasPrice
+    gasUsed
+    hash
+    id
+    methodId
+    status
+    timeStamp
+    to
+    toSymbol
+    tokenAddress
+    tokenSymbol
+    transactionIndex
+    txreceipt_status
+    type
+    updatedAt
+    userId
+    value
+  }
+}`;
+
+
+export const GET_ALL_TRANSACTIONS = gql`
+query Query($skip: Float!, $status: TransactionStatus, $take: Float!) {
+  allCryptoTransactions(skip: $skip, status: $status, take: $take) {
+    blockNumber
+    confirmations
+    createdAt
+    errorMessage
+    fee
+    from
+    gas
+    gasPrice
+    gasUsed
+    hash
+    id
+    methodId
+    status
+    timeStamp
+    to
+    toSymbol
+    tokenAddress
+    tokenSymbol
+    transactionIndex
+    txreceipt_status
+    type
+    updatedAt
+    userId
+    value
+  }
+}`;

@@ -1,4 +1,5 @@
 "use client";
+
 import {
   IconAperture,
   IconCopy,
@@ -7,94 +8,141 @@ import {
   IconMoodHappy,
   IconTypography,
   IconUserPlus,
+  IconBasket,
+  IconWallet,
+  IconSettings,
+  IconUser,
 } from "@tabler/icons-react";
 
 import { uniqueId } from "lodash";
 
-const user = localStorage.getItem("user");
-let userType = "USER";
-try {
-  if (user) {
-    userType = JSON.parse(user).userType || "USER";
-  }
-} catch {
-  userType = "USER";
-}
+export const getMenuItems = (user: { userType?: string } | null) => {
+  const userType = user?.userType;
 
-const Menuitems = [
-  {
-    navlabel: true,
-    subheader: "HOME",
-  },
-  {
-    id: uniqueId(),
-    title: "Dashboard",
-    icon: IconLayoutDashboard,
-    href: "/",
-    userType: "ADMIN",
-  },
-  {
-    id: uniqueId(),
-    title: "Explore",
-    icon: IconLayoutDashboard,
-    href: "/explore",
-    userType: "USER",
-  },
-  {
-    navlabel: true,
-    subheader: "UTILITIES",
-  },
-  {
-    id: uniqueId(),
-    title: "Typography",
-    icon: IconTypography,
-    href: "/utilities/typography",
-  },
-  {
-    id: uniqueId(),
-    title: "Shadow",
-    icon: IconCopy,
-    href: "/utilities/shadow",
-  },
-  {
-    navlabel: true,
-    subheader: "AUTH",
-  },
-  {
-    id: uniqueId(),
-    title: "Login",
-    icon: IconLogin,
-    href: "/authentication/login",
-    userType: "USER",
-  },
-  {
-    id: uniqueId(),
-    title: "Register",
-    icon: IconUserPlus,
-    href: "/authentication/register",
-    userType: "USER",
-  },
-  {
-    navlabel: true,
-    subheader: " EXTRA",
-  },
-  {
-    id: uniqueId(),
-    title: "Icons",
-    icon: IconMoodHappy,
-    href: "/icons",
-  },
-  {
-    id: uniqueId(),
-    title: "Sample Page",
-    icon: IconAperture,
-    href: "/sample-page",
-  },
-];
+  const Menuitems = [
+    {
+      navlabel: true,
+      subheader: "HOME",
+    },
+    {
+      id: uniqueId(),
+      title: "Dashboard",
+      icon: IconLayoutDashboard,
+      href: "/",
+      userType: ["ADMIN", "RIDER"],
+    },
+    {
+      id: uniqueId(),
+      title: "Explore",
+      icon: IconLayoutDashboard,
+      href: "/explore",
+    },
+    {
+      id: uniqueId(),
+      title: "Cart",
+      icon: IconBasket,
+      href: "/cart",
+      userType: ["ADMIN", "USER"],
+    },
+        {
+      id: uniqueId(),
+      title: "Users",
+      icon: IconBasket,
+      href: "/users",
+      userType: ["ADMIN"],
+    },
+    {
+      id: uniqueId(),
+      title: "Riders",
+      icon: IconBasket,
+      href: "/riders",
+      userType: ["ADMIN"],
+    },
+    {
+      id: uniqueId(),
+      title: "My Orders",
+      icon: IconMoodHappy,
+      href: "/cart/orders",
+      userType: ["USER", "RIDER"],
+    },
+    {
+      id: uniqueId(),
+      title: "All Orders",
+      icon: IconMoodHappy,
+      href: "/cart/orders",
+      userType: ["ADMIN"],
+    },
+    {
+      id: uniqueId(),
+      title: "Payments",
+      icon: IconMoodHappy,
+      href: "/payments",
+      userType: ["ADMIN"],
+    },
+    {
+      navlabel: true,
+      subheader: "UTILITIES",
+      userType: ["ADMIN", "USER", "RIDER"],
+    },
+    {
+      id: uniqueId(),
+      title: "My Profile",
+      icon: IconUser,
+      href: "/profile",
+      userType: ["ADMIN", "USER", "RIDER"],
+    },
+    {
+      id: uniqueId(),
+      title: "Wallet",
+      icon: IconWallet,
+      href: "/wallet",
+      userType: ["ADMIN", "USER", "RIDER"],
+    },
+    {
+      id: uniqueId(),
+      title: "Settings",
+      icon: IconSettings,
+      href: "/utilities/shadow",
+      userType: ["ADMIN", "USER", "RIDER"],
+    },
+    // {
+    //   navlabel: true,
+    //   subheader: "AUTH",
+    // },
+    // {
+    //   id: uniqueId(),
+    //   title: "Login",
+    //   icon: IconLogin,
+    //   href: "/authentication/login",
+    //   userType: ["ADMIN", "USER"],
+    // },
+    // {
+    //   id: uniqueId(),
+    //   title: "Register",
+    //   icon: IconUserPlus,
+    //   href: "/authentication/register",
+    //   userType: ["ADMIN", "USER"],
+    // },
+    {
+      navlabel: true,
+      subheader: "GUIDE",
+    },
+    {
+      id: uniqueId(),
+      title: "FAQ",
+      icon: IconMoodHappy,
+      href: "/icons",
+    },
+    {
+      id: uniqueId(),
+      title: "Help",
+      icon: IconAperture,
+      href: "/sample-page",
+    },
+  ];
 
-// Only return menu items with matching userType or no userType specified
-const filteredMenuitems = Menuitems.filter(
-  (item) => !item.userType || item.userType === userType
-);
-
-export default filteredMenuitems;
+  return Menuitems.filter(
+    (item) =>
+      !item.userType || (Array.isArray(item.userType) && item.userType.includes(userType!))
+  );
+};
