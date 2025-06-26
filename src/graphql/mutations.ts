@@ -87,3 +87,13 @@ export const UPDATE_USER_MUTATION = gql`
     }
   }
 `;
+
+export const SEND_TOKEN = gql`
+  mutation SendToken($input: SendTokenInput!) {
+    sendToken(input: $input) {
+      message
+      status
+      transactionHash
+    }
+  }
+`;

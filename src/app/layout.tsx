@@ -4,7 +4,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import './global.css'
 import ApolloProviderWrapper from "./providers/ApolloProviderWrapper";
-
+import { Toaster } from 'react-hot-toast';
 
 export default function RootLayout({
   children,
@@ -19,6 +19,16 @@ export default function RootLayout({
             {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
             <CssBaseline />
             {children}
+            <Toaster
+              position="bottom-center"
+              reverseOrder={false}
+              toastOptions={{
+                style: {
+                  background: '#333',
+                  color: '#fff',
+                },
+              }}
+            />
           </ThemeProvider>
         </ApolloProviderWrapper>
       </body>

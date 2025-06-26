@@ -31,6 +31,7 @@ import EuroIcon from "@mui/icons-material/Euro";
 import CurrencyFrancIcon from "@mui/icons-material/CurrencyFranc";
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer } from "recharts";
 import useAppStore from "@/stores/useAuthStore"
+import SendTokenDialog from "../components/dashboard/sendToken";
 
 
 // Example wallet data (replace with real data/fetch from API or store)
@@ -44,6 +45,7 @@ const wallet = {
         { currency: "ETH", balance: 2.1 },
     ],
 };
+
 
 // Example transaction history
 const transactions = [
@@ -91,12 +93,14 @@ const pieData = [
 
 const COLORS = ["#1976d2", "#43a047", "#fbc02d", "#ff7043"];
 
-const assetOptions = [
+const assetOptions:any = [
     ...wallet.fiat.map((f) => ({ type: "fiat", currency: f.currency })),
     ...wallet.crypto.map((c) => ({ type: "crypto", currency: c.currency })),
 ];
 
 const WalletPage = () => {
+    const [sendDialogOpen, setSendDialogOpen] = useState(false);
+    
     const userDetails:any = useAppStore((state) => state.userDetails);
     console.log("User Details: ****", userDetails);
     const [modalOpen, setModalOpen] = useState(false);
@@ -190,9 +194,9 @@ const WalletPage = () => {
                                     sx={{ mr: 1, mb: 1 }}
                                     onClick={() => handleOpenModal("Deposit", "crypto")}
                                 >
-                                    Deposit
+                                    Receive
                                 </Button>
-                                <Button
+                                {/* <Button
                                     variant="outlined"
                                     size="small"
                                     sx={{ mb: 1 }}
@@ -200,6 +204,23 @@ const WalletPage = () => {
                                 >
                                     Withdraw
                                 </Button>
+                            </Box>
+                            <Box> */}
+                                <Button
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{ mb: 1 }}
+                                    onClick={() => setSendDialogOpen(true)}
+                                    >
+                                    Send
+                                </Button>
+                                <SendTokenDialog 
+                                    open={sendDialogOpen}
+                                    onClose={() => setSendDialogOpen(false)}
+                                    assetOptions={assetOptions}
+                                    onSend={(data:any) => {
+                                    console.log("Send Data:", data);
+                                }} />
                             </Box>
                         </CardContent>
                     </Card>
