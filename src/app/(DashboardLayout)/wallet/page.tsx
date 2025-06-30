@@ -23,6 +23,9 @@ import {
     Select,
     InputLabel,
     FormControl,
+    Skeleton,
+    Chip,
+    IconButton,
 } from "@mui/material";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import CurrencyBitcoinIcon from "@mui/icons-material/CurrencyBitcoin";
@@ -32,6 +35,11 @@ import CurrencyFrancIcon from "@mui/icons-material/CurrencyFranc";
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer } from "recharts";
 import useAppStore from "@/stores/useAuthStore"
 import SendTokenDialog from "../components/dashboard/sendToken";
+import { useQuery } from "@apollo/client";
+import { GET_MY_TRANSACTIONS } from "@/graphql/queries";
+import useAuthStore from "@/stores/useAuthStore";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import Tooltip from "@mui/material/Tooltip";
 
 
 // Example wallet data (replace with real data/fetch from API or store)
@@ -93,24 +101,25 @@ const pieData = [
 
 const COLORS = ["#1976d2", "#43a047", "#fbc02d", "#ff7043"];
 
-const assetOptions:any = [
+const assetOptions: any = [
     ...wallet.fiat.map((f) => ({ type: "fiat", currency: f.currency })),
     ...wallet.crypto.map((c) => ({ type: "crypto", currency: c.currency })),
 ];
 
 const WalletPage = () => {
     const [sendDialogOpen, setSendDialogOpen] = useState(false);
-    
-    const userDetails:any = useAppStore((state) => state.userDetails);
-    console.log("User Details: ****", userDetails);
+    const token = useAuthStore((state) => state.token);
+    const userDetails: any = useAppStore((state) => state.userDetails);
     const [modalOpen, setModalOpen] = useState(false);
     const [modalType, setModalType] = useState<"Deposit" | "Withdraw">("Deposit");
     const [selectedAsset, setSelectedAsset] = useState(assetOptions[0]);
     const [amount, setAmount] = useState("");
-
+    const { data: transaction_data, loading: loading_transactions, error: error_transactions } = useQuery(GET_MY_TRANSACTIONS, {
+        variables: { isTest: false, skip: 0, take: 10 },
+    });
     const handleOpenModal = (type: "Deposit" | "Withdraw", assetType: "fiat" | "crypto") => {
         setModalType(type);
-        setSelectedAsset(assetOptions.find((a) => a.type === assetType) || assetOptions[0]);
+        setSelectedAsset(assetOptions.find((a: any) => a.type === assetType) || assetOptions[0]);
         setAmount("");
         setModalOpen(true);
     };
@@ -211,16 +220,16 @@ const WalletPage = () => {
                                     size="small"
                                     sx={{ mb: 1 }}
                                     onClick={() => setSendDialogOpen(true)}
-                                    >
+                                >
                                     Send
                                 </Button>
-                                <SendTokenDialog 
+                                <SendTokenDialog
                                     open={sendDialogOpen}
                                     onClose={() => setSendDialogOpen(false)}
                                     assetOptions={assetOptions}
-                                    onSend={(data:any) => {
-                                    console.log("Send Data:", data);
-                                }} />
+                                    onSend={(data: any) => {
+                                        console.log("Send Data:", data);
+                                    }} />
                             </Box>
                         </CardContent>
                     </Card>
@@ -231,25 +240,47 @@ const WalletPage = () => {
                             Crypto Wallet Accounts
                         </Typography>
                         <Divider sx={{ mb: 2 }} />
-                        <Grid  container spacing={2}>
-                            {userDetails?.cryptoWallet?.accounts.map((account) => (
-                                <Grid size={{ xs:12, md:6, }} key={account.id}>
-                                    <Card>
-                                        <CardContent>
-                                        <Typography variant="h6" gutterBottom>
-                                            Account Address
-                                        </Typography>
-                                        <Typography variant="body2" sx={{ wordBreak: "break-all" }}>
-                                            {account.address}
-                                        </Typography>
-                                        <Typography variant="caption" color="text.secondary">
-                                            Created At: {new Date(account.createdAt).toLocaleString()}
-                                        </Typography>
-                                        </CardContent>
-                                    </Card>
-                                </Grid>
-                            ))}
-                        </Grid>
+
+                        {!userDetails ? (
+                            <Grid container spacing={2}>
+                                {Array.from({ length: 2 }).map((_, index) => (
+                                    <Grid size={{ xs: 12, md: 6 }} key={index}>
+                                        <Skeleton variant="rectangular" height={120} sx={{ borderRadius: 2 }} />
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        ) : userDetails?.cryptoWallet?.accounts?.length > 0 ? (
+                            <Grid container spacing={2}>
+                                {userDetails.cryptoWallet.accounts.map((account) => (
+                                    <Grid size={{ xs: 12, md: 6 }} key={account.id}>
+                                        <Card sx={{ borderRadius: 2, boxShadow: 3 }}>
+                                            <CardContent>
+                                                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                                                    Account Address
+                                                </Typography>
+                                                <Typography variant="body2" sx={{ wordBreak: "break-all", mb: 1, display: "flex", alignItems: "center" }}>
+                                                    {`${account.address.slice(0, 6)}...${account.address.slice(-6)}`}
+                                                    <Tooltip title="Copy Address">
+                                                        <IconButton
+                                                        size="small"
+                                                        sx={{ ml: 1 }}
+                                                        onClick={() => navigator.clipboard.writeText(account.address)}
+                                                        >
+                                                        <ContentCopyIcon fontSize="inherit" />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                </Typography>
+                                                <Typography variant="caption" color="text.secondary">
+                                                    Created: {new Date(account.createdAt).toLocaleString()}
+                                                </Typography>
+                                            </CardContent>
+                                        </Card>
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        ) : (
+                            <Typography color="text.secondary">No crypto accounts found.</Typography>
+                        )}
                     </Paper>
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
@@ -258,27 +289,41 @@ const WalletPage = () => {
                             Fiat Wallet Accounts
                         </Typography>
                         <Divider sx={{ mb: 2 }} />
-                        <Grid  container spacing={2}>
-                            {userDetails?.cryptoWallet?.accounts.map((account) => (
-                                <Grid size={{ xs:12, md:6, }} key={account.id}>
-                                    <Card>
-                                        <CardContent>
-                                        <Typography variant="h6" gutterBottom>
-                                            Account Address
-                                        </Typography>
-                                        <Typography variant="body2" sx={{ wordBreak: "break-all" }}>
-                                            {account.address}
-                                        </Typography>
-                                        <Typography variant="caption" color="text.secondary">
-                                            Created At: {new Date(account.createdAt).toLocaleString()}
-                                        </Typography>
-                                        </CardContent>
-                                    </Card>
-                                </Grid>
-                            ))}
-                        </Grid>
+
+                        {!userDetails ? (
+                            <Grid container spacing={2}>
+                                {Array.from({ length: 2 }).map((_, index) => (
+                                    <Grid size={{ xs: 12, md: 6 }} key={index}>
+                                        <Skeleton variant="rectangular" height={120} sx={{ borderRadius: 2 }} />
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        ) : userDetails?.fiatWallet?.accounts?.length > 0 ? (
+                            <Grid container spacing={2}>
+                                {userDetails.fiatWallet.accounts.map((account) => (
+                                    <Grid size={{ xs: 12, md: 6 }} key={account.id}>
+                                        <Card sx={{ borderRadius: 2, boxShadow: 3 }}>
+                                            <CardContent>
+                                                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                                                    Account Number
+                                                </Typography>
+                                                <Typography variant="body2" sx={{ wordBreak: "break-all", mb: 1 }}>
+                                                    {account.address}
+                                                </Typography>
+                                                <Typography variant="caption" color="text.secondary">
+                                                    Created: {new Date(account.createdAt).toLocaleString()}
+                                                </Typography>
+                                            </CardContent>
+                                        </Card>
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        ) : (
+                            <Typography color="text.secondary">No fiat accounts found.</Typography>
+                        )}
                     </Paper>
                 </Grid>
+
                 <Grid size={{ xs: 12, md: 6 }}>
                     <Paper sx={{ p: 2, height: 400 }}>
                         <Typography variant="h6" gutterBottom>
@@ -305,31 +350,78 @@ const WalletPage = () => {
                     </Paper>
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
-                    <Paper sx={{ p: 2, height: 400, overflow: "auto" }}>
+                    <Paper sx={{ p: 2, height: 400, overflow: "auto", position: "relative" }}>
                         <Typography variant="h6" gutterBottom>
                             Transaction History
                         </Typography>
                         <Divider sx={{ mb: 2 }} />
-                        <List>
-                            {transactions.map((tx) => {
-                                const Icon = tx?.icon;
-                                return (
-                                    <ListItem key={tx.id}>
-                                        <ListItemAvatar>
-                                            <Avatar>
-                                                <Icon />
-                                            </Avatar>
-                                        </ListItemAvatar>
-                                        <ListItemText
-                                            primary={`${tx.type} - ${tx.amount} ${tx.currency}`}
-                                            secondary={tx.date}
-                                        />
-                                    </ListItem>
-                                );
-                            })}
-                        </List>
+
+                        {loading_transactions ? (
+                            <List>
+                                {Array.from({ length: 5 }).map((_, index) => (
+                                    <>
+                                        <ListItem key={index} sx={{ position: "relative" }}>
+                                            <ListItemAvatar>
+                                                <Skeleton variant="circular" width={40} height={40} />
+                                            </ListItemAvatar>
+                                            <ListItemText
+                                                primary={<Skeleton width="60%" />}
+                                                secondary={<Skeleton width="40%" />}
+                                            />
+                                            <Skeleton
+                                                variant="rectangular"
+                                                width={60}
+                                                height={24}
+                                                sx={{ position: "absolute", top: 8, right: 16, borderRadius: 1 }}
+                                            />
+                                        </ListItem>
+                                        <Divider />
+                                    </>
+                                ))}
+                            </List>
+                        ) : transaction_data?.myCryptoTransactions?.length > 0 ? (
+                            <List>
+                                {transaction_data.myCryptoTransactions.map((tx) => (
+                                    <React.Fragment key={tx.id}>
+                                        <ListItem sx={{ position: "relative" }}>
+                                            <ListItemAvatar>
+                                                <Avatar>{tx.toSymbol?.charAt(0) || "T"}</Avatar>
+                                            </ListItemAvatar>
+                                            <ListItemText
+                                                primary={`${tx.type} - ${tx.value} ${tx.toSymbol}`}
+                                                secondary={new Date(tx.timeStamp).toLocaleString()}
+                                            />
+                                            <Chip
+                                                label={tx.status.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase())}
+                                                size="small"
+                                                sx={{
+                                                    position: "absolute",
+                                                    top: 8,
+                                                    right: 16,
+                                                    backgroundColor:
+                                                        tx.status === "COMPLETED"
+                                                            ? "#4caf50"
+                                                            : tx.status === "FAILED"
+                                                                ? "#f44336"
+                                                                : "#ff9800",
+                                                    color: "#fff",
+                                                    fontWeight: "bold",
+                                                    textTransform: "capitalize",
+                                                }}
+                                            />
+                                        </ListItem>
+                                        <Divider />
+                                    </React.Fragment>
+                                ))}
+                            </List>
+                        ) : (
+                            <Typography variant="body2" color="text.secondary">
+                                No transactions found.
+                            </Typography>
+                        )}
                     </Paper>
                 </Grid>
+
             </Grid>
             <Dialog open={modalOpen} onClose={handleCloseModal}>
                 <DialogTitle>

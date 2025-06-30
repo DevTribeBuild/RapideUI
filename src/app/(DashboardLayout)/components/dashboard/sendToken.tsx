@@ -78,7 +78,6 @@ const token = useAuthStore((state:any) => state.token);
     reset();
     onClose();
   };
-
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
       <DialogTitle>Send Tokens</DialogTitle>
@@ -111,7 +110,6 @@ const token = useAuthStore((state:any) => state.token);
             </Select>
           </FormControl>
         )}
-        {selectedUser.walletAddress}
         {activeStep === 1 && (
           <>
             <FormControl fullWidth sx={{ mb: 2 }}>
@@ -150,7 +148,7 @@ const token = useAuthStore((state:any) => state.token);
           <Box>
             <Typography sx={{ mb: 1 }}>
               <strong>Recipient:</strong>{" "}
-              {users.find((u:any) => u.id == selectedUser)?.email || "-"}
+              {users.find((u:any) => u == selectedUser)?.email || "-"}
             </Typography>
             <Typography sx={{ mb: 1 }}>
               <strong>Amount:</strong> {sendAmount}
