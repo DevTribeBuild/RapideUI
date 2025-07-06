@@ -36,7 +36,7 @@ import { PieChart, Pie, Cell, Legend, ResponsiveContainer } from "recharts";
 import useAppStore from "@/stores/useAuthStore"
 import SendTokenDialog from "../components/dashboard/sendToken";
 import { useQuery } from "@apollo/client";
-import { GET_MY_TRANSACTIONS } from "@/graphql/queries";
+import { GET_MY_TRANSACTIONS, GET_FIAT_BALANCE } from "@/graphql/queries";
 import useAuthStore from "@/stores/useAuthStore";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import Tooltip from "@mui/material/Tooltip";
@@ -117,6 +117,7 @@ const WalletPage = () => {
     const { data: transaction_data, loading: loading_transactions, error: error_transactions } = useQuery(GET_MY_TRANSACTIONS, {
         variables: { isTest: false, skip: 0, take: 10 },
     });
+    const { data: fiat_balance, loading: loading_balance, error: error_balance } = useQuery(GET_FIAT_BALANCE);
     const handleOpenModal = (type: "Deposit" | "Withdraw", assetType: "fiat" | "crypto") => {
         setModalType(type);
         setSelectedAsset(assetOptions.find((a: any) => a.type === assetType) || assetOptions[0]);
@@ -155,11 +156,12 @@ const WalletPage = () => {
                             </Avatar>
                             <Box sx={{ flexGrow: 1 }}>
                                 <Typography variant="h6">Fiat Wallet</Typography>
-                                {wallet.fiat.map((f) => (
-                                    <Typography key={f.currency} variant="h5" fontWeight="bold">
-                                        {f.currency} {f.balance.toLocaleString()}
-                                    </Typography>
-                                ))}
+                                {!loading_balance ? (
+                                    fiat_balance.fiatWalletBalance
+                                ) : (
+                                    <Skeleton width={80} height={24} />
+                                )}
+
                             </Box>
                             <Box>
                                 <Button
@@ -197,7 +199,7 @@ const WalletPage = () => {
                                 ))}
                             </Box>
                             <Box
-                            sx={{display:"flex"}}
+                                sx={{ display: "flex" }}
                             >
                                 <Button
                                     variant="contained"
@@ -207,7 +209,7 @@ const WalletPage = () => {
                                 >
                                     Receive
                                 </Button>
-                                <SwapToken/>
+                                <SwapToken />
                                 <Button
                                     variant="outlined"
                                     size="small"
@@ -255,11 +257,11 @@ const WalletPage = () => {
                                                     {`${account.address.slice(0, 6)}...${account.address.slice(-6)}`}
                                                     <Tooltip title="Copy Address">
                                                         <IconButton
-                                                        size="small"
-                                                        sx={{ ml: 1 }}
-                                                        onClick={() => navigator.clipboard.writeText(account.address)}
+                                                            size="small"
+                                                            sx={{ ml: 1 }}
+                                                            onClick={() => navigator.clipboard.writeText(account.address)}
                                                         >
-                                                        <ContentCopyIcon fontSize="inherit" />
+                                                            <ContentCopyIcon fontSize="inherit" />
                                                         </IconButton>
                                                     </Tooltip>
                                                 </Typography>
@@ -352,7 +354,6 @@ const WalletPage = () => {
                         {loading_transactions ? (
                             <List>
                                 {Array.from({ length: 5 }).map((_, index) => (
-                                    <>
                                         <ListItem key={index} sx={{ position: "relative" }}>
                                             <ListItemAvatar>
                                                 <Skeleton variant="circular" width={40} height={40} />
@@ -367,9 +368,8 @@ const WalletPage = () => {
                                                 height={24}
                                                 sx={{ position: "absolute", top: 8, right: 16, borderRadius: 1 }}
                                             />
-                                        </ListItem>
                                         <Divider />
-                                    </>
+                                        </ListItem>
                                 ))}
                             </List>
                         ) : transaction_data?.myCryptoTransactions?.length > 0 ? (

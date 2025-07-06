@@ -122,3 +122,9 @@ query Query($skip: Float!, $status: TransactionStatus, $take: Float!) {
     value
   }
 }`;
+
+export const GET_FIAT_BALANCE = gql`
+query Query {
+  fiatWalletBalance
+}
+`
