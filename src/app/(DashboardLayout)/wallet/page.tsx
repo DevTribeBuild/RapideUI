@@ -40,7 +40,7 @@ import { GET_MY_TRANSACTIONS } from "@/graphql/queries";
 import useAuthStore from "@/stores/useAuthStore";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import Tooltip from "@mui/material/Tooltip";
-
+import SwapToken from "@/app/(DashboardLayout)/components/dashboard/SwapToken"
 
 // Example wallet data (replace with real data/fetch from API or store)
 const wallet = {
@@ -196,7 +196,9 @@ const WalletPage = () => {
                                     </Typography>
                                 ))}
                             </Box>
-                            <Box>
+                            <Box
+                            sx={{display:"flex"}}
+                            >
                                 <Button
                                     variant="contained"
                                     size="small"
@@ -205,16 +207,7 @@ const WalletPage = () => {
                                 >
                                     Receive
                                 </Button>
-                                {/* <Button
-                                    variant="outlined"
-                                    size="small"
-                                    sx={{ mb: 1 }}
-                                    onClick={() => handleOpenModal("Withdraw", "crypto")}
-                                >
-                                    Withdraw
-                                </Button>
-                            </Box>
-                            <Box> */}
+                                <SwapToken/>
                                 <Button
                                     variant="outlined"
                                     size="small"
