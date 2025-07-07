@@ -128,3 +128,13 @@ query Query {
   fiatWalletBalance
 }
 `
+
+export const GET_CRYPTO_BALANCE = gql`
+query Balances($isTest: Boolean!) {
+  balances(isTest: $isTest) {
+    address
+    amount
+    symbol
+  }
+}
+`
