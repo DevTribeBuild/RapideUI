@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { Box, Typography, Button, MenuItem } from '@mui/material';
+import { Box, Typography, Button, MenuItem, Skeleton } from '@mui/material';
 import Link from 'next/link';
 import CustomTextField from '@/app/(DashboardLayout)/components/forms/theme-elements/CustomTextField';
 import { Stack } from '@mui/system';
-import { useMutation } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { REGISTER_MUTATION, VERIFY_OTP_MUTATION } from '@/graphql/mutations';
 import { useRouter } from 'next/navigation';
 import useAuthStore from '@/stores/useAuthStore';
 import { handleLoginHelper } from '@/helpers/authHelper';
 import toast from 'react-hot-toast';
+import { GET_FIAT_CURRENCIES } from '@/graphql/queries';
 
 interface registerType {
         title?: string;
@@ -25,6 +26,12 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
         const [register, { loading }] = useMutation(REGISTER_MUTATION);
         const [verifyOtp, { loading: otpLoading }] = useMutation(VERIFY_OTP_MUTATION);
         const router = useRouter();
+        const {
+                data: fiat_currencies_data,
+                loading: loading_fiat_currencies,
+                error: error_fiat_currencies,
+        } = useQuery(GET_FIAT_CURRENCIES);
+        console.log(fiat_currencies_data, "(*&*^&%^")
 
         const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
                 e.preventDefault();
@@ -97,21 +104,31 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
                                                 >
                                                         Select Currency
                                                 </Typography>
-                                                <CustomTextField
-                                                        id="currency"
-                                                        select
-                                                        variant="outlined"
-                                                        fullWidth
-                                                        value={currencyCode}
-                                                        onChange={(e) => setCurrencyCode(e.target.value)}
-                                                        required
-                                                >
-                                                        <MenuItem value="KES">Kenyan Shilling (KES)</MenuItem>
-                                                        <MenuItem value="USD">US Dollar (USD)</MenuItem>
-                                                        <MenuItem value="EUR">Euro (EUR)</MenuItem>
-                                                        <MenuItem value="GBP">British Pound (GBP)</MenuItem>
-                                                        <MenuItem value="NGN">Naira (NGN)</MenuItem>
-                                                </CustomTextField>
+                                                {loading_fiat_currencies ? (
+                                                        <Skeleton variant="rectangular" height={56} width="100%" sx={{ borderRadius: 1 }} />
+                                                ) : (
+                                                        <CustomTextField
+                                                                id="currency"
+                                                                select
+                                                                variant="outlined"
+                                                                fullWidth
+                                                                value={currencyCode}
+                                                                onChange={(e) => setCurrencyCode(e.target.value)}
+                                                                required
+                                                        >
+                                                                {fiat_currencies_data?.currencies?.length > 0 ? (
+                                                                        fiat_currencies_data.currencies.map((currency: any) => (
+                                                                                <MenuItem key={currency.code} value={currency.code}>
+                                                                                        {currency.name} ({currency.code})
+                                                                                </MenuItem>
+                                                                        ))
+                                                                ) : (
+                                                                        <MenuItem disabled value="">
+                                                                                No currencies found
+                                                                        </MenuItem>
+                                                                )}
+                                                        </CustomTextField>
+                                                )}
                                         </Stack>
                                         <Stack mb={3}>
                                                 <Typography

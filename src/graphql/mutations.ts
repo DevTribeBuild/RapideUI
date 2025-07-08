@@ -131,3 +131,28 @@ export const SEND_TOKEN = gql`
     }
   }
 `;
+
+export const FIAT_DEPOSIT = gql`
+  mutation fiatDeposit($input: DepositFiatInput!) {
+  depositFiat(input: $input) {
+    Currency {
+      code
+      createdAt
+      decimals
+      id
+      name
+      rateToUSD
+      symbol
+      updatedAt
+    }
+    amount
+    createdAt
+    id
+    recipientEmail
+    recipientId
+    senderId
+    status
+    updatedAt
+  }
+}
+`

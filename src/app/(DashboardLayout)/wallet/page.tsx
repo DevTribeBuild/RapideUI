@@ -39,8 +39,9 @@ import SwapToken from "@/app/(DashboardLayout)/components/dashboard/SwapToken";
 
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer } from "recharts";
 import useAppStore from "@/stores/useAuthStore"; // Assuming this is correct
-import { useQuery } from "@apollo/client";
-import { GET_MY_TRANSACTIONS, GET_FIAT_BALANCE, GET_CRYPTO_BALANCE, GET_TOTAL_CRYPTO_BALANCE } from "@/graphql/queries";
+import { useQuery, useMutation, gql } from "@apollo/client"; // Added gql and useMutation
+import { GET_MY_TRANSACTIONS, GET_FIAT_BALANCE, GET_CRYPTO_BALANCE, GET_TOTAL_CRYPTO_BALANCE, FIAT_WALLET_ACCOUNTS } from "@/graphql/queries";
+import { FIAT_DEPOSIT } from "@/graphql/mutations"; // Assuming FIAT_DEPOSIT is correctly imported from mutations
 import useAuthStore from "@/stores/useAuthStore"; // Assuming this is correct
 
 // Example wallet data (replace with real data/fetch from API or store)
@@ -55,13 +56,6 @@ const wallet = {
     ],
 };
 
-// Pie chart data (sum all balances, convert to USD for demo)
-const pieData = [
-    { name: "USD", value: 1250.75 },
-    { name: "KES", value: 32000 / 150 }, // Assume 1 USD = 150 KES
-    { name: "BTC", value: 0.5234 * 65000 }, // Assume 1 BTC = 65,000 USD
-    { name: "ETH", value: 2.1 * 3500 }, // Assume 1 ETH = 3,500 USD
-];
 
 const COLORS = ["#1976d2", "#43a047", "#fbc02d", "#ff7043"];
 
@@ -80,6 +74,7 @@ const WalletPage = () => {
     const [selectedAsset, setSelectedAsset] = useState(assetOptions[0]);
     const [amount, setAmount] = useState("");
 
+    // GraphQL Queries
     const {
         data: transaction_data,
         loading: loading_transactions,
@@ -88,6 +83,10 @@ const WalletPage = () => {
         variables: { isTest: false, skip: 0, take: 10 },
     });
     const { data: data_crypto_balances, loading: loading_crypto_balances } = useQuery(GET_CRYPTO_BALANCE, {
+        variables: { isTest },
+    });
+
+    const { data: data_fiat_accounts, loading: loading_fiat_accounts } = useQuery(FIAT_WALLET_ACCOUNTS, {
         variables: { isTest },
     });
 
@@ -103,12 +102,15 @@ const WalletPage = () => {
         error: error_crypto_balance
     } = useQuery(GET_TOTAL_CRYPTO_BALANCE, {
         variables: { isTest: false },
-    })
+    });
 
+    // GraphQL Mutation for Fiat Deposit
+    const [depositFiat, { loading: depositingFiat, error: depositFiatError }] = useMutation(FIAT_DEPOSIT);
 
 
     const handleOpenModal = (type: "Deposit" | "Withdraw", assetType: "fiat" | "crypto") => {
         setModalType(type);
+        // Find the first asset of the specified type, or default to the first overall asset
         setSelectedAsset(assetOptions.find((a: any) => a.type === assetType) || assetOptions[0]);
         setAmount("");
         setModalOpen(true);
@@ -126,10 +128,31 @@ const WalletPage = () => {
 
     const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => setAmount(e.target.value);
 
-    const handleSubmit = () => {
-        // Here you would handle the deposit/withdraw action
-        console.log(`Submitting ${modalType} of ${amount} ${selectedAsset.currency}`);
-        handleCloseModal();
+    const handleSubmit = async () => {
+        if (modalType === "Deposit" && selectedAsset.type === "fiat") {
+            try {
+                const response = await depositFiat({
+                    variables: {
+                        input: {
+                            amount: parseFloat(amount),
+                            currencyCode: selectedAsset.currency, // Changed from 'currency' to 'currencyCode'
+                            paymentMethod: "Mpesa", // Added required paymentMethod
+                        },
+                    },
+                });
+                console.log("Fiat Deposit Successful:", response.data.depositFiat);
+                // Optionally refetch balances or update UI state here
+                // refetchFiatBalance(); // If you have a refetch function for fiat balance
+                handleCloseModal();
+            } catch (error) {
+                console.error("Fiat Deposit Error:", error);
+                // Handle error (e.g., show error message to user)
+            }
+        } else {
+            // Handle other types of deposits/withdrawals if they were previously implemented
+            console.log(`Submitting ${modalType} of ${amount} ${selectedAsset.currency}`);
+            handleCloseModal();
+        }
     };
 
     // Helper to format currency display
@@ -141,9 +164,6 @@ const WalletPage = () => {
             maximumFractionDigits: 8, // For crypto, allow more decimal places
         }).format(amount);
     };
-
-
-
 
     const TOKEN_COLORS: Record<string, string> = {
         BTC: '#F7931A',     // Bitcoin orange
@@ -158,8 +178,8 @@ const WalletPage = () => {
 
     const pieData =
         data_crypto_balances?.balances
-            ?.filter((t) => Number(t.amount) > 0)
-            .reduce((acc: any[], curr) => {
+            ?.filter((t: any) => Number(t.amount) > 0)
+            .reduce((acc: any[], curr: any) => {
                 const existing = acc.find((a) => a.name === curr.symbol);
                 if (existing) {
                     existing.value += Number(curr.amount);
@@ -171,14 +191,11 @@ const WalletPage = () => {
 
     const getTokenColor = (symbol: string, index: number): string => {
         if (TOKEN_COLORS[symbol]) return TOKEN_COLORS[symbol];
-        // fallback: HSL dynamic color
         return `hsl(${(index * 360) / pieData.length}, 70%, 50%)`;
     };
 
-
-
     return (
-        <Box sx={{ p: { xs: 2, md: 4 } }}>
+        <Box sx={{ p: { xs: 2, md: 4, mb: 2 } }}>
             <Typography variant="h4" fontWeight="bold" gutterBottom>
                 My Wallet
             </Typography>
@@ -187,15 +204,12 @@ const WalletPage = () => {
                 <Grid size={{ xs: 12, md: 6 }}>
                     <Card elevation={3} sx={{ borderRadius: 2 }}>
                         <CardContent sx={{ display: "flex", alignItems: "center", p: 3 }}>
-                            {/* <Avatar sx={{ bgcolor: "primary.main", mr: 2, width: 56, height: 56 }}>
-                                <AccountBalanceWalletIcon sx={{ fontSize: 32 }} />
-                            </Avatar> */}
                             <Box sx={{ flexGrow: 1 }}>
                                 {loading_balance ? (
                                     <Skeleton width="60%" height={30} sx={{ mt: 0.5 }} />
                                 ) : (
                                     <Typography variant="h5" fontWeight="bold">
-                                        {fiat_balance.fiatWalletBalance} {userDetails.fiatWallet.Currency.symbol || 'KES'}
+                                        {fiat_balance?.fiatWalletBalance} {userDetails?.fiatWallet?.Currency?.symbol || 'KES'}
                                     </Typography>
                                 )}
                             </Box>
@@ -223,9 +237,6 @@ const WalletPage = () => {
                 <Grid size={{ xs: 12, md: 6 }}>
                     <Card elevation={3} sx={{ borderRadius: 2 }}>
                         <CardContent sx={{ display: "flex", alignItems: "center", p: 3 }}>
-                            {/* <Avatar sx={{ bgcolor: "warning.main", mr: 2, width: 56, height: 56 }}>
-                                <CurrencyBitcoinIcon sx={{ fontSize: 32 }} />
-                            </Avatar> */}
                             <Box sx={{ width: "100%" }}>
                                 {loading_crypto_balance ? (
                                     <Skeleton width="60%" height={30} sx={{ mt: 0.5 }} />
@@ -342,28 +353,28 @@ const WalletPage = () => {
                         </Typography>
                         <Divider sx={{ mb: 2 }} />
 
-                        {!userDetails ? (
+                        {loading_fiat_accounts ? (
                             <Grid container spacing={2}>
                                 {Array.from({ length: 2 }).map((_, index) => (
                                     <Grid size={{ xs: 12, md: 6 }} key={index}>
-                                        <Skeleton variant="rectangular" height={100} sx={{ borderRadius: 2 }} />
+                                        <Card variant="outlined" sx={{ borderRadius: 2, p: 2 }}>
+                                            <Skeleton variant="text" width="70%" height={24} />
+                                            <Skeleton variant="text" width="50%" height={20} sx={{ mt: 1 }} />
+                                        </Card>
                                     </Grid>
                                 ))}
                             </Grid>
-                        ) : userDetails?.fiatWallet?.accounts?.length > 0 ? (
+                        ) : data_fiat_accounts?.fiatWallets?.length > 0 ? (
                             <Grid container spacing={2}>
-                                {userDetails?.fiatWallet?.accounts.map((account: any) => (
+                                {data_fiat_accounts?.fiatWallets?.map((account: any) => (
                                     <Grid size={{ xs: 12, md: 6 }} key={account.id}>
                                         <Card variant="outlined" sx={{ borderRadius: 2, boxShadow: 0 }}>
                                             <CardContent sx={{ p: 2 }}>
-                                                <Typography variant="body2" color="text.secondary" gutterBottom>
-                                                    Account Number:
-                                                </Typography>
                                                 <Typography variant="body1" fontWeight={500} sx={{ wordBreak: "break-all", mb: 1 }}>
-                                                    {account.address}
+                                                    {account.Currency.code} Account
                                                 </Typography>
                                                 <Typography variant="caption" color="text.secondary">
-                                                    Created: {new Date(account.createdAt).toLocaleString()}
+                                                    Balance: {account.balance}
                                                 </Typography>
                                             </CardContent>
                                         </Card>
@@ -384,28 +395,46 @@ const WalletPage = () => {
                         <Typography variant="h6" fontWeight="bold" gutterBottom>
                             Asset Distribution
                         </Typography>
-                        <ResponsiveContainer width="100%" height="90%">
-                            <PieChart>
-                                <Pie
-                                    data={pieData}
-                                    dataKey="value"
-                                    nameKey="name"
-                                    cx="50%"
-                                    cy="50%"
-                                    outerRadius={100}
-                                    label
-                                >
-                                    {pieData.map((entry, index) => (
-                                        <Cell
-                                            key={`cell-${index}`}
-                                            fill={getTokenColor(entry.name, index)}
-                                        />
-                                    ))}
-                                </Pie>
-                                <Legend />
-                            </PieChart>
-                        </ResponsiveContainer>
-
+                        {loading_crypto_balances ? (
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    height: 'calc(100% - 48px)', // Adjust height to account for Typography
+                                }}
+                            >
+                                <Skeleton variant="circular" width={180} height={180} />
+                                <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                    <Skeleton variant="text" width={100} height={20} />
+                                    <Skeleton variant="text" width={80} height={20} sx={{ mt: 0.5 }} />
+                                    <Skeleton variant="text" width={120} height={20} sx={{ mt: 0.5 }} />
+                                </Box>
+                            </Box>
+                        ) : (
+                            <ResponsiveContainer width="100%" height="90%">
+                                <PieChart>
+                                    <Pie
+                                        data={pieData}
+                                        dataKey="value"
+                                        nameKey="name"
+                                        cx="50%"
+                                        cy="50%"
+                                        outerRadius={100}
+                                        label
+                                    >
+                                        {pieData.map((entry, index) => (
+                                            <Cell
+                                                key={`cell-${index}`}
+                                                fill={getTokenColor(entry.name, index)}
+                                            />
+                                        ))}
+                                    </Pie>
+                                    <Legend />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        )}
                     </Paper>
                 </Grid>
 
@@ -521,17 +550,22 @@ const WalletPage = () => {
                             ),
                         }}
                     />
+                    {depositFiatError && (
+                        <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+                            Error: {depositFiatError.message}
+                        </Typography>
+                    )}
                 </DialogContent>
                 <DialogActions sx={{ p: 2 }}>
-                    <Button onClick={handleCloseModal} color="error">
+                    <Button onClick={handleCloseModal} color="error" disabled={depositingFiat}>
                         Cancel
                     </Button>
                     <Button
                         onClick={handleSubmit}
                         variant="contained"
-                        disabled={!amount || Number(amount) <= 0}
+                        disabled={!amount || Number(amount) <= 0 || depositingFiat}
                     >
-                        {modalType}
+                        {depositingFiat ? 'Processing...' : modalType}
                     </Button>
                 </DialogActions>
             </Dialog>

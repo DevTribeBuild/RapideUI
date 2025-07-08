@@ -143,3 +143,63 @@ query totalCryptoBalance($isTest: Boolean!) {
   totalBalances(isTest: $isTest)
 }
 `
+
+export const GET_FIAT_WALLET_ACCOUNTS = gql`
+query getFiatWalletAccounts {
+  allFiatWallets {
+    Currency {
+      createdAt
+      code
+      decimals
+      id
+      name
+      rateToUSD
+      symbol
+      updatedAt
+    }
+    balance
+    createdAt
+    id
+    updatedAt
+    userId
+  }
+}
+`
+
+
+export const FIAT_WALLET_ACCOUNTS = gql`
+query getFiatWalletAccounts {
+  fiatWallets {
+    Currency {
+      code
+      createdAt
+      decimals
+      id
+      name
+      rateToUSD
+      symbol
+      updatedAt
+    }
+    balance
+    createdAt
+    id
+    updatedAt
+    userId
+  }
+}
+`
+
+export const GET_FIAT_CURRENCIES  = gql`
+query getfiatcurrencies {
+  currencies {
+    code
+    createdAt
+    decimals
+    id
+    name
+    rateToUSD
+    symbol
+    updatedAt
+  }
+}
+`
