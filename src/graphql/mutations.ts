@@ -156,3 +156,73 @@ export const FIAT_DEPOSIT = gql`
   }
 }
 `
+
+export const InitiateFiatSend = gql`
+mutation InitiateSendFiat($input: InitiateSendFiatInput!) {
+  initiateSendFiat(input: $input) {
+    Currency {
+      code
+      createdAt
+      decimals
+      id
+      name
+      rateToUSD
+      symbol
+      updatedAt
+    }
+    amount
+    createdAt
+    id
+    recipientEmail
+    recipientId
+    senderId
+    status
+    updatedAt
+  }
+}`
+
+
+export const confirmFiatSend = gql`
+mutation ConfirmSendFiat($input: ConfirmSendFiatInput!) {
+  confirmSendFiat(input: $input) {
+    Currency {
+      code
+      createdAt
+      decimals
+      id
+      name
+      rateToUSD
+      symbol
+      updatedAt
+    }
+    amount
+    createdAt
+    id
+    recipientEmail
+    recipientId
+    senderId
+    status
+    updatedAt
+  }
+}`
+
+export const createFiatWallet = gql`
+mutation CreateMyFiatWallet($input: CreateFiatWalletInput!) {
+  createMyFiatWallet(input: $input) {
+    Currency {
+      code
+      createdAt
+      decimals
+      id
+      name
+      rateToUSD
+      symbol
+      updatedAt
+    }
+    balance
+    createdAt
+    id
+    updatedAt
+    userId
+  }
+}`

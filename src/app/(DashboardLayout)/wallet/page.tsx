@@ -28,10 +28,6 @@ import {
     IconButton,
     InputAdornment, // Added for input field enhancements
 } from "@mui/material";
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
-import CurrencyBitcoinIcon from "@mui/icons-material/CurrencyBitcoin";
-import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
-import EuroIcon from "@mui/icons-material/Euro";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import Tooltip from "@mui/material/Tooltip";
 import SendTokenDialog from "../components/dashboard/sendToken";
