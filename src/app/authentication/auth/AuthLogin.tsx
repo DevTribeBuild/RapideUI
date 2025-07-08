@@ -5,18 +5,13 @@ import { LOGIN_MUTATION, REQUEST_OTP_MUTATION } from "@/graphql/mutations";
 import { useRouter } from "next/navigation";
 import { handleLoginHelper } from "@/helpers/authHelper";
 import {
-  Box,
   Typography,
-  FormGroup,
-  FormControlLabel,
   Button,
   Stack,
-  Checkbox,
-  Alert,
   TextField,
 } from "@mui/material";
-import Link from "next/link";
-import useAuthStore from '@/stores/useAuthStore'
+import useAuthStore from '@/stores/useAuthStore';
+import toast from "react-hot-toast";
 
 interface loginType {
   title?: string;
@@ -30,41 +25,63 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
   const [step, setStep] = useState<"REQUEST_OTP" | "LOGIN">("REQUEST_OTP");
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
-  const [requestOtp, { data: otpData, loading: otpLoading, error: otpError }] =
-    useMutation(REQUEST_OTP_MUTATION);
-  const [login, { data: loginData, loading: loginLoading, error: loginError }] =
-    useMutation(LOGIN_MUTATION);
+  const [requestOtp, { loading: otpLoading }] = useMutation(REQUEST_OTP_MUTATION);
+  const [login, { loading: loginLoading }] = useMutation(LOGIN_MUTATION);
 
   const handleRequestOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
-    await requestOtp({
-      variables: {
-        requestOtp: { email },
-      },
-    });
-    setStep("LOGIN"); // Use string, not number
+    if (!email) {
+      toast.error("Please enter your email.");
+      return;
+    }
+    try {
+      const res = await requestOtp({
+        variables: { requestOtp: { email } },
+      });
+
+      console.log(res.data.requestOtp, "&*&&^%&")
+      if (res.data?.requestOtp.status === "success") {
+        if (res.data.requestOtp) {
+          toast.success(res.data.requestOtp.msg || "OTP sent to your email.");
+          setStep("LOGIN");
+        } else {
+          toast.error(res.data.requestOtp.msg || "Failed to send OTP.");
+        }
+      }
+    } catch (error: any) {
+      toast.error(error?.message || "An unexpected error occurred.");
+    }
   };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!otp) {
+      toast.error("Please enter the OTP.");
+      return;
+    }
     try {
       const res = await login({
-        variables: {
-          loginRequest: { email, otp },
-        },
+        variables: { loginRequest: { email, otp } },
       });
-      if (res.data?.login?.token) {
-        setToken(res.data.login.token);
-        await handleLoginHelper(res.data.login.token);
-        setUser(res.data.login.user);
-        if (res.data.login.user.userType === "ADMIN") {
-          router.push("/"); // Use router to navigate
+
+      if (res.data?.login) {
+        if (res.data.login.token) {
+          toast.success(res.data.login.msg || "Login successful!");
+          setToken(res.data.login.token);
+          await handleLoginHelper(res.data.login.token);
+          setUser(res.data.login.user);
+
+          if (res.data.login.user.userType === "ADMIN") {
+            router.push("/");
+          } else {
+            router.push("/explore");
+          }
         } else {
-          router.push("/explore"); // Use router to navigate
+          toast.error(res.data.login.msg || "Login failed.");
         }
       }
-    } catch {
+    } catch (error: any) {
+      toast.error(error?.message || "An unexpected error occurred.");
     }
   };
 
@@ -111,26 +128,6 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
             ? "Logging in..."
             : "Login"}
         </Button>
-        {otpError && <Alert severity="error">{otpError.message}</Alert>}
-        {otpData?.requestOtp?.msg && (
-          <Alert
-            severity={
-              otpData.requestOtp.status === "SUCCESS" ? "success" : "error"
-            }
-          >
-            {otpData.requestOtp.msg}
-          </Alert>
-        )}
-        {loginError && <Alert severity="error">{loginError.message}</Alert>}
-        {loginData?.login?.msg && (
-          <Alert
-            severity={
-              loginData.login.status === "SUCCESS" ? "success" : "error"
-            }
-          >
-            {loginData.login.msg}
-          </Alert>
-        )}
       </Stack>
       {subtitle}
     </form>

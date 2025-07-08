@@ -5,6 +5,7 @@ export const REQUEST_OTP_MUTATION = gql`
     requestOtp(requestOtp: $requestOtp) {
       msg
       expiresAt
+      status
     }
   }
 `;
@@ -12,18 +13,51 @@ export const REQUEST_OTP_MUTATION = gql`
 export const LOGIN_MUTATION = gql`
   mutation Login($loginRequest: LoginRequestDTO!) {
     login(loginRequest: $loginRequest) {
+    expiresAt
+    msg
+    status
+    token
     user {
       createdAt
+      cryptoWallet {
+        accounts {
+          address
+          createdAt
+          cryptoWalletId
+          id
+          updatedAt
+        }
+        createdAt
+        id
+        updatedAt
+      }
       email
+      fiatWallet {
+        Currency {
+          code
+          createdAt
+          decimals
+          id
+          name
+          rateToUSD
+          symbol
+          updatedAt
+        }
+        balance
+        createdAt
+        id
+        updatedAt
+      }
+      firstName
       id
+      imageUrl
+      lastName
+      phone
       updatedAt
       userType
+      username
       walletAddress
     }
-    token
-    status
-    msg
-    expiresAt
     }
   }
 `;

@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { Box, Typography, Button, Alert, MenuItem } from '@mui/material';
+import { Box, Typography, Button, MenuItem } from '@mui/material';
 import Link from 'next/link';
 import CustomTextField from '@/app/(DashboardLayout)/components/forms/theme-elements/CustomTextField';
 import { Stack } from '@mui/system';
 import { useMutation } from '@apollo/client';
 import { REGISTER_MUTATION, VERIFY_OTP_MUTATION } from '@/graphql/mutations';
 import { useRouter } from 'next/navigation';
-import useAuthStore from '@/stores/useAuthStore'
+import useAuthStore from '@/stores/useAuthStore';
 import { handleLoginHelper } from '@/helpers/authHelper';
+import toast from 'react-hot-toast';
 
 interface registerType {
         title?: string;
@@ -21,8 +22,8 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
         const [currencyCode, setCurrencyCode] = useState('KES');
         const [step, setStep] = useState<'register' | 'verify'>('register');
         const [otp, setOtp] = useState('');
-        const [register, { data, loading, error }] = useMutation(REGISTER_MUTATION);
-        const [verifyOtp, { data: otpData, loading: otpLoading, error: otpError }] = useMutation(VERIFY_OTP_MUTATION);
+        const [register, { loading }] = useMutation(REGISTER_MUTATION);
+        const [verifyOtp, { loading: otpLoading }] = useMutation(VERIFY_OTP_MUTATION);
         const router = useRouter();
 
         const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -37,16 +38,20 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
                                 },
                         });
                         if (res.data?.register) {
-                                setStep('verify');
+                                if (res.data.register.status === "SUCCESS") {
+                                        toast.success(res.data.register.msg || "Registration successful. Check your email for OTP.");
+                                        setStep('verify');
+                                } else {
+                                        toast.error(res.data.register.msg || "Registration failed.");
+                                }
                         }
-                } catch (err) {
-                        // Error handled by Apollo
+                } catch (err: any) {
+                        toast.error(err?.message || "An unexpected error occurred.");
                 }
         };
 
         const handleVerifyOtp = async (e: React.FormEvent<HTMLFormElement>) => {
                 e.preventDefault();
-                console.log("Verifying OTP for email:", email, "with OTP:", otp);
                 try {
                         const res = await verifyOtp({
                                 variables: {
@@ -54,25 +59,29 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
                                         otp,
                                 },
                         });
-                        console.log("OTP verification response:", res.data);
                         if (res.data?.verifyOtp) {
-                            setToken(res.data.verifyOtp.token);
-                            await handleLoginHelper(res.data.verifyOtp.token);
-                            setUser(res.data.verifyOtp.user);
-                            router.push("/explore");
+                                if (res.data.verifyOtp.status === "SUCCESS") {
+                                        toast.success(res.data.verifyOtp.msg || "OTP verified successfully!");
+                                        setToken(res.data.verifyOtp.token);
+                                        await handleLoginHelper(res.data.verifyOtp.token);
+                                        setUser(res.data.verifyOtp.user);
+                                        router.push("/explore");
+                                } else {
+                                        toast.error(res.data.verifyOtp.msg || "OTP verification failed.");
+                                }
                         }
-                } catch (err) {
-                        // Error handled by Apollo
+                } catch (err: any) {
+                        toast.error(err?.message || "An unexpected error occurred.");
                 }
         };
 
         return (
                 <>
-                        {title ? (
+                        {title && (
                                 <Typography fontWeight="700" variant="h2" mb={1}>
                                         {title}
                                 </Typography>
-                        ) : null}
+                        )}
 
                         {subtext}
 
@@ -105,14 +114,21 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
                                                 </CustomTextField>
                                         </Stack>
                                         <Stack mb={3}>
-                                                <Typography variant="subtitle1"
-                                                        fontWeight={600} component="label" htmlFor='email' mb="5px">Email Address</Typography>
+                                                <Typography
+                                                        variant="subtitle1"
+                                                        fontWeight={600}
+                                                        component="label"
+                                                        htmlFor="email"
+                                                        mb="5px"
+                                                >
+                                                        Email Address
+                                                </Typography>
                                                 <CustomTextField
                                                         id="email"
                                                         variant="outlined"
                                                         fullWidth
                                                         value={email}
-                                                        onChange={e => setEmail(e.target.value)}
+                                                        onChange={(e) => setEmail(e.target.value)}
                                                         required
                                                 />
                                         </Stack>
@@ -126,15 +142,6 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
                                         >
                                                 {loading ? "Registering..." : "Sign Up"}
                                         </Button>
-                                        {error && <Alert severity="error" sx={{ mt: 2 }}>{error.message}</Alert>}
-                                        {data?.register?.msg && (
-                                                <Alert
-                                                        severity={data.register.status === "SUCCESS" ? "success" : "error"}
-                                                        sx={{ mt: 2 }}
-                                                >
-                                                        {data.register.msg}
-                                                </Alert>
-                                        )}
                                 </Box>
                         )}
 
@@ -149,7 +156,7 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
                                                         variant="outlined"
                                                         fullWidth
                                                         value={otp}
-                                                        onChange={e => setOtp(e.target.value)}
+                                                        onChange={(e) => setOtp(e.target.value)}
                                                         required
                                                 />
                                         </Stack>
@@ -163,15 +170,6 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
                                         >
                                                 {otpLoading ? "Verifying..." : "Verify OTP"}
                                         </Button>
-                                        {otpError && <Alert severity="error" sx={{ mt: 2 }}>{otpError.message}</Alert>}
-                                        {otpData?.verifyOtp?.msg && (
-                                                <Alert
-                                                        severity={otpData.verifyOtp.status === "SUCCESS" ? "success" : "error"}
-                                                        sx={{ mt: 2 }}
-                                                >
-                                                        {otpData.verifyOtp.msg}
-                                                </Alert>
-                                        )}
                                 </Box>
                         )}
 
