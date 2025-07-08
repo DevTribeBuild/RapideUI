@@ -40,7 +40,7 @@ import SwapToken from "@/app/(DashboardLayout)/components/dashboard/SwapToken";
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer } from "recharts";
 import useAppStore from "@/stores/useAuthStore"; // Assuming this is correct
 import { useQuery } from "@apollo/client";
-import { GET_MY_TRANSACTIONS, GET_FIAT_BALANCE, GET_CRYPTO_BALANCE } from "@/graphql/queries";
+import { GET_MY_TRANSACTIONS, GET_FIAT_BALANCE, GET_CRYPTO_BALANCE, GET_TOTAL_CRYPTO_BALANCE } from "@/graphql/queries";
 import useAuthStore from "@/stores/useAuthStore"; // Assuming this is correct
 
 // Example wallet data (replace with real data/fetch from API or store)
@@ -96,7 +96,16 @@ const WalletPage = () => {
         loading: loading_balance,
         error: error_balance,
     } = useQuery(GET_FIAT_BALANCE);
-    console.log(fiat_balance, "^&*^&%^$%")
+
+    const {
+        data: crypto_balance,
+        loading: loading_crypto_balance,
+        error: error_crypto_balance
+    } = useQuery(GET_TOTAL_CRYPTO_BALANCE, {
+        variables: { isTest: false },
+    })
+
+
 
     const handleOpenModal = (type: "Deposit" | "Withdraw", assetType: "fiat" | "crypto") => {
         setModalType(type);
@@ -133,6 +142,41 @@ const WalletPage = () => {
         }).format(amount);
     };
 
+
+
+
+    const TOKEN_COLORS: Record<string, string> = {
+        BTC: '#F7931A',     // Bitcoin orange
+        ETH: '#627EEA',     // Ethereum blue
+        USDT: '#26A17B',    // Tether green
+        USDC: '#2775CA',    // USD Coin blue
+        BNB: '#F3BA2F',     // BNB yellow
+        DAI: '#F4B731',     // DAI gold
+        // Add more as needed
+    };
+
+
+    const pieData =
+        data_crypto_balances?.balances
+            ?.filter((t) => Number(t.amount) > 0)
+            .reduce((acc: any[], curr) => {
+                const existing = acc.find((a) => a.name === curr.symbol);
+                if (existing) {
+                    existing.value += Number(curr.amount);
+                } else {
+                    acc.push({ name: curr.symbol, value: Number(curr.amount) });
+                }
+                return acc;
+            }, []) || [];
+
+    const getTokenColor = (symbol: string, index: number): string => {
+        if (TOKEN_COLORS[symbol]) return TOKEN_COLORS[symbol];
+        // fallback: HSL dynamic color
+        return `hsl(${(index * 360) / pieData.length}, 70%, 50%)`;
+    };
+
+
+
     return (
         <Box sx={{ p: { xs: 2, md: 4 } }}>
             <Typography variant="h4" fontWeight="bold" gutterBottom>
@@ -151,7 +195,7 @@ const WalletPage = () => {
                                     <Skeleton width="60%" height={30} sx={{ mt: 0.5 }} />
                                 ) : (
                                     <Typography variant="h5" fontWeight="bold">
-                                            {fiat_balance.fiatWalletBalance } KES
+                                        {fiat_balance.fiatWalletBalance} {userDetails.fiatWallet.Currency.symbol || 'KES'}
                                     </Typography>
                                 )}
                             </Box>
@@ -182,19 +226,17 @@ const WalletPage = () => {
                             {/* <Avatar sx={{ bgcolor: "warning.main", mr: 2, width: 56, height: 56 }}>
                                 <CurrencyBitcoinIcon sx={{ fontSize: 32 }} />
                             </Avatar> */}
-                            <Box sx={{ width:"100%" }}>
-                                {loading_crypto_balances ? (
+                            <Box sx={{ width: "100%" }}>
+                                {loading_crypto_balance ? (
                                     <Skeleton width="60%" height={30} sx={{ mt: 0.5 }} />
                                 ) : (
                                     <Typography variant="h5" fontWeight="bold">
-                                        {data_crypto_balances?.balances
-                                            ?.reduce((total: number, c: any) => total + Number(c.amount), 0)
-                                            .toFixed(2)}{" "} ETH
+                                        {crypto_balance?.totalBalances}{" "} USDT
                                     </Typography>
                                 )}
 
                             </Box>
-                            <br/>
+                            <br />
                             <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 1 }}>
                                 <Button
                                     variant="contained"
@@ -257,16 +299,13 @@ const WalletPage = () => {
                                             <Grid size={{ xs: 6, md: 4 }} key={idx}>
                                                 <Card variant="outlined" sx={{ borderRadius: 2, boxShadow: 0 }}>
                                                     <CardContent sx={{ p: 2 }}>
-                                                        <Typography variant="body2" color="text.secondary">
-                                                            Address:
-                                                        </Typography>
                                                         <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
                                                             <Typography
                                                                 variant="body1"
                                                                 fontWeight={500}
                                                                 sx={{ wordBreak: "break-all", mr: 1 }}
                                                             >
-                                                                {`${balance.address.slice(0, 6)}...${balance.address.slice(-6)}`}
+                                                                {balance.symbol}
                                                             </Typography>
                                                             <Tooltip title="Copy Address">
                                                                 <IconButton
@@ -279,7 +318,7 @@ const WalletPage = () => {
                                                             </Tooltip>
                                                         </Box>
                                                         <Typography variant="body1" fontWeight={600} color="text.primary">
-                                                            {balance.amount} {balance.symbol}
+                                                            {balance.amount}
                                                         </Typography>
                                                     </CardContent>
                                                 </Card>
@@ -357,12 +396,16 @@ const WalletPage = () => {
                                     label
                                 >
                                     {pieData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                        <Cell
+                                            key={`cell-${index}`}
+                                            fill={getTokenColor(entry.name, index)}
+                                        />
                                     ))}
                                 </Pie>
                                 <Legend />
                             </PieChart>
                         </ResponsiveContainer>
+
                     </Paper>
                 </Grid>
 

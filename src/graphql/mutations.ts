@@ -5,6 +5,7 @@ export const REQUEST_OTP_MUTATION = gql`
     requestOtp(requestOtp: $requestOtp) {
       msg
       expiresAt
+      status
     }
   }
 `;

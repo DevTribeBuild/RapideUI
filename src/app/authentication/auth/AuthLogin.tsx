@@ -40,7 +40,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
       });
 
       console.log(res.data.requestOtp, "&*&&^%&")
-      if (res.data?.requestOtp.msg == "OTP sent to your email") {
+      if (res.data?.requestOtp.status === "success") {
         if (res.data.requestOtp) {
           toast.success(res.data.requestOtp.msg || "OTP sent to your email.");
           setStep("LOGIN");

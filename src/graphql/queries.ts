@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const GET_USER_BY_EMAIL = gql`
-    query Query($email: String!) {
+    query getUserByEmail($email: String!) {
         user(email: $email) {
             createdAt
             email
@@ -14,7 +14,7 @@ export const GET_USER_BY_EMAIL = gql`
 `;
 
 export const GET_ALL_USERS = gql`
-    query Query {
+    query getAllUsers {
         users {
             createdAt
             email
@@ -27,7 +27,7 @@ export const GET_ALL_USERS = gql`
 `;
 
 export const GET_ME = gql`
-  query {
+  query getCurrentUSser {
     me {
       id
       email
@@ -63,7 +63,7 @@ export const GET_ME = gql`
 `;
 
 export const GET_MY_TRANSACTIONS = gql`
-query Query($isTest: Boolean!, $skip: Float!, $take: Float!) {
+query getMyTransactions($isTest: Boolean!, $skip: Float!, $take: Float!) {
   myCryptoTransactions(isTest: $isTest, skip: $skip, take: $take) {
     blockNumber
     confirmations
@@ -94,7 +94,7 @@ query Query($isTest: Boolean!, $skip: Float!, $take: Float!) {
 
 
 export const GET_ALL_TRANSACTIONS = gql`
-query Query($skip: Float!, $status: TransactionStatus, $take: Float!) {
+query allCryptoTransactions($skip: Float!, $status: TransactionStatus, $take: Float!) {
   allCryptoTransactions(skip: $skip, status: $status, take: $take) {
     blockNumber
     confirmations
@@ -124,7 +124,7 @@ query Query($skip: Float!, $status: TransactionStatus, $take: Float!) {
 }`;
 
 export const GET_FIAT_BALANCE = gql`
-query Query {
+query fiatBalance {
   fiatWalletBalance
 }
 `
@@ -132,9 +132,14 @@ query Query {
 export const GET_CRYPTO_BALANCE = gql`
 query Balances($isTest: Boolean!) {
   balances(isTest: $isTest) {
-    address
     amount
     symbol
   }
+}
+`
+
+export const GET_TOTAL_CRYPTO_BALANCE = gql`
+query totalCryptoBalance($isTest: Boolean!) {
+  totalBalances(isTest: $isTest)
 }
 `

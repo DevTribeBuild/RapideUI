@@ -65,7 +65,6 @@ const token = useAuthStore((state:any) => state.token);
         handleClose();
       });
     };
-    console.log("Users Data:", data_users);
     const users = data_users?.users || [];
     const reset = () => {
       setActiveStep(0);
