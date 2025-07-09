@@ -48,7 +48,8 @@ import {
     GET_FIAT_BALANCE,
     GET_CRYPTO_BALANCE,
     GET_TOTAL_CRYPTO_BALANCE,
-    FIAT_WALLET_ACCOUNTS
+    FIAT_WALLET_ACCOUNTS,
+    GENERAL_FIAT_BALANCE
 } from "@/graphql/queries";
 import { FIAT_DEPOSIT, CREATE_FIAT_WALLET } from "@/graphql/mutations";
 import useAuthStore from "@/stores/useAuthStore";
@@ -115,7 +116,7 @@ const WalletPage = () => {
         data: fiat_balance,
         loading: loading_balance,
         error: error_balance,
-    } = useQuery(GET_FIAT_BALANCE);
+    } = useQuery(GENERAL_FIAT_BALANCE);
 
     const {
         data: crypto_balance,

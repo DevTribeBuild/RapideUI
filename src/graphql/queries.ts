@@ -124,8 +124,24 @@ query allCryptoTransactions($skip: Float!, $status: TransactionStatus, $take: Fl
 }`;
 
 export const GET_FIAT_BALANCE = gql`
-query fiatBalance {
-  fiatWalletBalance
+query FiatWallet($fiatWalletId: String!) {
+  fiatWallet(id: $fiatWalletId) {
+    Currency {
+      code
+      createdAt
+      decimals
+      id
+      name
+      rateToUSD
+      symbol
+      updatedAt
+    }
+    balance
+    createdAt
+    id
+    updatedAt
+    userId
+  }
 }
 `
 
@@ -255,3 +271,8 @@ query TransactionsHistory($type: String) {
     }
   }
 }`
+export const GENERAL_FIAT_BALANCE = gql`
+query Query {
+  fiatWalletBalance
+}
+`

@@ -9,13 +9,23 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
+  Badge
 } from "@mui/material";
 
-import { IconListCheck, IconMail, IconUser } from "@tabler/icons-react";
+import { IconListCheck, IconMail, IconUser  } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import useAppStore from "@/stores/useAuthStore";
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+
 
 const Profile = () => {
+  const [cartItemCount, setCartItemCount] = useState<number>(3); // start with 3 items as an example
+
+  // Handle cart icon click
+  const handleCartClick = () => {
+    alert(`You have ${cartItemCount} item(s) in your cart.`);
+    // You could navigate to a cart page or open a drawer here
+  };
   const [anchorEl2, setAnchorEl2] = useState(null);
   const { clearAuth } = useAppStore();
   const handleClick2 = (event: any) => {
@@ -33,6 +43,32 @@ const Profile = () => {
 
   return (
     <Box>
+
+      <IconButton
+        size="large"
+        aria-label={`show ${cartItemCount} items in cart`}
+        color="inherit"
+        onClick={handleCartClick}
+        sx={{
+          ...(cartItemCount > 0 && {
+            color: 'primary.main',
+          }),
+        }}
+      >
+        <Badge
+          badgeContent={cartItemCount}
+          sx={{
+            '& .MuiBadge-badge': {
+              backgroundColor: '#F59E0B', // Tailwind yellow-500
+              color: '#000',
+              fontWeight: 'bold',
+            },
+          }}
+        >
+          <ShoppingCartIcon />
+        </Badge>
+      </IconButton>
+
       <IconButton
         size="large"
         aria-label="show 11 new notifications"
