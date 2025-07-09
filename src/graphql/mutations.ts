@@ -157,7 +157,7 @@ export const FIAT_DEPOSIT = gql`
 }
 `
 
-export const InitiateFiatSend = gql`
+export const INITIATE_FIAT_SEND = gql`
 mutation InitiateSendFiat($input: InitiateSendFiatInput!) {
   initiateSendFiat(input: $input) {
     Currency {
@@ -182,7 +182,7 @@ mutation InitiateSendFiat($input: InitiateSendFiatInput!) {
 }`
 
 
-export const confirmFiatSend = gql`
+export const CONFIRM_FIAT_SEND = gql`
 mutation ConfirmSendFiat($input: ConfirmSendFiatInput!) {
   confirmSendFiat(input: $input) {
     Currency {
@@ -206,7 +206,7 @@ mutation ConfirmSendFiat($input: ConfirmSendFiatInput!) {
   }
 }`
 
-export const createFiatWallet = gql`
+export const CREATE_FIAT_WALLET = gql`
 mutation CreateMyFiatWallet($input: CreateFiatWalletInput!) {
   createMyFiatWallet(input: $input) {
     Currency {

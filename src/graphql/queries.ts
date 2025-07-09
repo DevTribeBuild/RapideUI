@@ -203,3 +203,55 @@ query getfiatcurrencies {
   }
 }
 `
+
+export const GET_MY_TRANSACTIONS_COMBINED = gql`
+query TransactionsHistory($type: String) {
+  transactionsHistory(type: $type) {
+    fiat {
+      Currency {
+        code
+        createdAt
+        decimals
+        id
+        name
+        rateToUSD
+        symbol
+        updatedAt
+      }
+      amount
+      createdAt
+      id
+      recipientEmail
+      recipientId
+      senderId
+      status
+      updatedAt
+    }
+    crypto {
+      blockNumber
+      confirmations
+      createdAt
+      errorMessage
+      fee
+      from
+      gas
+      gasPrice
+      gasUsed
+      hash
+      id
+      methodId
+      status
+      timeStamp
+      to
+      toSymbol
+      tokenAddress
+      tokenSymbol
+      transactionIndex
+      txreceipt_status
+      type
+      updatedAt
+      userId
+      value
+    }
+  }
+}`
