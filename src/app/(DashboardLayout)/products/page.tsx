@@ -20,7 +20,12 @@ import DeleteIcon from '@mui/icons-material/Delete'; // Added for ProductManagem
 import AddIcon from '@mui/icons-material/Add'; // Added for ProductManagementApp
 import InfoIcon from '@mui/icons-material/Info'; // Added for ProductDetailsDialog
 import { styled } from '@mui/system';
+import { UPDATE_USER_MUTATION } from "@/graphql/mutations";
+import toast from 'react-hot-toast';
 import { SelectChangeEvent } from '@mui/material/Select'; // Explicitly import SelectChangeEvent
+import { CREATE_PRODUCT_CATEGORY } from '@/graphql/mutations';
+import { useQuery, useMutation } from "@apollo/client";
+import { GET_ALL_CATEGORIES } from '@/graphql/queries';
 
 // -----------------------------------------------------------------------------
 // Type Definitions
@@ -176,7 +181,7 @@ const ImageUploadDialog: React.FC<ImageUploadDialogProps> = ({ open, onClose, on
 
     // Generate a dummy image URL. In a real app, this would come from the server.
     const dummyImageUrl = `https://placehold.co/100x100/FFD700/000000?text=Uploaded+${Date.now()}`;
-    
+
     onUploadSuccess(dummyImageUrl);
     setIsUploading(false);
     onClose(); // Close the dialog after successful upload
@@ -251,6 +256,7 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({ open, onClose, pr
     category: '',
   });
 
+
   useEffect(() => {
     if (product) {
       setFormData(product);
@@ -275,20 +281,61 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({ open, onClose, pr
       [name as keyof Product]: name === 'price' || name === 'stock' ? parseFloat(value) || 0 : value,
     }));
   };
-
-  const handleSelectChange = (e: SelectChangeEvent<string>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name as keyof Product]: value,
-    }));
-  };
+  console.log("Selected category:", formData.category);
 
   const handleImageChange = (url: string) => {
     setFormData((prev) => ({
       ...prev,
       imageUrl: url,
     }));
+  };
+const { data, loading, error, refetch } = useQuery(GET_ALL_CATEGORIES);
+const [newCategoryName, setNewCategoryName] = useState("");
+
+// Show error if fetching categories fails
+useEffect(() => {
+  if (error) {
+    // Only show once per error
+    toast.error("Failed to load categories.");
+  }
+}, [error]);
+
+const [createCategory, { data: data_create, loading: loading_create, error: error_create }] = useMutation(CREATE_PRODUCT_CATEGORY);
+const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
+
+const handleCreateCategory = async () => {
+  if (!newCategoryName.trim()) return;
+
+  try {
+    const res = await createCategory({
+      variables: { input: { name: newCategoryName } },
+    });
+    // Use data_create and loading_create after mutation
+    if (res?.data?.createCategory) {
+      setFormData((prev) => ({ ...prev, category: res?.data?.createCategory.id }));
+      toast.success("created")
+      if (refetch) await refetch();
+      toast.success("Category created successfully!");
+    }
+  } catch (err) {
+    console.error("Category creation failed:", err);
+    toast.error("Failed to create category.");
+  } finally {
+    setIsCategoryDialogOpen(false);
+    setNewCategoryName("");
+  }
+};
+
+  const handleSelectChange = (event) => {
+    const value = event.target.value;
+
+    if (value === "__create_new__") {
+      setIsCategoryDialogOpen(true); // Open dialog to create new category
+    } else {
+      setFormData((prev) => ({ ...prev, category: value }));
+    }
+    // Show toast for category selection (optional, only for demonstration)
+    // toast.success("Category selected!");
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -297,6 +344,27 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({ open, onClose, pr
   };
 
   const isFormValid = formData.name && formData.description && formData.price > 0 && formData.stock >= 0 && formData.imageUrl && formData.category;
+
+  // const handleCreateCategory = async () => {
+  //   if (!newCategoryName.trim()) return;
+
+  //   try {
+  //     const { data: result } = await createCategory({
+  //       variables: { input: { name: newCategoryName } },
+  //     });
+
+  //     const newCategory = result?.createCategory;
+  //     if (newCategory) {
+  //       setFormData((prev) => ({ ...prev, category: newCategory.id }));
+  //       if (refetch) await refetch(); // optional, if using Apollo useQuery
+  //     }
+  //   } catch (err) {
+  //     console.error("Category creation failed:", err);
+  //   } finally {
+  //     setIsCategoryDialogOpen(false);
+  //     setNewCategoryName("");
+  //   }
+  // };
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
@@ -406,6 +474,7 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({ open, onClose, pr
               />
             </Box>
           )}
+
           <FormControl fullWidth required>
             <InputLabel id="category-select-label">Category</InputLabel>
             <Select
@@ -420,14 +489,48 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({ open, onClose, pr
                 '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#D97706' },
               }}
             >
-              <MenuItem value=""><em>None</em></MenuItem>
-              <MenuItem value="Electronics">Electronics</MenuItem>
-              <MenuItem value="Apparel">Apparel</MenuItem>
-              <MenuItem value="Home Goods">Home Goods</MenuItem>
-              <MenuItem value="Books">Books</MenuItem>
-              <MenuItem value="Other">Other</MenuItem>
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              
+              {data?.allCategories?.flatMap((category: any) => [ // Use flatMap here
+                <MenuItem key={category.id} value={category.id}>
+                  {category.name}
+                </MenuItem>,
+                ...(category?.subcategories?.map((sub: any) => (
+                  <MenuItem key={sub.id} value={sub.id} sx={{ pl: 4 }}>
+                    └ {sub.name}
+                  </MenuItem>
+                )) || []) // Ensure subcategories is an array or empty for spread
+              ])}
+
+              <MenuItem value="__create_new__" sx={{ fontStyle: "italic", color: "#0EA5E9" }}>
+            ➕ Create new category…
+          </MenuItem>
             </Select>
           </FormControl>
+
+
+      {/* Dialog for creating a new category */}
+      <Dialog open={isCategoryDialogOpen} onClose={() => setIsCategoryDialogOpen(false)}>
+        <DialogTitle>Create New Category</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Category Name"
+            fullWidth
+            variant="standard"
+            value={newCategoryName}
+            onChange={(e) => setNewCategoryName(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setIsCategoryDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleCreateCategory}>Create</Button>
+        </DialogActions>
+      </Dialog>
+
         </Box>
       </DialogContent>
       <DialogActions sx={{ p: 2, justifyContent: 'flex-end', borderTop: '1px solid #E5E7EB' }}>
@@ -720,10 +823,9 @@ const ProductManagementApp: React.FC = () => {
             Add New Product
           </YellowButton>
         </Box>
-
         <TableContainer component={Paper} sx={{ borderRadius: '8px', boxShadow: 'none', border: '1px solid #E5E7EB' }}>
           <Table sx={{ minWidth: 650 }} aria-label="product table">
-            <TableHead sx={{ bgcolor: '#FEF3C7' }}> {/* Tailwind yellow-100 */}
+            <TableHead sx={{ bgcolor: '#FEF3C7' }}>
               <TableRow>
                 <TableCell sx={{ fontWeight: 'bold', color: '#92400E' }}>Image</TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: '#92400E' }}>Name</TableCell>

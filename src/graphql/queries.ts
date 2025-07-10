@@ -276,3 +276,21 @@ query Query {
   fiatWalletBalance
 }
 `
+
+export const GET_ALL_CATEGORIES = gql`
+query AllCategories {
+  allCategories {
+    createdAt
+    id
+    name
+    parentId
+    subcategories {
+      createdAt
+      id
+      name
+      parentId
+      updatedAt
+    }
+    updatedAt
+  }
+}`

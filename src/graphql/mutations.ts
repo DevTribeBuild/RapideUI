@@ -226,3 +226,19 @@ mutation CreateMyFiatWallet($input: CreateFiatWalletInput!) {
     userId
   }
 }`
+
+
+export const CREATE_PRODUCT_CATEGORY = gql`
+mutation CreateCategory($input: CreateCategoryInput!) {
+  createCategory(input: $input) {
+    createdAt
+    id
+    name
+    parentId
+    subcategories {
+      name
+    }
+    updatedAt
+  }
+}
+`

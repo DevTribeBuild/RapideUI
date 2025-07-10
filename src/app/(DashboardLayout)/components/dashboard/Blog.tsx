@@ -104,7 +104,17 @@ const QuantityAdjuster = ({ initialQuantity = 1, onQuantityChange }) => {
 const Blog = () => {
   const router = useRouter();
   const [openPreviewDialog, setOpenPreviewDialog] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  type Product = {
+    title: string;
+    subheader: string;
+    photo: string;
+    salesPrice: number;
+    price: number;
+    rating: number;
+    description: string;
+  };
+  
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [productQuantities, setProductQuantities] = useState({});
   const [addedToCartStatus, setAddedToCartStatus] = useState({});
 
@@ -152,7 +162,7 @@ const Blog = () => {
         const isAdded = addedToCartStatus[productId] || false;
 
         return (
-          <Grid item key={index} xs={12} sm={6} md={4} lg={3} xl={2}>
+          <Grid key={index} size={{xs:12, sm:6, lg:3, xl:12}}>
             <BlankCard>
               <Typography
                 component="div"
@@ -269,7 +279,7 @@ const Blog = () => {
             </DialogTitle>
             <DialogContent dividers>
               <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
+                <Grid size={{xs:12,md:6}}>
                   <Image
                     src={selectedProduct.photo}
                     alt={selectedProduct.title}
@@ -282,7 +292,7 @@ const Blog = () => {
                     }}
                   />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid size={{xs:12,md:6}}>
                   <Typography variant="h5" gutterBottom>
                     {selectedProduct.title}
                   </Typography>
