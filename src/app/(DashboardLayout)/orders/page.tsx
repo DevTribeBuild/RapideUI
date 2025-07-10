@@ -102,7 +102,6 @@ export default function OrderManagement() {
       <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 3 }}> {/* Orange header text */}
         Orders
       </Typography>
-
         <TableContainer sx={{ border: '1px solid #E0E0E0', borderRadius: 2 }}> {/* Outlined Table Container */}
           <Table aria-label="order management table">
             <TableHead sx={{ bgcolor: '#FEF3C7' }}> {/* Specific yellow-orange header background */}

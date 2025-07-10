@@ -69,6 +69,86 @@ const ecoCard = [
     description:
       "A cuddly and cute soft teddy bear, perfect for gifting or as a comforting companion.",
   },
+    {
+    title: "Boat Headphone",
+    subheader: "September 14, 2023",
+    photo: "/images/products/s4.jpg",
+    salesPrice: 375,
+    price: 285,
+    rating: 4,
+    description:
+      "Experience immersive sound with these high-quality boat headphones. Perfect for music lovers on the go.",
+  },
+  {
+    title: "MacBook Air Pro",
+    subheader: "September 14, 2023",
+    photo: "/images/products/s5.jpg",
+    salesPrice: 650,
+    price: 900,
+    rating: 5,
+    description:
+      "Unleash your productivity with the powerful MacBook Air Pro. Sleek design and exceptional performance.",
+  },
+  {
+    title: "Red Valvet Dress",
+    subheader: "September 14, 2023",
+    photo: "/images/products/s7.jpg",
+    salesPrice: 150,
+    price: 200,
+    rating: 3,
+    description:
+      "Step out in style with this elegant red velvet dress. Perfect for any special occasion.",
+  },
+  {
+    title: "Cute Soft Teddybear",
+    subheader: "September 14, 2023",
+    photo: "/images/products/s11.jpg",
+    salesPrice: 285,
+    price: 345,
+    rating: 2,
+    description:
+      "A cuddly and cute soft teddy bear, perfect for gifting or as a comforting companion.",
+  },
+    {
+    title: "Boat Headphone",
+    subheader: "September 14, 2023",
+    photo: "/images/products/s4.jpg",
+    salesPrice: 375,
+    price: 285,
+    rating: 4,
+    description:
+      "Experience immersive sound with these high-quality boat headphones. Perfect for music lovers on the go.",
+  },
+  {
+    title: "MacBook Air Pro",
+    subheader: "September 14, 2023",
+    photo: "/images/products/s5.jpg",
+    salesPrice: 650,
+    price: 900,
+    rating: 5,
+    description:
+      "Unleash your productivity with the powerful MacBook Air Pro. Sleek design and exceptional performance.",
+  },
+  {
+    title: "Red Valvet Dress",
+    subheader: "September 14, 2023",
+    photo: "/images/products/s7.jpg",
+    salesPrice: 150,
+    price: 200,
+    rating: 3,
+    description:
+      "Step out in style with this elegant red velvet dress. Perfect for any special occasion.",
+  },
+  {
+    title: "Cute Soft Teddybear",
+    subheader: "September 14, 2023",
+    photo: "/images/products/s11.jpg",
+    salesPrice: 285,
+    price: 345,
+    rating: 2,
+    description:
+      "A cuddly and cute soft teddy bear, perfect for gifting or as a comforting companion.",
+  },
 ];
 
 const QuantityAdjuster = ({ initialQuantity = 1, onQuantityChange }) => {
@@ -162,7 +242,7 @@ const Blog = () => {
         const isAdded = addedToCartStatus[productId] || false;
 
         return (
-          <Grid key={index} size={{xs:12, sm:6, lg:3, xl:12}}>
+          <Grid key={index} size={{xs:12, sm:6, lg:4}}>
             <BlankCard>
               <Typography
                 component="div"
