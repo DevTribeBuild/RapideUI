@@ -124,8 +124,24 @@ query allCryptoTransactions($skip: Float!, $status: TransactionStatus, $take: Fl
 }`;
 
 export const GET_FIAT_BALANCE = gql`
-query fiatBalance {
-  fiatWalletBalance
+query FiatWallet($fiatWalletId: String!) {
+  fiatWallet(id: $fiatWalletId) {
+    Currency {
+      code
+      createdAt
+      decimals
+      id
+      name
+      rateToUSD
+      symbol
+      updatedAt
+    }
+    balance
+    createdAt
+    id
+    updatedAt
+    userId
+  }
 }
 `
 
@@ -143,3 +159,138 @@ query totalCryptoBalance($isTest: Boolean!) {
   totalBalances(isTest: $isTest)
 }
 `
+
+export const GET_FIAT_WALLET_ACCOUNTS = gql`
+query getFiatWalletAccounts {
+  allFiatWallets {
+    Currency {
+      createdAt
+      code
+      decimals
+      id
+      name
+      rateToUSD
+      symbol
+      updatedAt
+    }
+    balance
+    createdAt
+    id
+    updatedAt
+    userId
+  }
+}
+`
+
+
+export const FIAT_WALLET_ACCOUNTS = gql`
+query getFiatWalletAccounts {
+  fiatWallets {
+    Currency {
+      code
+      createdAt
+      decimals
+      id
+      name
+      rateToUSD
+      symbol
+      updatedAt
+    }
+    balance
+    createdAt
+    id
+    updatedAt
+    userId
+  }
+}
+`
+
+export const GET_FIAT_CURRENCIES  = gql`
+query getfiatcurrencies {
+  currencies {
+    code
+    createdAt
+    decimals
+    id
+    name
+    rateToUSD
+    symbol
+    updatedAt
+  }
+}
+`
+
+export const GET_MY_TRANSACTIONS_COMBINED = gql`
+query TransactionsHistory($type: String) {
+  transactionsHistory(type: $type) {
+    fiat {
+      Currency {
+        code
+        createdAt
+        decimals
+        id
+        name
+        rateToUSD
+        symbol
+        updatedAt
+      }
+      amount
+      createdAt
+      id
+      recipientEmail
+      recipientId
+      senderId
+      status
+      updatedAt
+    }
+    crypto {
+      blockNumber
+      confirmations
+      createdAt
+      errorMessage
+      fee
+      from
+      gas
+      gasPrice
+      gasUsed
+      hash
+      id
+      methodId
+      status
+      timeStamp
+      to
+      toSymbol
+      tokenAddress
+      tokenSymbol
+      transactionIndex
+      txreceipt_status
+      type
+      updatedAt
+      userId
+      value
+    }
+  }
+}`
+export const GENERAL_FIAT_BALANCE = gql`
+query Query {
+  fiatWalletBalance
+}
+`
+
+export const GET_ALL_CATEGORIES = gql`
+query AllCategories {
+  allCategories {
+    createdAt
+    id
+    name
+    parentId
+    subcategories {
+      createdAt
+      id
+      name
+      parentId
+      updatedAt
+    }
+    updatedAt
+  }
+}`

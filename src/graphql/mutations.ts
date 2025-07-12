@@ -131,3 +131,114 @@ export const SEND_TOKEN = gql`
     }
   }
 `;
+
+export const FIAT_DEPOSIT = gql`
+  mutation fiatDeposit($input: DepositFiatInput!) {
+  depositFiat(input: $input) {
+    Currency {
+      code
+      createdAt
+      decimals
+      id
+      name
+      rateToUSD
+      symbol
+      updatedAt
+    }
+    amount
+    createdAt
+    id
+    recipientEmail
+    recipientId
+    senderId
+    status
+    updatedAt
+  }
+}
+`
+
+export const INITIATE_FIAT_SEND = gql`
+mutation InitiateSendFiat($input: InitiateSendFiatInput!) {
+  initiateSendFiat(input: $input) {
+    Currency {
+      code
+      createdAt
+      decimals
+      id
+      name
+      rateToUSD
+      symbol
+      updatedAt
+    }
+    amount
+    createdAt
+    id
+    recipientEmail
+    recipientId
+    senderId
+    status
+    updatedAt
+  }
+}`
+
+
+export const CONFIRM_FIAT_SEND = gql`
+mutation ConfirmSendFiat($input: ConfirmSendFiatInput!) {
+  confirmSendFiat(input: $input) {
+    Currency {
+      code
+      createdAt
+      decimals
+      id
+      name
+      rateToUSD
+      symbol
+      updatedAt
+    }
+    amount
+    createdAt
+    id
+    recipientEmail
+    recipientId
+    senderId
+    status
+    updatedAt
+  }
+}`
+
+export const CREATE_FIAT_WALLET = gql`
+mutation CreateMyFiatWallet($input: CreateFiatWalletInput!) {
+  createMyFiatWallet(input: $input) {
+    Currency {
+      code
+      createdAt
+      decimals
+      id
+      name
+      rateToUSD
+      symbol
+      updatedAt
+    }
+    balance
+    createdAt
+    id
+    updatedAt
+    userId
+  }
+}`
+
+
+export const CREATE_PRODUCT_CATEGORY = gql`
+mutation CreateCategory($input: CreateCategoryInput!) {
+  createCategory(input: $input) {
+    createdAt
+    id
+    name
+    parentId
+    subcategories {
+      name
+    }
+    updatedAt
+  }
+}
+`
