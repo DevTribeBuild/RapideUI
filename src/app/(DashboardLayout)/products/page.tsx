@@ -26,7 +26,8 @@ import { SelectChangeEvent } from '@mui/material/Select'; // Explicitly import S
 import { CREATE_PRODUCT_CATEGORY } from '@/graphql/mutations';
 import { useQuery, useMutation } from "@apollo/client";
 import { GET_ALL_CATEGORIES } from '@/graphql/queries';
-
+import Image from 'next/image'; // Importing Image from next/image for optimized image handling
+import ImageWithFallback from '../components/dashboard/ImageWithFallBack';
 // -----------------------------------------------------------------------------
 // Type Definitions
 // -----------------------------------------------------------------------------
@@ -215,7 +216,16 @@ const ImageUploadDialog: React.FC<ImageUploadDialogProps> = ({ open, onClose, on
         </label>
         {previewUrl && (
           <Box sx={{ mt: 2, p: 1, border: '1px solid #E5E7EB', borderRadius: '8px' }}>
-            <img src={previewUrl} alt="Image Preview" style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'contain', borderRadius: '4px' }} />
+            <Image
+              src={previewUrl}
+              alt="Image Preview"
+              width={200}
+              height={200}
+              style={{
+                objectFit: 'contain',
+                borderRadius: '4px',
+              }}
+            />
           </Box>
         )}
         {!selectedFile && (
@@ -289,42 +299,42 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({ open, onClose, pr
       imageUrl: url,
     }));
   };
-const { data, loading, error, refetch } = useQuery(GET_ALL_CATEGORIES);
-const [newCategoryName, setNewCategoryName] = useState("");
+  const { data, loading, error, refetch } = useQuery(GET_ALL_CATEGORIES);
+  const [newCategoryName, setNewCategoryName] = useState("");
 
-// Show error if fetching categories fails
-useEffect(() => {
-  if (error) {
-    // Only show once per error
-    toast.error("Failed to load categories.");
-  }
-}, [error]);
-
-const [createCategory, { data: data_create, loading: loading_create, error: error_create }] = useMutation(CREATE_PRODUCT_CATEGORY);
-const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
-
-const handleCreateCategory = async () => {
-  if (!newCategoryName.trim()) return;
-
-  try {
-    const res = await createCategory({
-      variables: { input: { name: newCategoryName } },
-    });
-    // Use data_create and loading_create after mutation
-    if (res?.data?.createCategory) {
-      setFormData((prev) => ({ ...prev, category: res?.data?.createCategory.id }));
-      toast.success("created")
-      if (refetch) await refetch();
-      toast.success("Category created successfully!");
+  // Show error if fetching categories fails
+  useEffect(() => {
+    if (error) {
+      // Only show once per error
+      toast.error("Failed to load categories.");
     }
-  } catch (err) {
-    console.error("Category creation failed:", err);
-    toast.error("Failed to create category.");
-  } finally {
-    setIsCategoryDialogOpen(false);
-    setNewCategoryName("");
-  }
-};
+  }, [error]);
+
+  const [createCategory, { data: data_create, loading: loading_create, error: error_create }] = useMutation(CREATE_PRODUCT_CATEGORY);
+  const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
+
+  const handleCreateCategory = async () => {
+    if (!newCategoryName.trim()) return;
+
+    try {
+      const res = await createCategory({
+        variables: { input: { name: newCategoryName } },
+      });
+      // Use data_create and loading_create after mutation
+      if (res?.data?.createCategory) {
+        setFormData((prev) => ({ ...prev, category: res?.data?.createCategory.id }));
+        toast.success("created")
+        if (refetch) await refetch();
+        toast.success("Category created successfully!");
+      }
+    } catch (err) {
+      console.error("Category creation failed:", err);
+      toast.error("Failed to create category.");
+    } finally {
+      setIsCategoryDialogOpen(false);
+      setNewCategoryName("");
+    }
+  };
 
   const handleSelectChange = (event) => {
     const value = event.target.value;
@@ -467,7 +477,15 @@ const handleCreateCategory = async () => {
           </Box>
           {formData.imageUrl && (
             <Box sx={{ mt: 1, display: 'flex', justifyContent: 'center' }}>
-              <img src={formData.imageUrl} alt="Product Preview" style={{ maxWidth: '100px', maxHeight: '100px', objectFit: 'contain', borderRadius: '4px' }}
+              <Image
+                src={formData.imageUrl}
+                alt="Product Preview"
+                width={100}
+                height={100}
+                style={{
+                  objectFit: 'contain',
+                  borderRadius: '4px',
+                }}
                 onError={(e) => {
                   e.currentTarget.src = `https://placehold.co/100x100/E5E7EB/4B5563?text=Invalid+URL`;
                 }}
@@ -492,7 +510,7 @@ const handleCreateCategory = async () => {
               <MenuItem value="">
                 <em>None</em>
               </MenuItem>
-              
+
               {data?.allCategories?.flatMap((category: any) => [ // Use flatMap here
                 <MenuItem key={category.id} value={category.id}>
                   {category.name}
@@ -505,31 +523,31 @@ const handleCreateCategory = async () => {
               ])}
 
               <MenuItem value="__create_new__" sx={{ fontStyle: "italic", color: "#0EA5E9" }}>
-            ➕ Create new category…
-          </MenuItem>
+                ➕ Create new category…
+              </MenuItem>
             </Select>
           </FormControl>
 
 
-      {/* Dialog for creating a new category */}
-      <Dialog open={isCategoryDialogOpen} onClose={() => setIsCategoryDialogOpen(false)}>
-        <DialogTitle>Create New Category</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Category Name"
-            fullWidth
-            variant="standard"
-            value={newCategoryName}
-            onChange={(e) => setNewCategoryName(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setIsCategoryDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleCreateCategory}>Create</Button>
-        </DialogActions>
-      </Dialog>
+          {/* Dialog for creating a new category */}
+          <Dialog open={isCategoryDialogOpen} onClose={() => setIsCategoryDialogOpen(false)}>
+            <DialogTitle>Create New Category</DialogTitle>
+            <DialogContent>
+              <TextField
+                autoFocus
+                margin="dense"
+                label="Category Name"
+                fullWidth
+                variant="standard"
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setIsCategoryDialogOpen(false)}>Cancel</Button>
+              <Button onClick={handleCreateCategory}>Create</Button>
+            </DialogActions>
+          </Dialog>
 
         </Box>
       </DialogContent>
@@ -569,7 +587,7 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({ ope
       </DialogTitle>
       <DialogContent dividers sx={{ p: 3 }}>
         <Typography variant="body1" sx={{ mb: 2, color: '#4B5563' }}>
-          Are you sure you want to delete the product "<strong>{productName}</strong>"? This action cannot be undone.
+          Are you sure you want to delete the product &quot;<strong>{productName}</strong>&quot;? This action cannot be undone.
         </Typography>
       </DialogContent>
       <DialogActions sx={{ p: 2, justifyContent: 'flex-end', borderTop: '1px solid #E5E7EB' }}>
@@ -621,18 +639,29 @@ const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({ open, onClo
       <DialogContent dividers sx={{ p: 3 }}>
         <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 3 }}>
           <Box sx={{ flexShrink: 0, textAlign: 'center' }}>
-            <img
+            <ImageWithFallback
               src={product.imageUrl}
               alt={product.name}
-              style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'contain', borderRadius: '8px', border: '1px solid #E5E7EB' }}
-              onError={(e) => {
-                e.currentTarget.src = `https://placehold.co/200x200/E5E7EB/4B5563?text=Image+N/A`;
+              width={200}
+              height={200}
+              fallback="https://placehold.co/200x200/E5E7EB/4B5563?text=Image+N/A"
+              style={{
+                maxWidth: '200px',
+                maxHeight: '200px',
+                objectFit: 'contain',
+                borderRadius: '8px',
+                border: '1px solid #E5E7EB',
               }}
             />
-            <Typography variant="caption" display="block" sx={{ mt: 1, color: '#6B7280' }}>
+            <Typography
+              variant="caption"
+              display="block"
+              sx={{ mt: 1, color: '#6B7280' }}
+            >
               Image Preview
             </Typography>
           </Box>
+
           <Box sx={{ flexGrow: 1 }}>
             <Typography variant="body1" sx={{ mb: 1.5, color: '#1F2937' }}>
               <Typography component="span" sx={{ fontWeight: 'medium' }}>Description:</Typography>{' '}
@@ -839,7 +868,7 @@ const ProductManagementApp: React.FC = () => {
               {products.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} align="center" sx={{ py: 4, color: '#6B7280' }}>
-                    No products found. Click "Add New Product" to get started!
+                    No products found. Click &quot;Add New Product&quot; to get started!
                   </TableCell>
                 </TableRow>
               ) : (

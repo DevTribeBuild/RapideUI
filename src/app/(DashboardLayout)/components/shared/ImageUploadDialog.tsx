@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { styled } from '@mui/system';
-
+import Image from 'next/image';
 // -----------------------------------------------------------------------------
 // Type Definitions
 // -----------------------------------------------------------------------------
@@ -141,7 +141,16 @@ const ImageUploadDialog: React.FC<ImageUploadDialogProps> = ({ open, onClose, on
         </label>
         {previewUrl && (
           <Box sx={{ mt: 2, p: 1, border: '1px solid #E5E7EB', borderRadius: '8px' }}>
-            <img src={previewUrl} alt="Image Preview" style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'contain', borderRadius: '4px' }} />
+            <Image
+              src={previewUrl}
+              alt="Image Preview"
+              width={200}
+              height={200}
+              style={{
+                objectFit: 'contain',
+                borderRadius: '4px',
+              }}
+            />
           </Box>
         )}
         {!selectedFile && (

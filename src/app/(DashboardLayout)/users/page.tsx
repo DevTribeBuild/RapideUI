@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Grid,
   Card,
@@ -32,29 +32,30 @@ import { GET_ALL_USERS } from "@/graphql/queries";
 import { UPDATE_USER_MUTATION } from "@/graphql/mutations";
 import { useQuery, useMutation } from "@apollo/client";
 import Divider from '@mui/material/Divider';
+import { debounce } from 'lodash';
 
 // --- Accent Color Definition ---
 const ACCENT_COLOR = "#FF5722"; // You can change this to your desired accent color
 
 // Helper function for debouncing
-function debounce<T extends (...args: any[]) => void>(func: T, delay: number): (...args: Parameters<T>) => void {
-  let timeout: ReturnType<typeof setTimeout> | null;
+// function debounce<T extends (...args: any[]) => void>(func: T, delay: number): (...args: Parameters<T>) => void {
+//   let timeout: ReturnType<typeof setTimeout> | null;
 
-  return function (this: ThisParameterType<T>, ...args: Parameters<T>): void {
-    const context = this;
+//   return function (this: ThisParameterType<T>, ...args: Parameters<T>): void {
+//     const context = this;
 
-    const later = () => {
-      timeout = null;
-      func.apply(context, args);
-    };
+//     const later = () => {
+//       timeout = null;
+//       func.apply(context, args);
+//     };
 
-    if (timeout) {
-      clearTimeout(timeout);
-    }
+//     if (timeout) {
+//       clearTimeout(timeout);
+//     }
 
-    timeout = setTimeout(later, delay);
-  };
-}
+//     timeout = setTimeout(later, delay);
+//   };
+// }
 
 
 // Helper function to get initials and a consistent color
@@ -115,9 +116,9 @@ const UsersPage = () => {
   const [tab, setTab] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const debouncedSetSearchTerm = React.useCallback(
-    debounce((value) => setSearchTerm(value), 300),
-    []
+  const debouncedSetSearchTerm = React.useMemo(
+    () => debounce((value: string) => setSearchTerm(value), 300),
+    [setSearchTerm]
   );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -163,6 +164,13 @@ const UsersPage = () => {
     user.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.lastName?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+
+  useEffect(() => {
+    return () => {
+      debouncedSetSearchTerm.cancel();
+    };
+  }, [debouncedSetSearchTerm]);
 
   return (
     <Box sx={{ p: { xs: 2, md: 4 } }}>
@@ -210,7 +218,7 @@ const UsersPage = () => {
       {loading && (
         <Grid container spacing={3}>
           {Array.from(new Array(4)).map((_, index) => (
-            <Grid size={{ xs:12, md:6, lg:4}} key={index}>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }} key={index}>
               <Card sx={{ borderRadius: 2, boxShadow: 3 }}>
                 <CardContent sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                   <Skeleton variant="circular" width={56} height={56} />
@@ -243,7 +251,7 @@ const UsersPage = () => {
           {filteredUsers.map((user: any) => {
             const { initials, color } = getInitialsAndColor(user);
             return (
-              <Grid size={{ xs:12, md:6, lg:4}} key={user.id}>
+              <Grid size={{ xs: 12, md: 6, lg: 4 }} key={user.id}>
                 <Card
                   sx={{
                     borderRadius: 2,
@@ -275,13 +283,13 @@ const UsersPage = () => {
                       >
                         {!user.avatar && initials} {/* Display initials if no avatar */}
                       </Avatar>
-                      <br/>
+                      <br />
                       <Box>
                         <Typography variant="h6" fontWeight="bold" noWrap>
                           {user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email}
                         </Typography>
                         <Typography color="text.secondary" variant="body2" noWrap>{user.email}</Typography>
-                        <br/>
+                        <br />
                         {user.userType && (
                           <Chip
                             label={user.userType}
@@ -384,7 +392,7 @@ const UsersPage = () => {
 
               {tab === 0 && (
                 <Grid container spacing={2}>
-                  <Grid size={{ xs:12, md:6}}>
+                  <Grid size={{ xs: 12, md: 6 }}>
                     <TextField
                       label="First Name"
                       name="firstName"
@@ -396,7 +404,7 @@ const UsersPage = () => {
                       variant={editMode ? "outlined" : "filled"}
                     />
                   </Grid>
-                  <Grid size={{ xs:12, md:6}}>
+                  <Grid size={{ xs: 12, md: 6 }}>
                     <TextField
                       label="Last Name"
                       name="lastName"
@@ -413,7 +421,7 @@ const UsersPage = () => {
 
               {tab === 1 && (
                 <Grid container spacing={2}>
-                  <Grid size={{ xs:12}}>
+                  <Grid size={{ xs: 12 }}>
                     <TextField
                       label="Email"
                       name="email"
@@ -426,7 +434,7 @@ const UsersPage = () => {
                       variant={editMode ? "outlined" : "filled"}
                     />
                   </Grid>
-                  <Grid size={{ xs:12}}>
+                  <Grid size={{ xs: 12 }}>
                     <TextField
                       label="Phone"
                       name="phone"
@@ -444,7 +452,7 @@ const UsersPage = () => {
 
               {tab === 2 && (
                 <Grid container spacing={2}>
-                  <Grid size={{ xs:12}}>
+                  <Grid size={{ xs: 12 }}>
                     <TextField
                       label="Username"
                       name="username"
@@ -456,7 +464,7 @@ const UsersPage = () => {
                       variant={editMode ? "outlined" : "filled"}
                     />
                   </Grid>
-                  <Grid size={{ xs:12}}>
+                  <Grid size={{ xs: 12 }}>
                     <Typography mt={2} variant="body1" color="text.secondary">
                       **Wallet Address:** {selectedUser.walletAddress || "N/A"}
                     </Typography>
