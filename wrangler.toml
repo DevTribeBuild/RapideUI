@@ -1,7 +1,7 @@
 name = "swifteroute"
 compatibility_date = "2025-06-24"
 
-[build]
-command = "npm run build && next-on-pages --skip-build"
-
 main = ".vercel/output/config.json"
+
+[build]
+command = "npm run build && npx @cloudflare/next-on-pages --skip-build"

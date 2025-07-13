@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "postbuild": "next-on-pages",
     "start": "next start",
     "build": "next build",
     "export": "npx @cloudflare/next-on-pages --skip-build",
