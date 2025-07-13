@@ -1,8 +1,10 @@
 name = "swifteroute"
 compatibility_date = "2025-06-24"
-compatibility_flags = ["nodejs_compat"] 
+compatibility_flags = ["nodejs_compat"]
 
-main = ".vercel/output/static/_worker.js/index.js"  # or correct path if different
+# ✅ This is your actual Worker entry point (ES Module format)
+main = ".vercel/output/static/_worker.js/index.js"
 module = true
+
 [build]
-command = "npm run build && npx @cloudflare/next-on-pages --skip-build"
+command = "npm run build && npx @cloudflare/next-on-pages --skip-build
