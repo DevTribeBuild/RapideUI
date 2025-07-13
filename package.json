@@ -1,13 +1,14 @@
 {
-  "name": "rapide-xpress-next-free",
+  "name": "swifteroute",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
     "postbuild": "next-on-pages",
-    "deploy": "wranglerdeploy",
     "start": "next start",
+    "build": "next build",
+    "export": "npx @cloudflare/next-on-pages --skip-build",
+    "deploy": "npm run build && npm run export && wrangler deploy",
     "lint": "next lint"
   },
   "dependencies": {
@@ -37,6 +38,7 @@
     "react-syntax-highlighter": "^15.6.1",
     "recharts": "^2.15.3",
     "typescript": "5.7.3",
+    "vercel": "^44.4.1",
     "zustand": "^5.0.5"
   },
   "devDependencies": {
@@ -44,7 +46,9 @@
     "@types/lodash": "4.14.196",
     "@types/prop-types": "^15",
     "@types/react": "19.1.8",
+    "@types/react-dom": "^19.1.6",
     "@types/react-syntax-highlighter": "^15.5.13",
     "wrangler": "^4.21.1"
-  }
+  },
+  "packageManager": "yarn@4.9.2+sha512.1fc009bc09d13cfd0e19efa44cbfc2b9cf6ca61482725eb35bbc5e257e093ebf4130db6dfe15d604ff4b79efd8e1e8e99b25fa7d0a6197c9f9826358d4d65c3c"
 }
