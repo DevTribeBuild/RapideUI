@@ -6,7 +6,7 @@
     "dev": "next dev",
     "start": "next start",
     "build": "next build",
-    "export": "npx @cloudflare/next-on-pages --skip-build",
+    "export": "npx @cloudflare/next-on-pages",
     "deploy": "npm run build && npm run export && wrangler deploy",
     "lint": "next lint"
   },
@@ -49,5 +49,5 @@
     "@types/react-syntax-highlighter": "^15.5.13",
     "wrangler": "^4.21.1"
   }
-  
+
 }
