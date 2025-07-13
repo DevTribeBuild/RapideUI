@@ -1,7 +1,8 @@
 name = "swifteroute"
 compatibility_date = "2025-06-24"
+compatibility_flags = ["nodejs_compat"] 
 
-main = ".vercel/output/config.json"
-
+main = ".vercel/output/static/_worker.js/index.js"  # or correct path if different
+module = true
 [build]
 command = "npm run build && npx @cloudflare/next-on-pages --skip-build"
