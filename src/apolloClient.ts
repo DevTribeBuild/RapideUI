@@ -3,11 +3,10 @@ import { setContext } from "@apollo/client/link/context";
 import useAuthStore from "@/stores/useAuthStore";
 
 const httpLink = createHttpLink({
-  uri: "http://localhost:8080/graphql",
+  uri: process.env.NEXT_PUBLIC_API_URL, // ✅ now dynamic
 });
 
 const authLink = setContext((_, { headers }) => {
-  // Access token from Zustand store
   const token = useAuthStore.getState().token;
 
   return {
