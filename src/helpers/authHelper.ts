@@ -1,6 +1,6 @@
 import useAuthStore from "@/stores/useAuthStore";
 import client from "@/apolloClient";
-import { GET_ME } from "../graphql/queries";
+import { GET_ME } from "../graphql";
 
 export const handleLoginHelper = async (token: string) => {
   const { setToken, setUserDetails } = useAuthStore.getState();
