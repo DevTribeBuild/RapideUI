@@ -17,8 +17,8 @@ import {
   Box,
   Typography,
 } from "@mui/material";
-import { GET_ALL_USERS } from "@/graphql/queries";
-import { SEND_TOKEN } from "@/graphql/mutations";
+import { GET_ALL_USERS } from "@/graphql";
+import { SEND_TOKEN } from "@/graphql";
 import { useQuery, useMutation } from "@apollo/client";
 import toast from 'react-hot-toast';
 import useAuthStore from "@/stores/useAuthStore";

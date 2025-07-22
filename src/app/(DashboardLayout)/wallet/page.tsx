@@ -45,13 +45,12 @@ import useAppStore from "@/stores/useAuthStore";
 import { useQuery, useMutation, gql } from "@apollo/client";
 import {
     GET_MY_TRANSACTIONS_COMBINED, // Imported the new combined query
-    GET_FIAT_BALANCE,
+    
     GET_CRYPTO_BALANCE,
     GET_TOTAL_CRYPTO_BALANCE,
     FIAT_WALLET_ACCOUNTS,
-    GENERAL_FIAT_BALANCE
-} from "@/graphql/queries";
-import { FIAT_DEPOSIT, CREATE_FIAT_WALLET } from "@/graphql/mutations";
+} from "@/graphql";
+import { FIAT_DEPOSIT, CREATE_FIAT_WALLET } from "@/graphql";
 import useAuthStore from "@/stores/useAuthStore";
 
 // Example wallet data (replace with real data/fetch from API or store)
@@ -112,11 +111,7 @@ const WalletPage = () => {
         variables: { isTest },
     });
 
-    const {
-        data: fiat_balance,
-        loading: loading_balance,
-        error: error_balance,
-    } = useQuery(GENERAL_FIAT_BALANCE);
+    
 
     const {
         data: crypto_balance,
@@ -265,11 +260,12 @@ const WalletPage = () => {
                     <Card elevation={3} sx={{ borderRadius: 2 }}>
                         <CardContent sx={{ display: "flex", alignItems: "center", p: 3 }}>
                             <Box sx={{ flexGrow: 1 }}>
-                                {loading_balance ? (
+                                {loading_fiat_accounts ? (
                                     <Skeleton width="60%" height={30} sx={{ mt: 0.5 }} />
                                 ) : (
                                     <Typography variant="h5" fontWeight="bold">
-                                        {fiat_balance?.fiatWalletBalance} {userDetails?.fiatWallet?.Currency?.symbol || 'KES'}
+                                        {data_fiat_accounts?.fiatWallets?.reduce((sum: number, wallet: any) => sum + (wallet.balance || 0), 0).toFixed(2)}{" "}
+                                        {userDetails?.fiatWallet?.Currency?.symbol || 'KES'}
                                     </Typography>
                                 )}
                             </Box>
@@ -346,7 +342,7 @@ const WalletPage = () => {
                             Crypto Wallet Accounts
                         </Typography>
                         <Divider sx={{ mb: 2 }} />
-                        {!userDetails ? (
+                        {false ? (
                             <Grid container spacing={2}>
                                 {Array.from({ length: 2 }).map((_, index) => (
                                     <Grid size={{ xs: 12, md: 6 }} key={index}>
@@ -354,7 +350,7 @@ const WalletPage = () => {
                                     </Grid>
                                 ))}
                             </Grid>
-                        ) : userDetails?.cryptoWallet?.accounts?.length > 0 || data_crypto_balances?.balances?.length > 0 ? (
+                        ) : true ? (
                             <Grid container spacing={2}>
                                 {loading_crypto_balances
                                     ? Array.from({ length: 3 }).map((_, idx) => (

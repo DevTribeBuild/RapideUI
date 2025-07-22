@@ -28,8 +28,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
 
-import { GET_ALL_USERS } from "@/graphql/queries";
-import { UPDATE_USER_MUTATION } from "@/graphql/mutations";
+import { GET_ALL_USERS } from "@/graphql";
+import { UPDATE_USER_MUTATION } from "@/graphql";
 import { useQuery, useMutation } from "@apollo/client";
 import Divider from '@mui/material/Divider';
 import { debounce } from 'lodash';

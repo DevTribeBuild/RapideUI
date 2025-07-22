@@ -20,12 +20,12 @@ import DeleteIcon from '@mui/icons-material/Delete'; // Added for ProductManagem
 import AddIcon from '@mui/icons-material/Add'; // Added for ProductManagementApp
 import InfoIcon from '@mui/icons-material/Info'; // Added for ProductDetailsDialog
 import { styled } from '@mui/system';
-import { UPDATE_USER_MUTATION } from "@/graphql/mutations";
+import { UPDATE_USER_MUTATION } from "@/graphql";
 import toast from 'react-hot-toast';
 import { SelectChangeEvent } from '@mui/material/Select'; // Explicitly import SelectChangeEvent
-import { CREATE_PRODUCT_CATEGORY } from '@/graphql/mutations';
+import { CREATE_PRODUCT_CATEGORY } from '@/graphql';
 import { useQuery, useMutation } from "@apollo/client";
-import { GET_ALL_CATEGORIES } from '@/graphql/queries';
+import { GET_ALL_CATEGORIES } from '@/graphql';
 import Image from 'next/image'; // Importing Image from next/image for optimized image handling
 import ImageWithFallback from '../components/dashboard/ImageWithFallBack';
 // -----------------------------------------------------------------------------

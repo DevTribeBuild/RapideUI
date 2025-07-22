@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
-import { LOGIN_MUTATION } from '../graphql/mutations';
+import { LOGIN_MUTATION } from '../graphql';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');

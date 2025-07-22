@@ -13,7 +13,7 @@ import {
     Paper,
 } from '@mui/material';
 import { gql, useMutation } from "@apollo/client";
-import { UPDATE_USER_MUTATION } from "@/graphql/mutations";
+import { UPDATE_USER_MUTATION } from "@/graphql";
 
 interface UserDetails {
     firstName?: string;

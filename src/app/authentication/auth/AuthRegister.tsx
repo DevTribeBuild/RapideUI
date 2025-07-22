@@ -4,12 +4,12 @@ import Link from 'next/link';
 import CustomTextField from '@/app/(DashboardLayout)/components/forms/theme-elements/CustomTextField';
 import { Stack } from '@mui/system';
 import { useMutation, useQuery } from '@apollo/client';
-import { REGISTER_MUTATION, VERIFY_OTP_MUTATION } from '@/graphql/mutations';
+import { REGISTER_MUTATION, VERIFY_OTP_MUTATION } from '@/graphql';
 import { useRouter } from 'next/navigation';
 import useAuthStore from '@/stores/useAuthStore';
 import { handleLoginHelper } from '@/helpers/authHelper';
 import toast from 'react-hot-toast';
-import { GET_FIAT_CURRENCIES } from '@/graphql/queries';
+import { GET_FIAT_CURRENCIES } from '@/graphql';
 
 interface registerType {
         title?: string;
