@@ -71,7 +71,7 @@ const useAppStore = create<AppState>()(
     }),
     {
       name: 'app-store-session',
-      storage: createJSONStorage(() => sessionStorage), // ✅ Fix: wrap sessionStorage
+      storage: createJSONStorage(() => localStorage),
     }
   )
 )

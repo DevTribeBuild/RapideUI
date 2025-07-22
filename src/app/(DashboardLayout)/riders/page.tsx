@@ -19,8 +19,8 @@ import {
   Tabs,
   Tab,
 } from "@mui/material";
-import { GET_ALL_USERS } from "@/graphql/queries";
-import { UPDATE_USER_MUTATION } from "@/graphql/mutations";
+import { GET_ALL_USERS } from "@/graphql";
+import { UPDATE_USER_MUTATION } from "@/graphql";
 import { useQuery, useMutation } from "@apollo/client";
 
 const UsersPage = () => {

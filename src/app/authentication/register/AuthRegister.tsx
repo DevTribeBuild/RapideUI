@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useMutation } from "@apollo/client";
-import { REGISTER_MUTATION } from "@/graphql/mutations";
+import { REGISTER_MUTATION } from "@/graphql";
 import { Button, TextField, Alert, Stack } from "@mui/material";
 import { useRouter } from "next/navigation";
 
