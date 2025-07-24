@@ -20,14 +20,16 @@ import DeleteIcon from '@mui/icons-material/Delete'; // Added for ProductManagem
 import AddIcon from '@mui/icons-material/Add'; // Added for ProductManagementApp
 import InfoIcon from '@mui/icons-material/Info'; // Added for ProductDetailsDialog
 import { styled } from '@mui/system';
-import { UPDATE_USER_MUTATION } from "@/graphql";
 import toast from 'react-hot-toast';
-import { SelectChangeEvent } from '@mui/material/Select'; // Explicitly import SelectChangeEvent
 import { CREATE_PRODUCT_CATEGORY } from '@/graphql';
+import { CREATE_PRODUCT_MUTATION, UPDATE_PRODUCT_MUTATION, DELETE_PRODUCT_MUTATION } from '@/graphql/product/mutations';
 import { useQuery, useMutation } from "@apollo/client";
 import { GET_ALL_CATEGORIES } from '@/graphql';
+import { ALL_PRODUCTS_QUERY } from '@/graphql/product/queries';
 import Image from 'next/image'; // Importing Image from next/image for optimized image handling
 import ImageWithFallback from '../components/dashboard/ImageWithFallBack';
+import { ImageUploadDialog } from './components/ImageUploadDialog';
+import { ProductFormDialog } from './components/ProductFormDialog';
 // -----------------------------------------------------------------------------
 // Type Definitions
 // -----------------------------------------------------------------------------
@@ -43,6 +45,30 @@ interface Product {
   stock: number;
   imageUrl: string;
   category: string;
+  merchantId: string;
+  currencyId: string;
+  quantity: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+
+interface ProductFormDialogProps {
+  open: boolean;
+  onClose: () => void;
+  onSave: (payload: { input: ProductInput }) => void;
+  product?: ProductInput | null;
+  isSaving: boolean;
+  onImageUploadRequest: (callback: (url: string) => void) => void;
+}
+
+interface ProductInput {
+  name: string;
+  description: string;
+  price: number;
+  imageUrl: string;
+  categoryId: string;
+  currencyId: string;
 }
 
 /**
@@ -57,14 +83,14 @@ interface ImageUploadDialogProps {
 /**
  * Props for the ProductFormDialog component.
  */
-interface ProductFormDialogProps {
-  open: boolean;
-  onClose: () => void;
-  product?: Product | null; // Optional, for editing
-  onSave: (product: Product) => void;
-  isSaving: boolean;
-  onImageUploadRequest: (callback: (url: string) => void) => void; // Callback to request image upload
-}
+// interface ProductFormDialogProps {
+//   open: boolean;
+//   onClose: () => void;
+//   product?: ProductInput | null; // Optional, for editing
+//   // onSave: (product: ProductInput) => void;
+//   isSaving: boolean;
+//   onImageUploadRequest: (callback: (url: string) => void) => void; // Callback to request image upload
+// }
 
 /**
  * Props for the DeleteConfirmationDialog component.
@@ -136,437 +162,13 @@ const GreyButton = styled(Button)(({ theme }) => ({
 // ImageUploadDialog Component (Global Dialog for Image Upload)
 // -----------------------------------------------------------------------------
 
-const ImageUploadDialog: React.FC<ImageUploadDialogProps> = ({ open, onClose, onUploadSuccess }) => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState<boolean>(false);
 
-  useEffect(() => {
-    // Clean up preview URL when dialog closes or component unmounts
-    if (!open) {
-      setSelectedFile(null);
-      setPreviewUrl(null);
-    }
-    return () => {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
-    };
-  }, [open, previewUrl]);
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl); // Revoke previous object URL
-      }
-      setPreviewUrl(URL.createObjectURL(file));
-    } else {
-      setSelectedFile(null);
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
-      setPreviewUrl(null);
-    }
-  };
-
-  const handleUpload = async () => {
-    if (!selectedFile) return;
-
-    setIsUploading(true);
-    // Simulate image upload to a server
-    // In a real application, you would send `selectedFile` to your backend
-    // and receive the actual image URL.
-    await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
-
-    // Generate a dummy image URL. In a real app, this would come from the server.
-    const dummyImageUrl = `https://placehold.co/100x100/FFD700/000000?text=Uploaded+${Date.now()}`;
-
-    onUploadSuccess(dummyImageUrl);
-    setIsUploading(false);
-    onClose(); // Close the dialog after successful upload
-  };
-
-  return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}>
-        <Typography variant="h6" component="div" sx={{ fontWeight: 'bold', color: '#1F2937' }}>
-          Upload Product Image
-        </Typography>
-        <IconButton onClick={onClose} size="small" disabled={isUploading}>
-          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </IconButton>
-      </DialogTitle>
-      <DialogContent dividers sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-        <input
-          accept="image/*"
-          style={{ display: 'none' }}
-          id="raised-button-file"
-          multiple
-          type="file"
-          onChange={handleFileChange}
-        />
-        <label htmlFor="raised-button-file">
-          <Button variant="outlined" component="span" startIcon={<CloudUploadIcon />} sx={{ borderColor: '#F59E0B', color: '#F59E0B', '&:hover': { borderColor: '#D97706', color: '#D97706' } }}>
-            {selectedFile ? selectedFile.name : 'Choose Image'}
-          </Button>
-        </label>
-        {previewUrl && (
-          <Box sx={{ mt: 2, p: 1, border: '1px solid #E5E7EB', borderRadius: '8px' }}>
-            <Image
-              src={previewUrl}
-              alt="Image Preview"
-              width={200}
-              height={200}
-              style={{
-                objectFit: 'contain',
-                borderRadius: '4px',
-              }}
-            />
-          </Box>
-        )}
-        {!selectedFile && (
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            No image selected.
-          </Typography>
-        )}
-      </DialogContent>
-      <DialogActions sx={{ p: 2, justifyContent: 'flex-end', borderTop: '1px solid #E5E7EB' }}>
-        <GreyButton onClick={onClose} disabled={isUploading}>
-          Cancel
-        </GreyButton>
-        <YellowButton
-          onClick={handleUpload}
-          disabled={!selectedFile || isUploading}
-          variant="contained"
-          endIcon={isUploading ? <CircularProgress size={20} color="inherit" /> : null}
-        >
-          {isUploading ? 'Uploading...' : 'Upload Image'}
-        </YellowButton>
-      </DialogActions>
-    </Dialog>
-  );
-};
 
 // -----------------------------------------------------------------------------
 // ProductFormDialog Component (Create/Edit Product)
 // -----------------------------------------------------------------------------
 
-const ProductFormDialog: React.FC<ProductFormDialogProps> = ({ open, onClose, product, onSave, isSaving, onImageUploadRequest }) => {
-  const [formData, setFormData] = useState<Product>({
-    id: '',
-    name: '',
-    description: '',
-    price: 0,
-    stock: 0,
-    imageUrl: '',
-    category: '',
-  });
 
-
-  useEffect(() => {
-    if (product) {
-      setFormData(product);
-    } else {
-      // Reset form for new product
-      setFormData({
-        id: '',
-        name: '',
-        description: '',
-        price: 0,
-        stock: 0,
-        imageUrl: '',
-        category: '',
-      });
-    }
-  }, [product, open]); // Reset when dialog opens or product changes
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name as keyof Product]: name === 'price' || name === 'stock' ? parseFloat(value) || 0 : value,
-    }));
-  };
-  console.log("Selected category:", formData.category);
-
-  const handleImageChange = (url: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      imageUrl: url,
-    }));
-  };
-  const { data, loading, error, refetch } = useQuery(GET_ALL_CATEGORIES);
-  const [newCategoryName, setNewCategoryName] = useState("");
-
-  // Show error if fetching categories fails
-  useEffect(() => {
-    if (error) {
-      // Only show once per error
-      toast.error("Failed to load categories.");
-    }
-  }, [error]);
-
-  const [createCategory, { data: data_create, loading: loading_create, error: error_create }] = useMutation(CREATE_PRODUCT_CATEGORY);
-  const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
-
-  const handleCreateCategory = async () => {
-    if (!newCategoryName.trim()) return;
-
-    try {
-      const res = await createCategory({
-        variables: { input: { name: newCategoryName } },
-      });
-      // Use data_create and loading_create after mutation
-      if (res?.data?.createCategory) {
-        setFormData((prev) => ({ ...prev, category: res?.data?.createCategory.id }));
-        toast.success("created")
-        if (refetch) await refetch();
-        toast.success("Category created successfully!");
-      }
-    } catch (err) {
-      console.error("Category creation failed:", err);
-      toast.error("Failed to create category.");
-    } finally {
-      setIsCategoryDialogOpen(false);
-      setNewCategoryName("");
-    }
-  };
-
-  const handleSelectChange = (event) => {
-    const value = event.target.value;
-
-    if (value === "__create_new__") {
-      setIsCategoryDialogOpen(true); // Open dialog to create new category
-    } else {
-      setFormData((prev) => ({ ...prev, category: value }));
-    }
-    // Show toast for category selection (optional, only for demonstration)
-    // toast.success("Category selected!");
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSave({ ...formData, id: formData.id || `prod-${Date.now()}` }); // Assign a unique ID if new
-  };
-
-  const isFormValid = formData.name && formData.description && formData.price > 0 && formData.stock >= 0 && formData.imageUrl && formData.category;
-
-  // const handleCreateCategory = async () => {
-  //   if (!newCategoryName.trim()) return;
-
-  //   try {
-  //     const { data: result } = await createCategory({
-  //       variables: { input: { name: newCategoryName } },
-  //     });
-
-  //     const newCategory = result?.createCategory;
-  //     if (newCategory) {
-  //       setFormData((prev) => ({ ...prev, category: newCategory.id }));
-  //       if (refetch) await refetch(); // optional, if using Apollo useQuery
-  //     }
-  //   } catch (err) {
-  //     console.error("Category creation failed:", err);
-  //   } finally {
-  //     setIsCategoryDialogOpen(false);
-  //     setNewCategoryName("");
-  //   }
-  // };
-
-  return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}>
-        <Typography variant="h6" component="div" sx={{ fontWeight: 'bold', color: '#1F2937' }}>
-          {product ? 'Edit Product' : 'Create New Product'}
-        </Typography>
-        <IconButton onClick={onClose} size="small">
-          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </IconButton>
-      </DialogTitle>
-      <DialogContent dividers sx={{ p: 3 }}>
-        <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <TextField
-            label="Product Name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            fullWidth
-            required
-            sx={{
-              '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#F59E0B' },
-              '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#D97706' },
-              '& .MuiInputLabel-root.Mui-focused': { color: '#F59E0B' },
-            }}
-          />
-          <TextField
-            label="Description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            fullWidth
-            multiline
-            rows={3}
-            required
-            sx={{
-              '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#F59E0B' },
-              '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#D97706' },
-              '& .MuiInputLabel-root.Mui-focused': { color: '#F59E0B' },
-            }}
-          />
-          <TextField
-            label="Price"
-            name="price"
-            type="number"
-            value={formData.price}
-            onChange={handleChange}
-            fullWidth
-            required
-            inputProps={{ min: 0, step: "0.01" }}
-            sx={{
-              '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#F59E0B' },
-              '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#D97706' },
-              '& .MuiInputLabel-root.Mui-focused': { color: '#F59E0B' },
-            }}
-          />
-          <TextField
-            label="Stock Quantity"
-            name="stock"
-            type="number"
-            value={formData.stock}
-            onChange={handleChange}
-            fullWidth
-            required
-            inputProps={{ min: 0 }}
-            sx={{
-              '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#F59E0B' },
-              '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#D97706' },
-              '& .MuiInputLabel-root.Mui-focused': { color: '#F59E0B' },
-            }}
-          />
-          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-            <TextField
-              label="Image URL"
-              name="imageUrl"
-              value={formData.imageUrl}
-              fullWidth
-              required
-              InputProps={{
-                readOnly: true, // Make it read-only as it's set by the upload dialog
-              }}
-              sx={{
-                '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#F59E0B' },
-                '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#D97706' },
-                '& .MuiInputLabel-root.Mui-focused': { color: '#F59E0B' },
-              }}
-            />
-            <Button
-              variant="outlined"
-              onClick={() => onImageUploadRequest(handleImageChange)}
-              sx={{
-                height: '56px', // Match TextField height
-                borderColor: '#F59E0B', color: '#F59E0B', '&:hover': { borderColor: '#D97706', color: '#D97706' }
-              }}
-            >
-              Upload
-            </Button>
-          </Box>
-          {formData.imageUrl && (
-            <Box sx={{ mt: 1, display: 'flex', justifyContent: 'center' }}>
-              <Image
-                src={formData.imageUrl}
-                alt="Product Preview"
-                width={100}
-                height={100}
-                style={{
-                  objectFit: 'contain',
-                  borderRadius: '4px',
-                }}
-                onError={(e) => {
-                  e.currentTarget.src = `https://placehold.co/100x100/E5E7EB/4B5563?text=Invalid+URL`;
-                }}
-              />
-            </Box>
-          )}
-
-          <FormControl fullWidth required>
-            <InputLabel id="category-select-label">Category</InputLabel>
-            <Select
-              labelId="category-select-label"
-              id="category-select"
-              name="category"
-              value={formData.category}
-              label="Category"
-              onChange={handleSelectChange}
-              sx={{
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#F59E0B' },
-                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#D97706' },
-              }}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-
-              {data?.allCategories?.flatMap((category: any) => [ // Use flatMap here
-                <MenuItem key={category.id} value={category.id}>
-                  {category.name}
-                </MenuItem>,
-                ...(category?.subcategories?.map((sub: any) => (
-                  <MenuItem key={sub.id} value={sub.id} sx={{ pl: 4 }}>
-                    └ {sub.name}
-                  </MenuItem>
-                )) || []) // Ensure subcategories is an array or empty for spread
-              ])}
-
-              <MenuItem value="__create_new__" sx={{ fontStyle: "italic", color: "#0EA5E9" }}>
-                ➕ Create new category…
-              </MenuItem>
-            </Select>
-          </FormControl>
-
-
-          {/* Dialog for creating a new category */}
-          <Dialog open={isCategoryDialogOpen} onClose={() => setIsCategoryDialogOpen(false)}>
-            <DialogTitle>Create New Category</DialogTitle>
-            <DialogContent>
-              <TextField
-                autoFocus
-                margin="dense"
-                label="Category Name"
-                fullWidth
-                variant="standard"
-                value={newCategoryName}
-                onChange={(e) => setNewCategoryName(e.target.value)}
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setIsCategoryDialogOpen(false)}>Cancel</Button>
-              <Button onClick={handleCreateCategory}>Create</Button>
-            </DialogActions>
-          </Dialog>
-
-        </Box>
-      </DialogContent>
-      <DialogActions sx={{ p: 2, justifyContent: 'flex-end', borderTop: '1px solid #E5E7EB' }}>
-        <GreyButton onClick={onClose} disabled={isSaving}>
-          Cancel
-        </GreyButton>
-        <YellowButton
-          onClick={handleSubmit}
-          disabled={!isFormValid || isSaving}
-          variant="contained"
-          endIcon={isSaving ? <CircularProgress size={20} color="inherit" /> : null}
-        >
-          {isSaving ? 'Saving...' : 'Save Product'}
-        </YellowButton>
-      </DialogActions>
-    </Dialog>
-  );
-};
 
 // -----------------------------------------------------------------------------
 // DeleteConfirmationDialog Component
@@ -624,6 +226,10 @@ const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({ open, onClo
     onClose(); // Close details dialog when opening delete confirmation
   };
 
+  function getCategoryName(category: string): React.ReactNode {
+    throw new Error('Function not implemented.');
+  }
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}>
@@ -669,7 +275,7 @@ const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({ open, onClo
             </Typography>
             <Typography variant="body1" sx={{ mb: 1.5, color: '#1F2937' }}>
               <Typography component="span" sx={{ fontWeight: 'medium' }}>Category:</Typography>{' '}
-              {product.category}
+              {getCategoryName(product.category)}
             </Typography>
             <Typography variant="body1" sx={{ mb: 1.5, color: '#1F2937' }}>
               <Typography component="span" sx={{ fontWeight: 'medium' }}>Price:</Typography>{' '}
@@ -704,19 +310,21 @@ const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({ open, onClo
 // -----------------------------------------------------------------------------
 
 const ProductManagementApp: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>(() => [
-    { id: 'p1', name: 'Wireless Headphones', description: 'High-quality sound, noise-cancelling. Perfect for immersive audio experience.', price: 99.99, stock: 50, imageUrl: 'https://placehold.co/60x60/FFD700/000000?text=HP', category: 'Electronics' },
-    { id: 'p2', name: 'Ergonomic Office Chair', description: 'Adjustable, comfortable, lumbar support. Designed for long working hours.', price: 249.00, stock: 20, imageUrl: 'https://placehold.co/60x60/ADD8E6/000000?text=Chair', category: 'Home Goods' },
-    { id: 'p3', name: 'Smartwatch X', description: 'Fitness tracking, heart rate monitor, notifications. Compatible with iOS and Android.', price: 149.50, stock: 35, imageUrl: 'https://placehold.co/60x60/90EE90/000000?text=Watch', category: 'Electronics' },
-  ]);
+  const { data: productsData, loading: productsLoading, error: productsError } = useQuery(ALL_PRODUCTS_QUERY);
+  const { data: categoriesData, loading: categoriesLoading, error: categoriesError } = useQuery(GET_ALL_CATEGORIES);
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    if (productsData) {
+      setProducts(productsData.allProducts);
+    }
+  }, [productsData]);
 
   const [isFormDialogOpen, setIsFormDialogOpen] = useState<boolean>(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [isSavingProduct, setIsSavingProduct] = useState<boolean>(false);
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
-  const [isDeletingProduct, setIsDeletingProduct] = useState<boolean>(false);
 
   const [isImageUploadDialogOpen, setIsImageUploadDialogOpen] = useState<boolean>(false);
   const [setImageUrlCallback, setSetImageUrlCallback] = useState<((url: string) => void) | null>(null);
@@ -741,20 +349,35 @@ const ProductManagementApp: React.FC = () => {
     setEditingProduct(null); // Clear editing product on close
   };
 
-  const handleSaveProduct = async (productToSave: Product) => {
-    setIsSavingProduct(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
+  const [createProduct, { loading: creatingProduct }] = useMutation(CREATE_PRODUCT_MUTATION, {
+    refetchQueries: [{ query: ALL_PRODUCTS_QUERY }],
+  });
+  const [updateProduct, { loading: updatingProduct }] = useMutation(UPDATE_PRODUCT_MUTATION, {
+    refetchQueries: [{ query: ALL_PRODUCTS_QUERY }],
+  });
 
-    if (productToSave.id && products.some(p => p.id === productToSave.id)) {
-      // Update existing product
-      setProducts((prev) => prev.map((p) => (p.id === productToSave.id ? productToSave : p)));
-    } else {
-      // Add new product
-      setProducts((prev) => [...prev, { ...productToSave, id: `prod-${Date.now()}` }]);
+  const handleSaveProduct = async (productToSave: Product) => {
+    try {
+      if (productToSave.id) {
+        await updateProduct({ variables: { input: { ...productToSave, price: Number(productToSave.price), stock: Number(productToSave.stock) } } });
+        toast.success('Product updated successfully!');
+      } else {
+        const createProductInput = {
+          categoryId: productToSave.category,
+          currencyId: productToSave.currencyId,
+          description: productToSave.description,
+          imageUrl: productToSave.imageUrl,
+          name: productToSave.name,
+          price: Number(productToSave.price),
+        };
+        await createProduct({ variables: { input: createProductInput } });
+        toast.success('Product created successfully!');
+      }
+      handleCloseFormDialog();
+    } catch (error) {
+      console.error('Error saving product:', error);
+      toast.error('Error saving product. Please try again.');
     }
-    setIsSavingProduct(false);
-    handleCloseFormDialog();
   };
 
   // Handlers for Delete Confirmation Dialog
@@ -768,14 +391,20 @@ const ProductManagementApp: React.FC = () => {
     setProductToDelete(null);
   };
 
+  const [deleteProduct, { loading: deletingProduct }] = useMutation(DELETE_PRODUCT_MUTATION, {
+    refetchQueries: [{ query: ALL_PRODUCTS_QUERY }],
+  });
+
   const handleDeleteProduct = async () => {
     if (productToDelete) {
-      setIsDeletingProduct(true);
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 700));
-      setProducts((prev) => prev.filter((p) => p.id !== productToDelete.id));
-      setIsDeletingProduct(false);
-      handleCloseDeleteConfirm();
+      try {
+        await deleteProduct({ variables: { id: productToDelete.id } });
+        toast.success('Product deleted successfully!');
+        handleCloseDeleteConfirm();
+      } catch (error) {
+        console.error('Error deleting product:', error);
+        toast.error('Error deleting product. Please try again.');
+      }
     }
   };
 
@@ -817,6 +446,12 @@ const ProductManagementApp: React.FC = () => {
   // Callback from ProductDetailsDialog to open delete confirmation
   const handleDeleteFromDetails = (product: Product) => {
     handleOpenDeleteConfirm(product);
+  };
+
+  const getCategoryName = (categoryId: string) => {
+    if (!categoriesData) return '...';
+    const category = categoriesData.allCategories.find((c: any) => c.id === categoryId);
+    return category ? category.name : 'Unknown';
   };
 
 
@@ -865,7 +500,19 @@ const ProductManagementApp: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {products.length === 0 ? (
+              {productsLoading || categoriesLoading ? (
+                <TableRow>
+                  <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
+                    <CircularProgress />
+                  </TableCell>
+                </TableRow>
+              ) : productsError || categoriesError ? (
+                <TableRow>
+                  <TableCell colSpan={6} align="center" sx={{ py: 4, color: 'red' }}>
+                    Error loading data. Please try again.
+                  </TableCell>
+                </TableRow>
+              ) : products.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} align="center" sx={{ py: 4, color: '#6B7280' }}>
                     No products found. Click &quot;Add New Product&quot; to get started!
@@ -900,7 +547,7 @@ const ProductManagementApp: React.FC = () => {
                         {product.description.substring(0, 50)}{product.description.length > 50 ? '...' : ''}
                       </Typography>
                     </TableCell>
-                    <TableCell sx={{ color: '#374151' }}>{product.category}</TableCell>
+                    <TableCell sx={{ color: '#374151' }}>{getCategoryName(product.category)}</TableCell>
                     <TableCell align="right" sx={{ color: '#374151', fontWeight: 'medium' }}>${product.price.toFixed(2)}</TableCell>
                     <TableCell align="right" sx={{ color: product.stock <= 5 ? '#EF4444' : '#374151', fontWeight: 'medium' }}>
                       {product.stock}
@@ -930,7 +577,7 @@ const ProductManagementApp: React.FC = () => {
         onClose={handleCloseFormDialog}
         product={editingProduct}
         onSave={handleSaveProduct}
-        isSaving={isSavingProduct}
+        isSaving={creatingProduct || updatingProduct}
         onImageUploadRequest={handleImageUploadRequest} // Pass the new handler
       />
 
@@ -940,7 +587,7 @@ const ProductManagementApp: React.FC = () => {
         onClose={handleCloseDeleteConfirm}
         onConfirm={handleDeleteProduct}
         productName={productToDelete?.name || ''}
-        isDeleting={isDeletingProduct}
+        isDeleting={deletingProduct}
       />
 
       {/* Global Image Upload Dialog */}
