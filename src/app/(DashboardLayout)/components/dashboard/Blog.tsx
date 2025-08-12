@@ -66,15 +66,22 @@ import toast from 'react-hot-toast';
     setSelectedProduct(null);
   };
 
-  const handleAddToCartClick = (productId: string) => {
-    setProductQuantities((prev) => ({
-      ...prev,
-      [productId]: { count: 1, showAdjuster: true },
-    }));
-    setAddedToCartStatus((prev) => ({
-      ...prev,
-      [productId]: true,
-    }));
+  const handleAddToCartClick = async (product: Product) => {
+    try {
+      await addToCart({ variables: { input: { productId: product.id, quantity: 1 } } });
+      toast.success(`${product.name} added to cart!`);
+      setProductQuantities((prev) => ({
+        ...prev,
+        [product.id]: { count: 1, showAdjuster: true },
+      }));
+      setAddedToCartStatus((prev) => ({
+        ...prev,
+        [product.id]: true,
+      }));
+    } catch (err) {
+      console.error("Error adding to cart:", err);
+      toast.error(`Failed to add ${product.name} to cart.`);
+    }
   };
 
   const handleProductQuantityChange = (productId: string, newQuantity: number) => {
@@ -166,7 +173,7 @@ import toast from 'react-hot-toast';
                       color="primary"
                       fullWidth
                       startIcon={<IconBasket size="16" />}
-                      onClick={() => handleAddToCartClick(productId)}
+                      onClick={() => handleAddToCartClick(product)}
                       sx={{ padding: "8px 16px", fontSize: "0.875rem" }}
                     >
                       Add To Cart
