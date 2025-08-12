@@ -1,5 +1,9 @@
 'use client';
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useQuery, useMutation } from "@apollo/client";
+import { MY_CART_QUERY, GET_CART_DETAILS_QUERY } from '@/graphql/cart/queries';
+import { UPDATE_CART_ITEM_MUTATION, REMOVE_FROM_CART_MUTATION, CLEAR_CART_MUTATION } from '@/graphql/cart/mutations';
+import toast from 'react-hot-toast';
 import { useRouter } from "next/navigation";
 import {
     Container,
@@ -22,23 +26,54 @@ import {
 } from "@mui/material";
 import OrderStatusStepper from "@/app/(DashboardLayout)/components/shared/OrderStatusStepper";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import DeleteIcon from "@mui/icons-material/Delete";
 import PageContainer from "@/app/(DashboardLayout)/components/container/PageContainer";
 import Image from 'next/image';
 
 const CartPage: React.FC = () => {
     const router = useRouter();
-    // Placeholder cart items
-    const cartItems = [
-        { id: 1, name: "Product A", price: 29.99, quantity: 2 },
-        { id: 2, name: "Product B", price: 15.5, quantity: 1 },
-    ];
+    const { data, loading, error, refetch } = useQuery(MY_CART_QUERY);
+    const [updateCartItem] = useMutation(UPDATE_CART_ITEM_MUTATION);
+    const [removeFromCart] = useMutation(REMOVE_FROM_CART_MUTATION);
+    const [clearCart] = useMutation(CLEAR_CART_MUTATION);
 
-    const [previewItem, setPreviewItem] = useState<null | typeof cartItems[0]>(null);
+    const cartItems = data?.myCart?.items || [];
+    const total = data?.myCart?.total || 0;
 
-    const total = cartItems.reduce(
-        (sum, item) => sum + item.price * item.quantity,
-        0
-    );
+    const [previewItem, setPreviewItem] = useState<any>(null); // Use any for now, or define a more specific type based on GraphQL response
+
+    const handleUpdateQuantity = async (productId: string, quantity: number) => {
+        try {
+            await updateCartItem({ variables: { input: { productId, quantity } } });
+            toast.success('Cart item quantity updated!');
+            refetch();
+        } catch (err) {
+            console.error("Error updating cart item:", err);
+            toast.error('Failed to update cart item.');
+        }
+    };
+
+    const handleRemoveItem = async (productId: string) => {
+        try {
+            await removeFromCart({ variables: { productId } });
+            toast.success('Product removed from cart!');
+            refetch();
+        } catch (err) {
+            console.error("Error removing item from cart:", err);
+            toast.error('Failed to remove item from cart.');
+        }
+    };
+
+    const handleClearCart = async () => {
+        try {
+            await clearCart();
+            toast.success('Cart cleared successfully!');
+            refetch();
+        } catch (err) {
+            console.error("Error clearing cart:", err);
+            toast.error('Failed to clear cart.');
+        }
+    };
 
     const checkoutProceeed = () => {
         // Handle checkout logic here
@@ -71,28 +106,61 @@ const CartPage: React.FC = () => {
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {cartItems.map((item) => (
-                                            <TableRow key={item.id}>
-                                                <TableCell>{item.name}</TableCell>
-                                                <TableCell align="right">
-                                                    ${item.price.toFixed(2)}
-                                                </TableCell>
-                                                <TableCell align="right">
-                                                    {item.quantity}
-                                                </TableCell>
-                                                <TableCell align="right">
-                                                    ${(item.price * item.quantity).toFixed(2)}
-                                                </TableCell>
-                                                <TableCell align="center">
-                                                    <IconButton
-                                                        aria-label="preview"
-                                                        onClick={() => setPreviewItem(item)}
-                                                    >
-                                                        <VisibilityIcon />
-                                                    </IconButton>
-                                                </TableCell>
+                                        {loading ? (
+                                            <TableRow>
+                                                <TableCell colSpan={6} align="center">Loading cart...</TableCell>
                                             </TableRow>
-                                        ))}
+                                        ) : error ? (
+                                            <TableRow>
+                                                <TableCell colSpan={6} align="center">Error loading cart: {error.message}</TableCell>
+                                            </TableRow>
+                                        ) : cartItems.length === 0 ? (
+                                            <TableRow>
+                                                <TableCell colSpan={6} align="center">Your cart is empty.</TableCell>
+                                            </TableRow>
+                                        ) : (
+                                            cartItems.map((item: any) => (
+                                                <TableRow key={item.product.id}>
+                                                    <TableCell>
+                                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                            <Image
+                                                                src={item.product.imageUrl}
+                                                                alt={item.product.name}
+                                                                width={50}
+                                                                height={50}
+                                                                style={{ borderRadius: '4px', marginRight: '10px' }}
+                                                            />
+                                                            {item.product.name}
+                                                        </Box>
+                                                    </TableCell>
+                                                    <TableCell align="right">
+                                                        ${item.product.price.toFixed(2)}
+                                                    </TableCell>
+                                                    <TableCell align="right">
+                                                        <IconButton size="small" onClick={() => handleUpdateQuantity(item.product.id, item.quantity - 1)} disabled={item.quantity <= 1}>-</IconButton>
+                                                        {item.quantity}
+                                                        <IconButton size="small" onClick={() => handleUpdateQuantity(item.product.id, item.quantity + 1)}>+</IconButton>
+                                                    </TableCell>
+                                                    <TableCell align="right">
+                                                        ${(item.product.price * item.quantity).toFixed(2)}
+                                                    </TableCell>
+                                                    <TableCell align="center">
+                                                        <IconButton
+                                                            aria-label="remove"
+                                                            onClick={() => handleRemoveItem(item.product.id)}
+                                                        >
+                                                            <DeleteIcon />
+                                                        </IconButton>
+                                                        <IconButton
+                                                            aria-label="preview"
+                                                            onClick={() => setPreviewItem(item.product)}
+                                                        >
+                                                            <VisibilityIcon />
+                                                        </IconButton>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        )}
                                     </TableBody>
                                     <TableHead>
                                         <TableRow>
@@ -106,15 +174,22 @@ const CartPage: React.FC = () => {
                                         </TableRow>
                                     </TableHead>
                                 </Table>
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    fullWidth
-                                    sx={{ mt: 2 }}
-                                    onClick={checkoutProceeed}
-                                >
-                                    Proceed to Checkout 
-                                </Button>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+                                    <Button
+                                        variant="outlined"
+                                        color="secondary"
+                                        onClick={handleClearCart}
+                                    >
+                                        Clear Cart
+                                    </Button>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={checkoutProceeed}
+                                    >
+                                        Proceed to Checkout
+                                    </Button>
+                                </Box>
                             </TableContainer>
                         </Grid>
                     </Grid>
