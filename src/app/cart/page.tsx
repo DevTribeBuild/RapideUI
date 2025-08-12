@@ -39,7 +39,12 @@ const CartPage: React.FC = () => {
     const [clearCart] = useMutation(CLEAR_CART_MUTATION);
 
     const cartItems = data?.myCart?.items || [];
-    const total = data?.myCart?.total || 0;
+
+    const calculateTotal = () => {
+        return cartItems.reduce((acc: number, item: any) => acc + item.product.price * item.quantity, 0);
+    };
+
+    const total = calculateTotal();
 
     const [previewItem, setPreviewItem] = useState<any>(null); // Use any for now, or define a more specific type based on GraphQL response
 
@@ -93,7 +98,7 @@ const CartPage: React.FC = () => {
                     <Typography>Your cart is empty.</Typography>
                 ) : (
                     <Grid container spacing={3}>
-                        <Grid size={12}>
+                        <Grid size={{ xs: 12 }}>
                             <OrderStatusStepper status="Order Placed" />
                             <TableContainer component={Paper}>
                                 <Table>
@@ -207,7 +212,7 @@ const CartPage: React.FC = () => {
                             <DialogContent>
                                 {previewItem && (
                                     <Grid container spacing={2} alignItems="center">
-                                        <Grid size={7}>
+                                        <Grid size={{ xs: 7 }}>
                                             <Typography variant="h5" gutterBottom>
                                                 {previewItem.name}
                                             </Typography>
@@ -221,7 +226,7 @@ const CartPage: React.FC = () => {
                                                 <strong>Subtotal:</strong> ${(previewItem.price * previewItem.quantity).toFixed(2)}
                                             </Typography>
                                         </Grid>
-                                        <Grid size={5}>
+                                        <Grid size={{ xs: 5 }}>
                                             <Image
                                                 src={`https://via.placeholder.com/120x120?text=${encodeURIComponent(previewItem.name)}`}
                                                 alt={previewItem.name}

@@ -14,7 +14,7 @@ const Dashboard = () => {
     <PageContainer title="Dashboard" description="this is Dashboard">
       <Box>
         <Grid container spacing={3}>
-          <Grid size={12}>
+          <Grid size={{ xs: 12 }}>
             <Blog />
           </Grid>
         </Grid>
