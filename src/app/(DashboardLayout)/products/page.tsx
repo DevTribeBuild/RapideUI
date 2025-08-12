@@ -11,6 +11,7 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import InfoIcon from '@mui/icons-material/Info';
+import { YellowButton } from '@/styled-components/buttons';
 import toast from 'react-hot-toast';
 import { useQuery, useMutation } from "@apollo/client";
 import { GET_ALL_CATEGORIES } from '@/graphql';
@@ -210,14 +211,13 @@ const ProductManagementApp: React.FC = () => {
           <Typography variant="h5" component="h1" sx={{ fontWeight: 'bold', color: '#1F2937' }}>
             Product Management
           </Typography>
-          {/* Assuming YellowButton is defined elsewhere or will be defined */}
-          {/* <YellowButton
+          <YellowButton
             variant="contained"
             startIcon={<AddIcon />}
             onClick={handleOpenCreateForm}
           >
             Add New Product
-          </YellowButton> */}
+          </YellowButton>
         </Box>
         <TableContainer component={Paper} sx={{ borderRadius: '8px', boxShadow: 'none', border: '1px solid #E5E7EB' }}>
           <Table sx={{ minWidth: 650 }} aria-label="product table">

@@ -18,8 +18,10 @@ import { QuantityAdjuster } from "./QuantityAdjuster";
 import BlankCard from "@/app/(DashboardLayout)/components/shared/BlankCard";
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
-import { useQuery } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import { ALL_PRODUCTS_QUERY } from "@/graphql/product/queries";
+import { ADD_TO_CART_MUTATION } from "@/graphql/cart/mutations";
+import toast from 'react-hot-toast';
 
 
   type Product = {
@@ -41,6 +43,7 @@ import { ALL_PRODUCTS_QUERY } from "@/graphql/product/queries";
   const [openPreviewDialog, setOpenPreviewDialog] = useState(false);
 
   const { data, loading, error } = useQuery(ALL_PRODUCTS_QUERY);
+  const [addToCart] = useMutation(ADD_TO_CART_MUTATION);
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
@@ -82,9 +85,19 @@ import { ALL_PRODUCTS_QUERY } from "@/graphql/product/queries";
     console.log(`Updated quantity for ${productId} to ${newQuantity}`);
   };
 
-  const handleConfirmAddToCart = (product: Product) => {
+  const handleConfirmAddToCart = async (product: Product) => {
     const quantity = productQuantities[product.id]?.count || 1;
-    console.log(`Adding ${quantity} of ${product.name} to cart.`);
+    try {
+      await addToCart({ variables: { input: { productId: product.id, quantity } } });
+      toast.success(`${quantity} of ${product.name} added to cart!`);
+      setAddedToCartStatus((prev) => ({
+        ...prev,
+        [product.id]: true,
+      }));
+    } catch (err) {
+      console.error("Error adding to cart:", err);
+      toast.error(`Failed to add ${product.name} to cart.`);
+    }
   };
 
   if (loading) return <p>Loading products...</p>;
@@ -270,11 +283,15 @@ import { ALL_PRODUCTS_QUERY } from "@/graphql/product/queries";
               <Button onClick={handleClosePreviewDialog}>Close</Button>
               <Button
                 variant="contained"
-                onClick={() => {
-                  console.log(
-                    `Adding ${selectedProduct.name} from preview to cart.`
-                  );
-                  handleClosePreviewDialog();
+                onClick={async () => {
+                  try {
+                    await addToCart({ variables: { input: { productId: selectedProduct.id, quantity: 1 } } });
+                    toast.success(`${selectedProduct.name} added to cart!`);
+                    handleClosePreviewDialog();
+                  } catch (err) {
+                    console.error("Error adding to cart from preview:", err);
+                    toast.error(`Failed to add ${selectedProduct.name} to cart.`);
+                  }
                 }}
                 startIcon={<IconBasket size="16" />}
               >
