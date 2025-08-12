@@ -3,8 +3,6 @@ import { gql } from '@apollo/client';
 export const MY_CART_QUERY = gql`
    query MyCart {
      myCart {
-       userId
-       total
        createdAt
        updatedAt
        items {
