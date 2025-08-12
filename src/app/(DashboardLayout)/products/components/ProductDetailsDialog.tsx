@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { styled } from '@mui/system';
+import { GreyButton, YellowButton, OrangeButton } from '@/styled-components/buttons';
 import ImageWithFallback from '../../components/dashboard/ImageWithFallBack';
 
 interface Product {
@@ -39,7 +39,7 @@ interface ProductDetailsDialogProps {
   product: Product | null;
   onEdit: (product: Product) => void;
   onDelete: (product: Product) => void;
-  categoriesData: any; // Add categoriesData prop
+  categoriesData?: any; // Add categoriesData prop
 }
 
 export const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({ open, onClose, product, onEdit, onDelete, categoriesData }) => {

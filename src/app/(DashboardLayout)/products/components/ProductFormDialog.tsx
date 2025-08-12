@@ -1,4 +1,3 @@
-
 "use client";
 import React, { useState, useEffect } from 'react';
 import {
@@ -14,8 +13,9 @@ import {
   TextField,
   MenuItem, Select, InputLabel, FormControl,
 } from '@mui/material';
-import { styled } from '@mui/system';
+
 import toast from 'react-hot-toast';
+import { GreyButton, YellowButton } from '@/styled-components/buttons';
 import { useQuery, useMutation } from "@apollo/client";
 import { GET_ALL_CATEGORIES, CREATE_PRODUCT_CATEGORY } from '@/graphql';
 import { ProductImageUpload } from './ProductImageUpload';
@@ -45,32 +45,7 @@ interface ProductFormDialogProps {
   onImageUploadRequest: (callback: (url: string) => void) => void;
 }
 
-const YellowButton = styled(Button)(({ theme }) => ({
-  backgroundColor: '#F59E0B',
-  color: '#ffffff',
-  '&:hover': {
-    backgroundColor: '#D97706',
-  },
-  '&.Mui-disabled': {
-    backgroundColor: '#FCD34D',
-    color: '#9CA3AF',
-  },
-}));
 
-const GreyButton = styled(Button)(({ theme }) => ({
-  backgroundColor: '#E5E7EB',
-  color: '#4B5563',
-  '&:hover': {
-    backgroundColor: '#D1D5DB',
-  },
-  '&.Mui-disabled': {
-    backgroundColor: '#F3F4F6',
-    color: '#9CA3AF',
-  },
-  borderRadius: '8px',
-  textTransform: 'none',
-  boxShadow: 'none',
-}));
 
 export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({ open, onClose, product, onSave, isSaving, onImageUploadRequest }) => {
   const [formData, setFormData] = useState<Product>({
