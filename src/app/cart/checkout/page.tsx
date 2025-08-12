@@ -125,8 +125,8 @@ const CheckoutPage = () => {
                         <TextField label="Card Number" fullWidth />
                         <TextField label="Expiry Date" fullWidth />
                         <TextField label="CVV" fullWidth />
-                        <Button variant="contained" color="primary" fullWidth onClick={handleCheckout} disabled={createOrderLoading}>
-                            {createOrderLoading ? <CircularProgress size={24} /> : `Pay with Card`}
+                        <Button variant="contained" color="primary" fullWidth onClick={handleCheckout} disabled={createOrderLoading || cartLoading}>
+                            {createOrderLoading || cartLoading ? <CircularProgress size={24} /> : `Pay with Card`}
                         </Button>
                     </Stack>
                     )}
@@ -138,16 +138,16 @@ const CheckoutPage = () => {
                         value={phone}
                         onChange={e => setPhone(e.target.value)}
                         />
-                        <Button variant="contained" color="success" fullWidth onClick={handleCheckout} disabled={createOrderLoading}>
-                            {createOrderLoading ? <CircularProgress size={24} /> : `Send Mpesa Prompt`}
+                        <Button variant="contained" color="success" fullWidth onClick={handleCheckout} disabled={createOrderLoading || cartLoading}>
+                            {createOrderLoading || cartLoading ? <CircularProgress size={24} /> : `Send Mpesa Prompt`}
                         </Button>
                     </Stack>
                     )}
                     {tab === 2 && (
                     <Stack spacing={2}>
                         <ConnectWalletButton />
-                        <Button variant="contained" color="secondary" fullWidth sx={{ mt: 2 }} onClick={handleCheckout} disabled={createOrderLoading}>
-                            {createOrderLoading ? <CircularProgress size={24} /> : `Pay with Crypto`}
+                        <Button variant="contained" color="secondary" fullWidth sx={{ mt: 2 }} onClick={handleCheckout} disabled={createOrderLoading || cartLoading}>
+                            {createOrderLoading || cartLoading ? <CircularProgress size={24} /> : `Pay with Crypto`}
                         </Button>
                     </Stack>
                     )}
@@ -158,7 +158,9 @@ const CheckoutPage = () => {
                     Order Summary
                 </Typography>
                 {cartLoading ? (
-                    <CircularProgress />
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                        <CircularProgress />
+                    </Box>
                 ) : cartError ? (
                     <Typography color="error">Error: {cartError.message}</Typography>
                 ) : (
