@@ -31,55 +31,18 @@ interface Product {
   updatedAt: string;
 }
 
+
+
 interface ProductDetailsDialogProps {
   open: boolean;
   onClose: () => void;
   product: Product | null;
   onEdit: (product: Product) => void;
   onDelete: (product: Product) => void;
-  getCategoryName: (categoryId: string) => string;
+  categoriesData: any; // Add categoriesData prop
 }
 
-const YellowButton = styled(Button)(({ theme }) => ({
-  backgroundColor: '#F59E0B',
-  color: '#ffffff',
-  '&:hover': {
-    backgroundColor: '#D97706',
-  },
-  '&.Mui-disabled': {
-    backgroundColor: '#FCD34D',
-    color: '#9CA3AF',
-  },
-}));
-
-const OrangeButton = styled(Button)(({ theme }) => ({
-  backgroundColor: '#F97316',
-  color: '#ffffff',
-  '&:hover': {
-    backgroundColor: '#EA580C',
-  },
-  '&.Mui-disabled': {
-    backgroundColor: '#FDBA74',
-    color: '#9CA3AF',
-  },
-}));
-
-const GreyButton = styled(Button)(({ theme }) => ({
-  backgroundColor: '#E5E7EB',
-  color: '#4B5563',
-  '&:hover': {
-    backgroundColor: '#D1D5DB',
-  },
-  '&.Mui-disabled': {
-    backgroundColor: '#F3F4F6',
-    color: '#9CA3AF',
-  },
-  borderRadius: '8px',
-  textTransform: 'none',
-  boxShadow: 'none',
-}));
-
-export const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({ open, onClose, product, onEdit, onDelete, getCategoryName }) => {
+export const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({ open, onClose, product, onEdit, onDelete, categoriesData }) => {
   if (!product) return null;
 
   const handleEditClick = () => {
@@ -90,6 +53,12 @@ export const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({ open
   const handleDeleteClick = () => {
     onDelete(product);
     onClose();
+  };
+
+  const getCategoryName = (categoryId: string) => {
+    if (!categoriesData) return '...';
+    const category = categoriesData.allCategories.find((c: any) => c.id === categoryId);
+    return category ? category.name : 'Unknown';
   };
 
   return (

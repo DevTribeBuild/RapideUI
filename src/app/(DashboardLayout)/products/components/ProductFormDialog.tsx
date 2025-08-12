@@ -18,6 +18,7 @@ import { styled } from '@mui/system';
 import toast from 'react-hot-toast';
 import { useQuery, useMutation } from "@apollo/client";
 import { GET_ALL_CATEGORIES, CREATE_PRODUCT_CATEGORY } from '@/graphql';
+import { ProductImageUpload } from './ProductImageUpload';
 import Image from 'next/image';
 
 interface Product {
@@ -279,7 +280,7 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({ open, onCl
                   objectFit: 'contain',
                   borderRadius: '4px',
                 }}
-                onError={(e) => {
+                onError={(e: { currentTarget: { src: string; }; }) => {
                   e.currentTarget.src = `https://placehold.co/100x100/E5E7EB/4B5563?text=Invalid+URL`;
                 }}
               />

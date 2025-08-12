@@ -13,6 +13,33 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/system';
 
+const OrangeButton = styled(Button)(({ theme }) => ({
+  backgroundColor: '#F97316',
+  color: '#ffffff',
+  '&:hover': {
+    backgroundColor: '#EA580C',
+  },
+  '&.Mui-disabled': {
+    backgroundColor: '#FDBA74',
+    color: '#9CA3AF',
+  },
+}));
+
+const GreyButton = styled(Button)(({ theme }) => ({
+  backgroundColor: '#E5E7EB',
+  color: '#4B5563',
+  '&:hover': {
+    backgroundColor: '#D1D5DB',
+  },
+  '&.Mui-disabled': {
+    backgroundColor: '#F3F4F6',
+    color: '#9CA3AF',
+  },
+  borderRadius: '8px',
+  textTransform: 'none',
+  boxShadow: 'none',
+}));
+
 interface DeleteConfirmationDialogProps {
   open: boolean;
   onClose: () => void;
