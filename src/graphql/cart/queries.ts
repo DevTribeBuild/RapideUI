@@ -3,7 +3,6 @@ import { gql } from '@apollo/client';
 export const MY_CART_QUERY = gql`
    query MyCart {
      myCart {
-       updatedAt
        items {
          quantity
          product {
@@ -23,3 +22,4 @@ export const MY_CART_QUERY = gql`
      }
    }
  `;
+

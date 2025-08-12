@@ -11,6 +11,7 @@ import {
   DialogContent,
   DialogActions,
   IconButton,
+  CircularProgress,
 } from "@mui/material";
 import { Stack } from "@mui/system";
 import { IconBasket, IconX, IconCheck } from "@tabler/icons-react";
@@ -20,7 +21,8 @@ import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@apollo/client";
 import { ALL_PRODUCTS_QUERY } from "@/graphql/product/queries";
-import { ADD_TO_CART_MUTATION } from "@/graphql/cart/mutations";
+import { MY_CART_QUERY } from "@/graphql/cart/queries";
+import { ADD_TO_CART_MUTATION, UPDATE_CART_ITEM_MUTATION } from "@/graphql/cart/mutations";
 import toast from 'react-hot-toast';
 
 
@@ -42,19 +44,28 @@ import toast from 'react-hot-toast';
   const router = useRouter();
   const [openPreviewDialog, setOpenPreviewDialog] = useState(false);
 
-  const { data, loading, error } = useQuery(ALL_PRODUCTS_QUERY);
-  const [addToCart] = useMutation(ADD_TO_CART_MUTATION);
+  const { data: productsData, loading: productsLoading, error: productsError } = useQuery(ALL_PRODUCTS_QUERY);
+  const { data: cartData, loading: cartLoading, error: cartError } = useQuery(MY_CART_QUERY);
+  const [addToCart, { loading: addToCartLoading }] = useMutation(ADD_TO_CART_MUTATION, { refetchQueries: [{ query: MY_CART_QUERY }] });
+  const [updateCartItem, { loading: updateCartItemLoading }] = useMutation(UPDATE_CART_ITEM_MUTATION, { refetchQueries: [{ query: MY_CART_QUERY }] });
   const [products, setProducts] = useState<Product[]>([]);
+  const [cartItems, setCartItems] = useState(new Set());
 
   useEffect(() => {
-    if (data && data.allProducts) {
-      setProducts(data.allProducts);
+    if (productsData && productsData.allProducts) {
+      setProducts(productsData.allProducts);
     }
-  }, [data]);
+  }, [productsData]);
+
+  useEffect(() => {
+    if (cartData && cartData.myCart && cartData.myCart.items) {
+      const itemIds = new Set(cartData.myCart.items.map(item => item.product.id));
+      setCartItems(itemIds);
+    }
+  }, [cartData]);
 
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [productQuantities, setProductQuantities] = useState({});
-  const [addedToCartStatus, setAddedToCartStatus] = useState({});
 
   const handleOpenPreviewDialog = (product: Product) => {
     setSelectedProduct(product);
@@ -70,54 +81,33 @@ import toast from 'react-hot-toast';
     try {
       await addToCart({ variables: { input: { productId: product.id, quantity: 1 } } });
       toast.success(`${product.name} added to cart!`);
-      setProductQuantities((prev) => ({
-        ...prev,
-        [product.id]: { count: 1, showAdjuster: true },
-      }));
-      setAddedToCartStatus((prev) => ({
-        ...prev,
-        [product.id]: true,
-      }));
     } catch (err) {
       console.error("Error adding to cart:", err);
       toast.error(`Failed to add ${product.name} to cart.`);
     }
   };
 
-  const handleProductQuantityChange = (productId: string, newQuantity: number) => {
-    setProductQuantities((prev) => ({
-      ...prev,
-      [productId]: { ...prev[productId], count: newQuantity },
-    }));
-    console.log(`Updated quantity for ${productId} to ${newQuantity}`);
-  };
-
-  const handleConfirmAddToCart = async (product: Product) => {
-    const quantity = productQuantities[product.id]?.count || 1;
+  const handleProductQuantityChange = async (productId: string, newQuantity: number) => {
     try {
-      await addToCart({ variables: { input: { productId: product.id, quantity } } });
-      toast.success(`${quantity} of ${product.name} added to cart!`);
-      setAddedToCartStatus((prev) => ({
-        ...prev,
-        [product.id]: true,
-      }));
+      await updateCartItem({ variables: { input: { productId: productId, quantity: newQuantity } } });
+      toast.success(`Cart updated!`);
     } catch (err) {
-      console.error("Error adding to cart:", err);
-      toast.error(`Failed to add ${product.name} to cart.`);
+      console.error("Error updating cart:", err);
+      toast.error(`Failed to update cart.`);
     }
   };
 
-  if (loading) return <p>Loading products...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  if (productsLoading || cartLoading) return <p>Loading...</p>;
+  if (productsError) return <p>Error: {productsError.message}</p>;
+  if (cartError) return <p>Error: {cartError.message}</p>;
 
   return (
     <Grid container spacing={3}>
       {products.map((product) => {
         const productId = product.id;
-        const currentProductState = productQuantities[productId];
-        const showAdjuster = currentProductState?.showAdjuster || false;
-        const currentQuantity = currentProductState?.count || 1;
-        const isAdded = addedToCartStatus[productId] || false;
+        const isInCart = cartItems.has(productId);
+        const cartItem = cartData?.myCart?.items.find(item => item.product.id === productId);
+        const currentQuantity = cartItem?.quantity || 1;
 
         return (
           <Grid size={{xs:12, sm:6, md:4, lg:3}} key={product.id}>
@@ -167,16 +157,17 @@ import toast from 'react-hot-toast';
                 </Stack>
 
                 <Stack direction="column" alignItems="center" mt={2} spacing={1}>
-                  {!showAdjuster ? (
+                  {!isInCart ? (
                     <Button
                       variant="contained"
                       color="primary"
                       fullWidth
-                      startIcon={<IconBasket size="16" />}
+                      startIcon={addToCartLoading ? <CircularProgress size={20} color="inherit" /> : <IconBasket size="16" />}
                       onClick={() => handleAddToCartClick(product)}
+                      disabled={addToCartLoading}
                       sx={{ padding: "8px 16px", fontSize: "0.875rem" }}
                     >
-                      Add To Cart
+                      {addToCartLoading ? "Adding..." : "Add To Cart"}
                     </Button>
                   ) : (
                     <>
@@ -186,29 +177,8 @@ import toast from 'react-hot-toast';
                         onQuantityChange={(newQuantity) =>
                           handleProductQuantityChange(productId, newQuantity)
                         }
+                        loading={updateCartItemLoading}
                       />
-                      {!isAdded ? (
-                        <Button
-                          variant="outlined"
-                          color="primary"
-                          fullWidth
-                          size="small"
-                          onClick={() => handleConfirmAddToCart(product)}
-                          sx={{ mt: 1 }}
-                        >
-                          Add {currentQuantity} to Basket
-                        </Button>
-                      ) : (
-                        <Stack
-                          direction="row"
-                          alignItems="center"
-                          spacing={1}
-                          sx={{ mt: 1, color: "success.main" }}
-                        >
-                          <IconCheck size="20" />
-                          <Typography variant="subtitle1">Added to Cart!</Typography>
-                        </Stack>
-                      )}
                     </>
                   )}
                 </Stack>
@@ -243,7 +213,7 @@ import toast from 'react-hot-toast';
             </DialogTitle>
             <DialogContent dividers>
               <Grid container spacing={2}>
-                <Grid size={{xs: 12, md: 6 }}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Image
                     src={selectedProduct.imageUrl}
                     alt={selectedProduct.name}
@@ -256,7 +226,7 @@ import toast from 'react-hot-toast';
                     }}
                   />
                 </Grid>
-                <Grid size={{xs: 12, md: 6 }}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="h5" gutterBottom>
                     {selectedProduct.name}
                   </Typography>
@@ -300,9 +270,10 @@ import toast from 'react-hot-toast';
                     toast.error(`Failed to add ${selectedProduct.name} to cart.`);
                   }
                 }}
-                startIcon={<IconBasket size="16" />}
+                disabled={addToCartLoading}
+                startIcon={addToCartLoading ? <CircularProgress size={20} color="inherit" /> : <IconBasket size="16" />}
               >
-                Add to Cart
+                {addToCartLoading ? "Adding..." : "Add to Cart"}
               </Button>
             </DialogActions>
           </>

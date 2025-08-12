@@ -3,8 +3,7 @@ import { gql } from "@apollo/client";
 export const ADD_TO_CART_MUTATION = gql`
    mutation AddToCart($input: CartItemInput!) {
      addToCart(input: $input) {
-       userId
-       updatedAt
+
        items {
          quantity
          product {
@@ -28,8 +27,7 @@ export const ADD_TO_CART_MUTATION = gql`
  export const UPDATE_CART_ITEM_MUTATION = gql`
    mutation UpdateCartItem($input: CartItemInput!) {
      updateCartItem(input: $input) {
-       userId
-       updatedAt
+
        items {
          quantity
          product {
@@ -53,8 +51,7 @@ export const ADD_TO_CART_MUTATION = gql`
  export const REMOVE_FROM_CART_MUTATION = gql`
    mutation RemoveFromCart($productId: String!) {
      removeFromCart(productId: $productId) {
-       userId
-       updatedAt
+
        items {
          quantity
          product {
@@ -79,7 +76,6 @@ export const ADD_TO_CART_MUTATION = gql`
    mutation ClearCart {
      clearCart {
        id
-       userId
        total
        createdAt
        updatedAt
