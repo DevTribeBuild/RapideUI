@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@apollo/client";
-import { MY_CART_QUERY, GET_CART_DETAILS_QUERY } from '@/graphql/cart/queries';
+import { MY_CART_QUERY } from '@/graphql/cart/queries';
 import { UPDATE_CART_ITEM_MUTATION, REMOVE_FROM_CART_MUTATION, CLEAR_CART_MUTATION } from '@/graphql/cart/mutations';
 import toast from 'react-hot-toast';
 import { useRouter } from "next/navigation";
@@ -23,6 +23,7 @@ import {
     DialogActions,
     Button,
     Card,
+    Box,
 } from "@mui/material";
 import OrderStatusStepper from "@/app/(DashboardLayout)/components/shared/OrderStatusStepper";
 import VisibilityIcon from "@mui/icons-material/Visibility";
