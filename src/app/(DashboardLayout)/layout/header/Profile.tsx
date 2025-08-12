@@ -75,7 +75,7 @@ const Profile = () => {
   return (
     <Box display="flex" alignItems="center">
       {/* Cart */}
-      <IconButton
+      {/* <IconButton
         size="large"
         aria-label={`show ${cartItemCount} items in cart`}
         color="inherit"
@@ -98,10 +98,10 @@ const Profile = () => {
         >
           <ShoppingCartIcon />
         </Badge>
-      </IconButton>
+      </IconButton> */}
 
       {/* Cart Menu */}
-      <Menu
+      {/* <Menu
         id="cart-menu"
         anchorEl={cartAnchorEl}
         open={Boolean(cartAnchorEl)}
@@ -148,10 +148,10 @@ const Profile = () => {
             Go to Cart
           </Button>
         </Box>
-      </Menu>
+      </Menu> */}
 
       {/* Notifications */}
-      <IconButton
+      {/* <IconButton
         size="large"
         aria-label="show notifications"
         color="inherit"
@@ -174,7 +174,7 @@ const Profile = () => {
         >
           <NotificationsIcon />
         </Badge>
-      </IconButton>
+      </IconButton> */}
 
       {/* Notifications Menu */}
       <Menu
