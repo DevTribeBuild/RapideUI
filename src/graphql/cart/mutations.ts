@@ -4,7 +4,6 @@ export const ADD_TO_CART_MUTATION = gql`
    mutation AddToCart($input: CartItemInput!) {
      addToCart(input: $input) {
        userId
-       total
        createdAt
        updatedAt
        items {
@@ -31,7 +30,6 @@ export const ADD_TO_CART_MUTATION = gql`
    mutation UpdateCartItem($input: CartItemInput!) {
      updateCartItem(input: $input) {
        userId
-       total
        createdAt
        updatedAt
        items {
@@ -58,7 +56,6 @@ export const ADD_TO_CART_MUTATION = gql`
    mutation RemoveFromCart($productId: String!) {
      removeFromCart(productId: $productId) {
        userId
-       total
        createdAt
        updatedAt
        items {
