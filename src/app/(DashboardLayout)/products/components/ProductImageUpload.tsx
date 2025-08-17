@@ -10,7 +10,6 @@ import {
   DialogActions,
   Typography,
   IconButton,
-  CircularProgress,
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { styled } from '@mui/system';
@@ -158,7 +157,6 @@ export const ProductImageUpload: React.FC<ProductImageUploadProps> = ({ open, on
           onClick={handleUpload}
           disabled={!selectedFile || isUploading}
           variant="contained"
-          endIcon={isUploading ? <CircularProgress size={20} color="inherit" /> : null}
         >
           {isUploading ? 'Uploading...' : 'Upload Image'}
         </YellowButton>

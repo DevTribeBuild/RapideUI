@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import {
   IconButton,
   Typography,
-  CircularProgress,
+  Skeleton,
 } from "@mui/material";
 import { Stack } from "@mui/system";
 import {
@@ -43,7 +43,7 @@ export const QuantityAdjuster: React.FC<QuantityAdjusterProps> = ({ initialQuant
       <IconButton size="small" onClick={handleDecrease} disabled={quantity === 1 || loading}>
         <IconMinus size="18" />
       </IconButton>
-      <Typography variant="h6">{loading ? <CircularProgress size={20} /> : quantity}</Typography>
+      <Typography variant="h6">{loading ? <Skeleton variant="text" width={20} /> : quantity}</Typography>
       <IconButton size="small" onClick={handleIncrease} disabled={loading}>
         <IconPlus size="18" />
       </IconButton>

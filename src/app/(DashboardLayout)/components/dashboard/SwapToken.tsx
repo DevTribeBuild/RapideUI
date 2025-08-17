@@ -15,7 +15,6 @@ import {
   TextField,
   Box,
   Typography,
-  CircularProgress,
   SelectChangeEvent, // Import for Select onChange event
 } from '@mui/material';
 import { styled } from '@mui/system';
@@ -413,7 +412,6 @@ const SwapTokenDialog: React.FC<SwapTokenDialogProps> = ({ open, onClose, assetO
             onClick={handleConfirmSwap}
             disabled={isSwapping}
             variant="contained"
-            endIcon={isSwapping ? <CircularProgress size={20} color="inherit" /> : null}
           >
             {isSwapping ? 'Swapping...' : 'Confirm Swap'}
           </OrangeButton>

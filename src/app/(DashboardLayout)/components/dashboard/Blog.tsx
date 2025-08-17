@@ -11,7 +11,7 @@ import {
   DialogContent,
   DialogActions,
   IconButton,
-  CircularProgress,
+  Skeleton,
 } from "@mui/material";
 import { Stack } from "@mui/system";
 import { IconBasket, IconX, IconCheck } from "@tabler/icons-react";
@@ -97,7 +97,17 @@ import toast from 'react-hot-toast';
     }
   };
 
-  if (productsLoading || cartLoading) return <p>Loading...</p>;
+  if (productsLoading || cartLoading) return (
+    <Grid container spacing={3}>
+      {[...Array(8)].map((_, index) => (
+        <Grid size={{xs:12, sm:6, md:4, lg:3}} key={index}>
+          <Skeleton variant="rectangular" width="100%" height={200} />
+          <Skeleton variant="text" />
+          <Skeleton variant="text" width="60%" />
+        </Grid>
+      ))}
+    </Grid>
+  );
   if (productsError) return <p>Error: {productsError.message}</p>;
   if (cartError) return <p>Error: {cartError.message}</p>;
 
@@ -162,7 +172,6 @@ import toast from 'react-hot-toast';
                       variant="contained"
                       color="primary"
                       fullWidth
-                      startIcon={addToCartLoading ? <CircularProgress size={20} color="inherit" /> : <IconBasket size="16" />}
                       onClick={() => handleAddToCartClick(product)}
                       disabled={addToCartLoading}
                       sx={{ padding: "8px 16px", fontSize: "0.875rem" }}
@@ -271,7 +280,6 @@ import toast from 'react-hot-toast';
                   }
                 }}
                 disabled={addToCartLoading}
-                startIcon={addToCartLoading ? <CircularProgress size={20} color="inherit" /> : <IconBasket size="16" />}
               >
                 {addToCartLoading ? "Adding..." : "Add to Cart"}
               </Button>

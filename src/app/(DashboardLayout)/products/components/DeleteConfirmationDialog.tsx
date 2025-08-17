@@ -9,7 +9,6 @@ import {
   DialogActions,
   Typography,
   IconButton,
-  CircularProgress,
 } from '@mui/material';
 import { GreyButton, OrangeButton } from '@/styled-components/buttons';
 
@@ -47,7 +46,6 @@ export const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> =
           onClick={onConfirm}
           disabled={isDeleting}
           variant="contained"
-          endIcon={isDeleting ? <CircularProgress size={20} color="inherit" /> : null}
         >
           {isDeleting ? 'Deleting...' : 'Delete'}
         </OrangeButton>

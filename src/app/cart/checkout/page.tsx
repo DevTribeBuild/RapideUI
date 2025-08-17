@@ -5,7 +5,7 @@ import { MY_CART_QUERY } from '@/graphql/cart/queries';
 import { CREATE_ORDER_MUTATION } from '@/graphql/order/mutations';
 import { CLEAR_CART_MUTATION } from '@/graphql/cart/mutations';
 import toast from 'react-hot-toast';
-import { Grid, Typography, Paper, Button, Divider, TextField, Tabs, Tab, Box, Stack, CircularProgress } from "@mui/material";
+import { Grid, Typography, Paper, Button, Divider, TextField, Tabs, Tab, Box, Stack, CircularProgress, Skeleton } from "@mui/material";
 import { useRouter } from "next/navigation";
 import OrderStatusStepper from "@/app/(DashboardLayout)/components/shared/OrderStatusStepper";
 
@@ -126,7 +126,7 @@ const CheckoutPage = () => {
                         <TextField label="Expiry Date" fullWidth />
                         <TextField label="CVV" fullWidth />
                         <Button variant="contained" color="primary" fullWidth onClick={handleCheckout} disabled={createOrderLoading || cartLoading}>
-                            {createOrderLoading || cartLoading ? <CircularProgress size={24} /> : `Pay with Card`}
+                            {createOrderLoading || cartLoading ? 'Processing...' : `Pay with Card`}
                         </Button>
                     </Stack>
                     )}
@@ -139,7 +139,7 @@ const CheckoutPage = () => {
                         onChange={e => setPhone(e.target.value)}
                         />
                         <Button variant="contained" color="success" fullWidth onClick={handleCheckout} disabled={createOrderLoading || cartLoading}>
-                            {createOrderLoading || cartLoading ? <CircularProgress size={24} /> : `Send Mpesa Prompt`}
+                            {createOrderLoading || cartLoading ? 'Processing...' : `Send Mpesa Prompt`}
                         </Button>
                     </Stack>
                     )}
@@ -147,7 +147,7 @@ const CheckoutPage = () => {
                     <Stack spacing={2}>
                         <ConnectWalletButton />
                         <Button variant="contained" color="secondary" fullWidth sx={{ mt: 2 }} onClick={handleCheckout} disabled={createOrderLoading || cartLoading}>
-                            {createOrderLoading || cartLoading ? <CircularProgress size={24} /> : `Pay with Crypto`}
+                            {createOrderLoading || cartLoading ? 'Processing...' : `Pay with Crypto`}
                         </Button>
                     </Stack>
                     )}
@@ -158,9 +158,13 @@ const CheckoutPage = () => {
                     Order Summary
                 </Typography>
                 {cartLoading ? (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                        <CircularProgress />
-                    </Box>
+                    <Stack spacing={1} sx={{ width: '100%' }}>
+                        <Skeleton variant="rectangular" width="100%" height={40} />
+                        <Skeleton variant="rectangular" width="100%" height={40} />
+                        <Skeleton variant="rectangular" width="100%" height={40} />
+                        <Divider sx={{ my: 2 }} />
+                        <Skeleton variant="rectangular" width="100%" height={50} />
+                    </Stack>
                 ) : cartError ? (
                     <Typography color="error">Error: {cartError.message}</Typography>
                 ) : (
