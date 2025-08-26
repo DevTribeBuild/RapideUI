@@ -11,7 +11,7 @@ export type User = {
   walletAddress: string
 }
 
-type UserDetails = {
+export type UserDetails = {
   me: {
     id: string
     email?: string

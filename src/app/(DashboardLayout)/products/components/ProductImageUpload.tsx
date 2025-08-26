@@ -24,6 +24,18 @@ interface ProductImageUploadProps {
   onUploadSuccess: (url: string) => void;
 }
 
+type SingleUploadMutationResult = {
+  singleUpload: {
+    success: boolean;
+    message: string;
+    url: string;
+  };
+};
+
+type SingleUploadMutationVariables = {
+  file: File;
+};
+
 const YellowButton = styled(Button)(({ theme }) => ({
   backgroundColor: '#F59E0B', // Tailwind yellow-500
   color: '#ffffff',
@@ -54,7 +66,7 @@ const GreyButton = styled(Button)(({ theme }) => ({
 export const ProductImageUpload: React.FC<ProductImageUploadProps> = ({ open, onClose, onUploadSuccess }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [uploadFile, { loading: isUploading }] = useMutation(SINGLE_UPLOAD_MUTATION);
+  const [uploadFile, { loading: isUploading }] = useMutation<SingleUploadMutationResult, SingleUploadMutationVariables>(SINGLE_UPLOAD_MUTATION);
 
   useEffect(() => {
     if (!open) {

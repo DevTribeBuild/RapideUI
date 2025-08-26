@@ -44,6 +44,28 @@ interface ProductFormDialogProps {
   onImageUploadRequest: (callback: (url: string) => void) => void;
 }
 
+type Category = {
+  id: string;
+  name: string;
+  subcategories?: Category[];
+};
+
+type GetAllCategoriesQuery = {
+  allCategories: Category[];
+};
+
+type CreateProductCategoryMutationResult = {
+  createCategory: {
+    id: string;
+  };
+};
+
+type CreateProductCategoryMutationVariables = {
+  input: {
+    name: string;
+  };
+};
+
 
 
 export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({ open, onClose, product, onSave, isSaving, onImageUploadRequest }) => {
@@ -97,10 +119,10 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({ open, onCl
       imageUrl: url,
     }));
   };
-  const { data, error, refetch } = useQuery(GET_ALL_CATEGORIES);
+  const { data, error, refetch } = useQuery<GetAllCategoriesQuery>(GET_ALL_CATEGORIES);
   const [newCategoryName, setNewCategoryName] = useState("");
 
-  const [createCategory] = useMutation(CREATE_PRODUCT_CATEGORY, {
+  const [createCategory] = useMutation<CreateProductCategoryMutationResult, CreateProductCategoryMutationVariables>(CREATE_PRODUCT_CATEGORY, {
     refetchQueries: [{ query: GET_ALL_CATEGORIES }],
   });
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
@@ -112,8 +134,9 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({ open, onCl
       const res = await createCategory({
         variables: { input: { name: newCategoryName } },
       });
-      if (res?.data?.createCategory) {
-        setFormData((prev) => ({ ...prev, category: res?.data?.createCategory.id }));
+      if (res && res.data && res.data.createCategory && res.data.createCategory.id) {
+        const newCategoryId = res.data.createCategory.id;
+        setFormData((prev) => ({ ...prev, category: newCategoryId }));
         toast.success("created")
         if (refetch) await refetch();
         toast.success("Category created successfully!");

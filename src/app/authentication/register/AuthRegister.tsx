@@ -4,9 +4,22 @@ import { REGISTER_MUTATION } from "@/graphql";
 import { Button, TextField, Alert, Stack } from "@mui/material";
 import { useRouter } from "next/navigation";
 
+type RegisterMutationResult = {
+  register: {
+    status: string;
+    msg: string;
+  };
+};
+
+type RegisterMutationVariables = {
+  registerRequest: {
+    email: string;
+  };
+};
+
 const AuthRegister = ({ subtext, subtitle }: any) => {
   const [email, setEmail] = useState("");
-  const [register, { data, loading, error }] = useMutation(REGISTER_MUTATION);
+  const [register, { data, loading, error }] = useMutation<RegisterMutationResult, RegisterMutationVariables>(REGISTER_MUTATION);
   const router = useRouter();
 
   const handleRegister = async (e: React.FormEvent) => {

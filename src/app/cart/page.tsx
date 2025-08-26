@@ -31,11 +31,38 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import PageContainer from "@/app/(DashboardLayout)/components/container/PageContainer";
 import Image from 'next/image';
 
+type CartItem = {
+  product: {
+    id: string;
+    name: string;
+    price: number;
+    imageUrl: string;
+  };
+  quantity: number;
+};
+
+type MyCartQuery = {
+  myCart: {
+    items: CartItem[];
+  };
+};
+
+type UpdateCartItemMutationVariables = {
+  input: {
+    productId: string;
+    quantity: number;
+  };
+};
+
+type RemoveFromCartMutationVariables = {
+  productId: string;
+};
+
 const CartPage: React.FC = () => {
     const router = useRouter();
-    const { data, loading, error, refetch } = useQuery(MY_CART_QUERY);
-    const [updateCartItem] = useMutation(UPDATE_CART_ITEM_MUTATION);
-    const [removeFromCart] = useMutation(REMOVE_FROM_CART_MUTATION);
+    const { data, loading, error, refetch } = useQuery<MyCartQuery>(MY_CART_QUERY);
+    const [updateCartItem] = useMutation<any, UpdateCartItemMutationVariables>(UPDATE_CART_ITEM_MUTATION);
+    const [removeFromCart] = useMutation<any, RemoveFromCartMutationVariables>(REMOVE_FROM_CART_MUTATION);
     const [clearCart] = useMutation(CLEAR_CART_MUTATION);
 
     const cartItems = data?.myCart?.items || [];

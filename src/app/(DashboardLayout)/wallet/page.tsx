@@ -54,6 +54,81 @@ import {
 import { FIAT_DEPOSIT, CREATE_FIAT_WALLET } from "@/graphql";
 import useAuthStore from "@/stores/useAuthStore";
 
+// Type definitions
+type FiatTransaction = {
+    id: string;
+    amount: number;
+    status: string;
+    createdAt: string;
+    Currency: {
+        code: string;
+    };
+};
+
+type CryptoTransaction = {
+    id: string;
+    type: string;
+    value: number;
+    toSymbol: string;
+    status: string;
+    timeStamp: string;
+};
+
+type TransactionsQuery = {
+    transactionsHistory: {
+        fiat: FiatTransaction[];
+        crypto: CryptoTransaction[];
+    };
+};
+
+type CryptoBalance = {
+    address: string;
+    amount: number;
+    symbol: string;
+};
+
+type CryptoBalanceQuery = {
+    balances: CryptoBalance[];
+};
+
+type FiatWallet = {
+    id: string;
+    balance: number;
+    Currency: {
+        code: string;
+    };
+};
+
+type FiatWalletQuery = {
+    fiatWallets: FiatWallet[];
+};
+
+type TotalCryptoBalanceQuery = {
+    totalBalances: number;
+};
+
+type FiatDepositMutationResult = {
+    depositFiat: any; // Define this more accurately if possible
+};
+
+type FiatDepositMutationVariables = {
+    input: {
+        amount: number;
+        currencyCode: string;
+        paymentMethod: string;
+    };
+};
+
+type CreateFiatWalletMutationResult = {
+    createMyFiatWallet: any; // Define this more accurately if possible
+};
+
+type CreateFiatWalletMutationVariables = {
+    input: {
+        currencyCode: string;
+    };
+};
+
 // Example wallet data (replace with real data/fetch from API or store)
 const wallet = {
     fiat: [
@@ -97,18 +172,18 @@ const WalletPage = () => {
         error: error_transactions,
         refetch: refetchTransactions,
         networkStatus: transactionNetworkStatus
-    } = useQuery(GET_MY_TRANSACTIONS_COMBINED, {
+    } = useQuery<TransactionsQuery>(GET_MY_TRANSACTIONS_COMBINED, {
         variables: {
             type: selectedTab.toUpperCase() // Convert to uppercase for 'FIAT' or 'CRYPTO', or pass null for 'all'
         },
         notifyOnNetworkStatusChange: true,
     });
 
-    const { data: data_crypto_balances, loading: loading_crypto_balances } = useQuery(GET_CRYPTO_BALANCE, {
+    const { data: data_crypto_balances, loading: loading_crypto_balances } = useQuery<CryptoBalanceQuery>(GET_CRYPTO_BALANCE, {
         variables: { isTest },
     });
 
-    const { data: data_fiat_accounts, loading: loading_fiat_accounts, refetch: refetchFiatAccounts } = useQuery(FIAT_WALLET_ACCOUNTS, {
+    const { data: data_fiat_accounts, loading: loading_fiat_accounts, refetch: refetchFiatAccounts } = useQuery<FiatWalletQuery>(FIAT_WALLET_ACCOUNTS, {
         variables: { isTest },
     });
 
@@ -118,12 +193,12 @@ const WalletPage = () => {
         data: crypto_balance,
         loading: loading_crypto_balance,
         error: error_crypto_balance
-    } = useQuery(GET_TOTAL_CRYPTO_BALANCE, {
+    } = useQuery<TotalCryptoBalanceQuery>(GET_TOTAL_CRYPTO_BALANCE, {
         variables: { isTest: false },
     });
 
     // GraphQL Mutation for Fiat Deposit
-    const [depositFiat, { loading: depositingFiat, error: depositFiatError }] = useMutation(FIAT_DEPOSIT, {
+    const [depositFiat, { loading: depositingFiat, error: depositFiatError }] = useMutation<FiatDepositMutationResult, FiatDepositMutationVariables>(FIAT_DEPOSIT, {
         onCompleted: () => {
             refetchFiatAccounts();
             refetchTransactions();
@@ -131,7 +206,7 @@ const WalletPage = () => {
     });
 
     // GraphQL Mutation for Create Fiat Wallet
-    const [createFiatWallet, { loading: creatingWallet, error: createWalletError }] = useMutation(CREATE_FIAT_WALLET, {
+    const [createFiatWallet, { loading: creatingWallet, error: createWalletError }] = useMutation<CreateFiatWalletMutationResult, CreateFiatWalletMutationVariables>(CREATE_FIAT_WALLET, {
         onCompleted: () => {
             refetchFiatAccounts();
         }
@@ -169,8 +244,10 @@ const WalletPage = () => {
                         },
                     },
                 });
-                console.log("Fiat Deposit Successful:", response.data.depositFiat);
-                handleCloseModal();
+                if (response && response.data && response.data.depositFiat) {
+                  console.log("Fiat Deposit Successful:", response.data.depositFiat);
+                  handleCloseModal();
+                }
             } catch (error) {
                 console.error("Fiat Deposit Error:", error);
             }
@@ -189,9 +266,11 @@ const WalletPage = () => {
                     },
                 },
             });
-            console.log("Create Fiat Wallet Successful:", response.data.createMyFiatWallet);
-            setCreateWalletDialogOpen(false);
-            setNewWalletCurrency('USD');
+            if (response && response.data && response.data.createMyFiatWallet) {
+              console.log("Create Fiat Wallet Successful:", response.data.createMyFiatWallet);
+              setCreateWalletDialogOpen(false);
+              setNewWalletCurrency('USD');
+            }
         } catch (error) {
             console.error("Create Fiat Wallet Error:", error);
         }
@@ -430,7 +509,7 @@ const WalletPage = () => {
                                     </Grid>
                                 ))}
                             </Grid>
-                        ) : data_fiat_accounts?.fiatWallets?.length > 0 ? (
+                        ) : data_fiat_accounts && data_fiat_accounts.fiatWallets && data_fiat_accounts.fiatWallets.length > 0 ? (
                             <Grid container spacing={2}>
                                 {data_fiat_accounts?.fiatWallets?.map((account: any) => (
                                     <Grid size={{ xs: 12, md: 6 }} key={account.id}>

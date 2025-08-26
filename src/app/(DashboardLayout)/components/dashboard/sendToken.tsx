@@ -21,7 +21,11 @@ import { GET_ALL_USERS } from "@/graphql";
 import { SEND_TOKEN } from "@/graphql";
 import { useQuery, useMutation } from "@apollo/client/react";
 import toast from 'react-hot-toast';
-import useAuthStore from "@/stores/useAuthStore";
+import useAuthStore, { User } from "@/stores/useAuthStore";
+
+type GetAllUsersQuery = {
+  users: User[];
+};
 
 type SendTokenMutationResult = {
   sendToken: {
@@ -52,7 +56,7 @@ const token = useAuthStore((state:any) => state.token);
   const [selectedUser, setSelectedUser] = useState<any>("");
   const [sendAmount, setSendAmount] = useState<any>("");
   const [sendAsset, setSendAsset] = useState<any>(assetOptions[0] || {});
-  const { data:data_users, loading:loading_users, error:error_users, refetch:refetch_users } = useQuery(GET_ALL_USERS, {
+  const { data:data_users, loading:loading_users, error:error_users, refetch:refetch_users } = useQuery<GetAllUsersQuery>(GET_ALL_USERS, {
     fetchPolicy: "cache-and-network",
   });
     const handleSendToken = () => {
