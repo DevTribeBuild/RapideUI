@@ -22,6 +22,7 @@
     "@tabler/icons-react": "^3.33.0",
     "@types/node": "^20.2.3",
     "apexcharts": "4.7.0",
+    "apollo-upload-client": "^18.0.1",
     "eslint": "8.46.0",
     "eslint-config-next": "13.4.12",
     "graphql": "^16.11.0",
@@ -43,6 +44,7 @@
   },
   "devDependencies": {
     "@cloudflare/next-on-pages": "^1.13.12",
+    "@types/apollo-upload-client": "^18",
     "@types/graphql": "^14.5.0",
     "@types/lodash": "4.14.196",
     "@types/prop-types": "^15",

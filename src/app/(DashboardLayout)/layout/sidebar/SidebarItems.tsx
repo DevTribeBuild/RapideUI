@@ -2,7 +2,7 @@ import React, {useState,  useEffect} from "react";
 import { getMenuItems } from "./MenuItems";
 import useAppStore from "@/stores/useAuthStore"
 
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Divider, useTheme } from "@mui/material";
 import {
   Logo,
   Sidebar as MUI_Sidebar,
@@ -67,19 +67,17 @@ const renderMenuItems = (items: any, pathDirect: any) => {
     // If the item has no children, render a MenuItem
 
     return (
-      <Box px={3} key={item.id}>
-        <MenuItem
-          key={item.id}
-          isSelected={pathDirect === item?.href}
-          borderRadius='8px'
-          icon={itemIcon}
-          link={item.href}
-          component={Link}
-        >
-          {item.title}
-        </MenuItem >
-      </Box>
-
+      <MenuItem
+        key={item.id}
+        isSelected={pathDirect === item?.href}
+        borderRadius='8px'
+        icon={itemIcon}
+        link={item.href}
+        component={Link}
+        sx={{ px: 3 }} // Add padding directly to MenuItem
+      >
+        {item.title}
+      </MenuItem >
     );
   });
 };
@@ -88,8 +86,10 @@ const renderMenuItems = (items: any, pathDirect: any) => {
 const SidebarItems = () => {
   const pathname = usePathname();
   const pathDirect = pathname;
-   const user = useAppStore((state) => state.user);
+  const user = useAppStore((state) => state.user);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const theme = useTheme();
+
   useEffect(() => {
     try{
       console.log("user", user?.userType || "");
@@ -102,15 +102,18 @@ const SidebarItems = () => {
 
   return (
     < >
-      <MUI_Sidebar width={"100%"} showProfile={false} themeColor={"#E9C33B"} themeSecondaryColor={'#49beff'} >
+      <MUI_Sidebar width={"100%"} showProfile={false} themeColor={theme.palette.primary.main} themeSecondaryColor={theme.palette.secondary.main} >
 
-        <Image
-          src="/images/logos/image.png"
-          alt="logo"
-          style={{ objectFit: 'contain' }}
-          width={200}
-          height={70}
-        />
+        <Box sx={{ p: 2, display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <Image
+            src="/images/logos/image.png"
+            alt="logo"
+            style={{ objectFit: 'contain' }}
+            width={200}
+            height={70}
+          />
+        </Box>
+        <Divider />
         {renderMenuItems(menuItems, pathDirect)}
         <Box px={2}>
           <Upgrade />

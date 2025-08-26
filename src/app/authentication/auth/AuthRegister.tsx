@@ -66,7 +66,6 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
                 loading: loading_fiat_currencies,
                 error: error_fiat_currencies,
         } = useQuery<FiatCurrenciesQuery>(GET_FIAT_CURRENCIES);
-        console.log(fiat_currencies_data, "(*&*^&%^")
 
         const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
                 e.preventDefault();

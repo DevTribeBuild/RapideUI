@@ -16,8 +16,16 @@ import { styled } from "@mui/system";
 
 import FileUploadInput from "@/components/FileUploadInput";
 import { useMutation } from "@apollo/client/react";
-import { VERIFY_RIDER_MUTATION } from "@/graphql/mutations";
+import {
+  UPLOAD_NATIONAL_ID_OR_PASSPORT_MUTATION,
+  UPLOAD_DRIVER_LICENSE_MUTATION,
+  UPLOAD_LOGBOOK_MUTATION,
+  UPLOAD_CERTIFICATE_OF_GOOD_CONDUCT_MUTATION,
+  UPLOAD_INSURANCE_MUTATION,
+  UPSERT_RIDER_DETAILS_MUTATION,
+} from "@/graphql/mutations";
 import toast from "react-hot-toast";
+import useAuthStore from "@/stores/useAuthStore";
 
 // Styled components for consistent UI
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -41,21 +49,23 @@ const steps = [
   "Motorbike Details",
 ];
 
-type VerifyRiderMutationResult = {
-  verifyRider: {
-    success: boolean;
-    message: string;
+type UpsertRiderDetailsMutationResult = {
+  upsertRiderDetails: {
+    id: string;
+    userId: string;
+    status: string;
   };
 };
 
-type VerifyRiderMutationVariables = {
+type UpsertRiderDetailsMutationVariables = {
+  userId: string;
   input: {
-    nationalIdOrPassportUrl: string;
-    driverLicenseUrl: string;
-    logbookUrl: string;
-    certificateOfGoodConductUrl: string;
-    insuranceUrl: string;
-    motorbikeCC: number;
+    nationalIdOrPassport?: string;
+    driverLicense?: string;
+    logbook?: string;
+    certificateOfGoodConduct?: string;
+    insurance?: string;
+    motorbikeCC?: number;
   };
 };
 
@@ -70,7 +80,10 @@ const RiderVerificationPage = () => {
     motorbikeCC: "",
   });
 
-  const [verifyRider, { loading: isSubmitting }] = useMutation<VerifyRiderMutationResult, VerifyRiderMutationVariables>(VERIFY_RIDER_MUTATION);
+  const user = useAuthStore((state) => state.user);
+  const userId = user?.id || "";
+
+  const [upsertRiderDetails, { loading: isSubmitting }] = useMutation<UpsertRiderDetailsMutationResult, UpsertRiderDetailsMutationVariables>(UPSERT_RIDER_DETAILS_MUTATION);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -209,22 +222,26 @@ const RiderVerificationPage = () => {
   };
 
   const handleFormSubmit = async () => {
+    if (!userId) {
+      toast.error("User not logged in.");
+      return;
+    }
     try {
       const input = {
-        nationalIdOrPassportUrl: formData.nationalIdOrPassport,
-        driverLicenseUrl: formData.driverLicense,
-        logbookUrl: formData.logbook,
-        certificateOfGoodConductUrl: formData.certificateOfGoodConduct,
-        insuranceUrl: formData.insurance,
+        nationalIdOrPassport: formData.nationalIdOrPassport,
+        driverLicense: formData.driverLicense,
+        logbook: formData.logbook,
+        certificateOfGoodConduct: formData.certificateOfGoodConduct,
+        insurance: formData.insurance,
         motorbikeCC: parseInt(formData.motorbikeCC),
       };
-      const { data } = await verifyRider({ variables: { input } });
+      const { data } = await upsertRiderDetails({ variables: { userId, input } });
 
-      if (data && data.verifyRider && data.verifyRider.success) {
-        toast.success(data.verifyRider.message || "Rider verification process completed!");
+      if (data && data.upsertRiderDetails && data.upsertRiderDetails.id) {
+        toast.success("Rider verification process completed!");
         // In a real application, you would navigate away or show a success message
       } else {
-        toast.error(data?.verifyRider?.message || "Rider verification failed.");
+        toast.error("Rider verification failed.");
       }
     } catch (error: any) {
       console.error("Error submitting form:", error);
