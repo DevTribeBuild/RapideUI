@@ -1,8 +1,9 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
+import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+import { createUploadLink } from "apollo-upload-client"; // Import createUploadLink
 import useAuthStore from "@/stores/useAuthStore";
 
-const httpLink = createHttpLink({
+const uploadLink = createUploadLink({
   uri: "https://zyntra-backend-1.onrender.com/graphql/",
 });
 
@@ -19,7 +20,7 @@ const authLink = setContext((_, { headers }) => {
 });
 
 const client = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: authLink.concat(uploadLink), // Use uploadLink here
   cache: new InMemoryCache(),
 });
 

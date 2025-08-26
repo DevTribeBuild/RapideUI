@@ -52,6 +52,8 @@ const MSidebar = ({
                 boxSizing: "border-box",
                 ...scrollbarStyles,
                 width: sidebarWidth,
+                bgcolor: (theme) => theme.palette.background.paper, // Set background color
+                boxShadow: (theme) => theme.shadows[8], // Ensure consistent shadow
               },
             }
           }}
@@ -89,6 +91,7 @@ const MSidebar = ({
           sx: {
             boxShadow: (theme) => theme.shadows[8],
             ...scrollbarStyles,
+            bgcolor: (theme) => theme.palette.background.paper, // Set background color
           },
         }
       }}
