@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from "react";
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client/react";
 import { MY_CART_QUERY } from '@/graphql/cart/queries';
 import { CREATE_ORDER_MUTATION } from '@/graphql/order/mutations';
 import { CLEAR_CART_MUTATION } from '@/graphql/cart/mutations';

@@ -15,7 +15,7 @@ import {
 
 import toast from 'react-hot-toast';
 import { GreyButton, YellowButton } from '@/styled-components/buttons';
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client/react";
 import { GET_ALL_CATEGORIES, CREATE_PRODUCT_CATEGORY } from '@/graphql';
 import { ProductImageUpload } from './ProductImageUpload';
 import Image from 'next/image';

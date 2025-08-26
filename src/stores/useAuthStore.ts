@@ -2,7 +2,7 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
-type User = {
+export type User = {
   id: string
   email: string
   userType: string

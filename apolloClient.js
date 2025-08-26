@@ -3,7 +3,7 @@ import { setContext } from "@apollo/client/link/context";
 import useAuthStore from "@/stores/useAuthStore";
 
 const httpLink = createHttpLink({
-  uri: "http://localhost:8080/graphql",
+  uri: "https://zyntra-backend-1.onrender.com/graphql/",
 });
 
 const authLink = setContext((_, { headers }) => {

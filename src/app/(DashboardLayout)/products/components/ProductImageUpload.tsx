@@ -14,7 +14,7 @@ import {
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { styled } from '@mui/system';
 import Image from 'next/image';
-import { useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
 import { SINGLE_UPLOAD_MUTATION } from "@/graphql/upload/mutations";
 import toast from 'react-hot-toast';
 

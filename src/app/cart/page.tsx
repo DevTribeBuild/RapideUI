@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from "react";
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client/react";
 import { MY_CART_QUERY } from '@/graphql/cart/queries';
 import { UPDATE_CART_ITEM_MUTATION, REMOVE_FROM_CART_MUTATION, CLEAR_CART_MUTATION } from '@/graphql/cart/mutations';
 import toast from 'react-hot-toast';

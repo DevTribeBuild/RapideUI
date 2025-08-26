@@ -12,7 +12,8 @@ import {
     Button,
     Paper,
 } from '@mui/material';
-import { gql, useMutation } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
 import { UPDATE_USER_MUTATION } from "@/graphql";
 
 interface UserDetails {

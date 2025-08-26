@@ -32,7 +32,7 @@ export const GET_ME = gql`
        cryptoWallet {
          id
          createdAt
-         updatednAt
+         updatedAt
          accounts {
            id
            cryptoWalletId

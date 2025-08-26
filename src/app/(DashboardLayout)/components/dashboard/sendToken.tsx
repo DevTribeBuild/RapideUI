@@ -19,9 +19,25 @@ import {
 } from "@mui/material";
 import { GET_ALL_USERS } from "@/graphql";
 import { SEND_TOKEN } from "@/graphql";
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client/react";
 import toast from 'react-hot-toast';
 import useAuthStore from "@/stores/useAuthStore";
+
+type SendTokenMutationResult = {
+  sendToken: {
+    status: string;
+    message: string;
+  };
+};
+
+type SendTokenMutationVariables = {
+  input: {
+    amount: string;
+    isTest: boolean;
+    to: string;
+    token: string;
+  };
+};
 
 const SendTokenDialog = ({
   open,
@@ -29,7 +45,7 @@ const SendTokenDialog = ({
   assetOptions = [],
   onSend,
 }) => {
-  const [sendTokenMutation, { loading:loading_send_token, error:error_sending_token, data:data_sending_token }] = useMutation(SEND_TOKEN);
+  const [sendTokenMutation, { loading:loading_send_token, error:error_sending_token, data:data_sending_token }] = useMutation<SendTokenMutationResult, SendTokenMutationVariables>(SEND_TOKEN);
 const token = useAuthStore((state:any) => state.token);
   
   const [activeStep, setActiveStep] = useState<any>(0);
@@ -50,12 +66,12 @@ const token = useAuthStore((state:any) => state.token);
       };
       sendTokenMutation({ variables: payload,  context: { headers: { Authorization: `Bearer ${token}` } } })
       .then((res) => {
-        if(res.data.sendToken.status == "failed") {
-          toast.error(res.data.sendToken.message || "Failed to send token");
+        if(res.data?.sendToken.status == "failed") {
+          toast.error(res.data?.sendToken.message || "Failed to send token");
           return;
         }
         console.log("Send token response:", res.data);
-        toast.success(res.data.sendToken.message || "Token sent successfully!");
+        toast.success(res.data?.sendToken.message || "Token sent successfully!");
       })
       .catch((err) => {
         console.error(err);

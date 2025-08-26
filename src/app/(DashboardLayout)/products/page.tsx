@@ -15,7 +15,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import InfoIcon from '@mui/icons-material/Info';
 import { YellowButton } from '@/styled-components/buttons';
 import toast from 'react-hot-toast';
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client/react";
 import { GET_ALL_CATEGORIES } from '@/graphql';
 import { PRODUCTS_BY_MERCHANT_QUERY } from '@/graphql/product/queries';
 import { CREATE_PRODUCT_MUTATION, UPDATE_PRODUCT_MUTATION, DELETE_PRODUCT_MUTATION } from '@/graphql/product/mutations';

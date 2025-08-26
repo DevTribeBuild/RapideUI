@@ -99,7 +99,7 @@ import { registerApolloClient } from '@apollo/experimental-nextjs-app-support/rs
 import useAuthStore from './stores/useAuthStore'; // Adjust path as needed
 
 const httpLink = createHttpLink({
-  uri: process.env.NEXT_PUBLIC_GRAPHQL_API_URL || 'http://localhost:8000/graphql/', // Replace with your GraphQL API URL
+  uri: process.env.NEXT_PUBLIC_GRAPHQL_API_URL || 'https://zyntra-backend-1.onrender.com/graphql/', // Replace with your GraphQL API URL
 });
 
 const authLink = setContext((_, { headers }) => {
@@ -147,7 +147,7 @@ import useAuthStore from '@/stores/useAuthStore'; // Adjust path as needed
 
 function makeClient() {
   const httpLink = new HttpLink({
-    uri: process.env.NEXT_PUBLIC_GRAPHQL_API_URL || 'http://localhost:8000/graphql/', // Replace with your GraphQL API URL
+    uri: process.env.NEXT_PUBLIC_GRAPHQL_API_URL || 'https://zyntra-backend-1.onrender.com/graphql/', // Replace with your GraphQL API URL
   });
 
   const authLink = setContext((_, { headers }) => {
