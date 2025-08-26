@@ -21,7 +21,7 @@ import {
 } from "@mui/material";
 import { GET_ALL_USERS } from "@/graphql";
 import { UPDATE_USER_MUTATION } from "@/graphql";
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client/react";
 
 const UsersPage = () => {
   const { data, loading, error, refetch } = useQuery(GET_ALL_USERS, {

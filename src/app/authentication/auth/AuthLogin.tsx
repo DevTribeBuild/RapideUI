@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
 import { LOGIN_MUTATION, REQUEST_OTP_MUTATION } from "@/graphql";
 import { useRouter } from "next/navigation";
 import { handleLoginHelper } from "@/helpers/authHelper";
@@ -10,7 +10,7 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import useAuthStore from '@/stores/useAuthStore';
+import useAuthStore, { User } from '@/stores/useAuthStore';
 import toast from "react-hot-toast";
 
 interface loginType {
@@ -19,14 +19,42 @@ interface loginType {
   subtext?: React.ReactNode;
 }
 
+type RequestOtpMutationResult = {
+  requestOtp: {
+    status: string;
+    msg: string;
+  };
+};
+
+type RequestOtpMutationVariables = {
+  requestOtp: {
+    email: string;
+  };
+};
+
+type LoginMutationResult = {
+  login: {
+    token: string;
+    msg: string;
+    user: User;
+  };
+};
+
+type LoginMutationVariables = {
+  loginRequest: {
+    email: string;
+    otp: string;
+  };
+};
+
 const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
   const { setToken, setUser } = useAuthStore.getState();
   const router = useRouter();
   const [step, setStep] = useState<"REQUEST_OTP" | "LOGIN">("REQUEST_OTP");
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
-  const [requestOtp, { loading: otpLoading }] = useMutation(REQUEST_OTP_MUTATION);
-  const [login, { loading: loginLoading }] = useMutation(LOGIN_MUTATION);
+  const [requestOtp, { loading: otpLoading }] = useMutation<RequestOtpMutationResult, RequestOtpMutationVariables>(REQUEST_OTP_MUTATION);
+  const [login, { loading: loginLoading }] = useMutation<LoginMutationResult, LoginMutationVariables>(LOGIN_MUTATION);
 
   const handleRequestOtp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,7 +72,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
           toast.success(res.data.requestOtp.msg || "OTP sent to your email.");
           setStep("LOGIN");
         } else {
-          toast.error(res.data.requestOtp.msg || "Failed to send OTP.");
+          toast.error("Failed to send OTP.");
         }
       }
     } catch (error: any) {

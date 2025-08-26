@@ -42,7 +42,8 @@ import SwapToken from "@/app/(DashboardLayout)/components/dashboard/SwapToken";
 
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer } from "recharts";
 import useAppStore from "@/stores/useAuthStore";
-import { useQuery, useMutation, gql } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client/react";
 import {
     GET_MY_TRANSACTIONS_COMBINED, // Imported the new combined query
     

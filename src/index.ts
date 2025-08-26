@@ -1,4 +1,4 @@
-export default {
+const worker = {
   async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url);
     if (url.pathname === "/api/hello") {
@@ -9,3 +9,5 @@ export default {
     return fetch(request);
   },
 };
+
+export default worker;

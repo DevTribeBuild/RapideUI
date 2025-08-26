@@ -29,7 +29,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 
 import { GET_ALL_USERS } from "@/graphql";
 import { UPDATE_USER_MUTATION } from "@/graphql";
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client/react";
 import Divider from '@mui/material/Divider';
 import { debounce } from 'lodash';
 

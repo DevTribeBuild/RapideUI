@@ -12,6 +12,7 @@ const Login2 = () => {
       <Box
         sx={{
           position: "relative",
+          border: "1px solid red",
           "&:before": {
             content: '""',
             background: "radial-gradient(#d2f1df, #d3d7fa, #bad8f4)",

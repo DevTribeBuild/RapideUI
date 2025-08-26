@@ -19,7 +19,7 @@ import { QuantityAdjuster } from "./QuantityAdjuster";
 import BlankCard from "@/app/(DashboardLayout)/components/shared/BlankCard";
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client/react";
 import { ALL_PRODUCTS_QUERY } from "@/graphql/product/queries";
 import { MY_CART_QUERY } from "@/graphql/cart/queries";
 import { ADD_TO_CART_MUTATION, UPDATE_CART_ITEM_MUTATION } from "@/graphql/cart/mutations";
@@ -39,13 +39,26 @@ import toast from 'react-hot-toast';
     createdAt: string;
     updatedAt: string;
   };
+
+  type AllProductsQuery = {
+    allProducts: Product[];
+  };
+
+  type MyCartQuery = {
+    myCart: {
+      items: {
+        product: { id: string };
+        quantity: number;
+      }[];
+    };
+  };
   
   const Blog = () => {
   const router = useRouter();
   const [openPreviewDialog, setOpenPreviewDialog] = useState(false);
 
-  const { data: productsData, loading: productsLoading, error: productsError } = useQuery(ALL_PRODUCTS_QUERY);
-  const { data: cartData, loading: cartLoading, error: cartError } = useQuery(MY_CART_QUERY);
+  const { data: productsData, loading: productsLoading, error: productsError } = useQuery<AllProductsQuery>(ALL_PRODUCTS_QUERY);
+  const { data: cartData, loading: cartLoading, error: cartError } = useQuery<MyCartQuery>(MY_CART_QUERY);
   const [addToCart, { loading: addToCartLoading }] = useMutation(ADD_TO_CART_MUTATION, { refetchQueries: [{ query: MY_CART_QUERY }] });
   const [updateCartItem, { loading: updateCartItemLoading }] = useMutation(UPDATE_CART_ITEM_MUTATION, { refetchQueries: [{ query: MY_CART_QUERY }] });
   const [products, setProducts] = useState<Product[]>([]);

@@ -3,7 +3,7 @@ import { Box, Typography, Button, MenuItem, Skeleton } from '@mui/material';
 import Link from 'next/link';
 import CustomTextField from '@/app/(DashboardLayout)/components/forms/theme-elements/CustomTextField';
 import { Stack } from '@mui/system';
-import { useMutation, useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client/react';
 import { REGISTER_MUTATION, VERIFY_OTP_MUTATION } from '@/graphql';
 import { useRouter } from 'next/navigation';
 import useAuthStore from '@/stores/useAuthStore';
