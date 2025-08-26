@@ -1,9 +1,11 @@
 "use client";
 import React, { useState, useEffect } from 'react';
+import useAppStore from '@/stores/useAuthStore';
 import {
   Box,
   Typography,
   CircularProgress,
+  Skeleton,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
   IconButton,
 } from '@mui/material';
@@ -38,7 +40,8 @@ interface Product {
 }
 
 const ProductManagementApp: React.FC = () => {
-  const merchantId = "YOUR_MERCHANT_ID_HERE"; // Replace with actual merchant ID from context or auth
+  const user = useAppStore((state) => state.user);
+  const merchantId = user?.id || "";
   const { data: productsData, loading: productsLoading, error: productsError } = useQuery(PRODUCTS_BY_MERCHANT_QUERY, {
     variables: { merchantId },
   });
@@ -233,11 +236,18 @@ const ProductManagementApp: React.FC = () => {
             </TableHead>
             <TableBody>
               {productsLoading || categoriesLoading ? (
-                <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
-                    <CircularProgress />
-                  </TableCell>
-                </TableRow>
+                <>
+                  {[...Array(5)].map((_, index) => (
+                    <TableRow key={index}>
+                      <TableCell><Skeleton variant="rectangular" width={40} height={40} /></TableCell>
+                      <TableCell><Skeleton variant="text" width={100} /></TableCell>
+                      <TableCell><Skeleton variant="text" width={80} /></TableCell>
+                      <TableCell align="right"><Skeleton variant="text" width={50} /></TableCell>
+                      <TableCell align="right"><Skeleton variant="text" width={50} /></TableCell>
+                      <TableCell align="center"><Skeleton variant="rectangular" width={80} height={30} /></TableCell>
+                    </TableRow>
+                  ))}
+                </>
               ) : productsError || categoriesError ? (
                 <TableRow>
                   <TableCell colSpan={6} align="center" sx={{ py: 4, color: 'red' }}>

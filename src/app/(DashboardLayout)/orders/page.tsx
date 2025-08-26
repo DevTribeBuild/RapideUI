@@ -6,7 +6,6 @@ import {
   AccordionSummary,
   Box,
   Button,
-  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -212,7 +211,6 @@ export default function OrderManagement() {
             variant="contained"
             onClick={handleStatusChange}
             disabled={!newStatus || loading}
-            startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
             sx={{
                 bgcolor: '#6B7280',
                 color: '#fff',

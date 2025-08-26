@@ -85,11 +85,6 @@ export const CREATE_ORDER_MUTATION = gql`
        createdAt
        updatedAt
        cart {
-         id
-         userId
-         total
-         createdAt
-         updatedAt
          items {
            quantity
            product {

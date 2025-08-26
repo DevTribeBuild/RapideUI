@@ -9,7 +9,6 @@ import {
   DialogActions,
   Typography,
   IconButton,
-  CircularProgress,
   TextField,
   MenuItem, Select, InputLabel, FormControl,
 } from '@mui/material';
@@ -326,7 +325,6 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({ open, onCl
           onClick={handleSubmit}
           disabled={!isFormValid || isSaving}
           variant="contained"
-          endIcon={isSaving ? <CircularProgress size={20} color="inherit" /> : null}
         >
           {isSaving ? 'Saving...' : 'Save Product'}
         </YellowButton>

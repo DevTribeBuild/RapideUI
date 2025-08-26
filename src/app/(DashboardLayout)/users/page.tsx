@@ -18,7 +18,6 @@ import {
   FormControlLabel,
   Tabs,
   Tab,
-  CircularProgress,
   Chip,
   Alert,
   Skeleton,
@@ -484,7 +483,7 @@ const UsersPage = () => {
               // sx={{ bgcolor: ACCENT_COLOR, '&:hover': { bgcolor: '#E64A19' } }} // Using accent color for save button
               variant="contained"
               disabled={updating}
-              endIcon={updating ? <CircularProgress size={20} color="inherit" /> : null}
+              endIcon={updating ? null : null}
             >
               {updating ? "Saving..." : "Save Changes"}
             </Button>
