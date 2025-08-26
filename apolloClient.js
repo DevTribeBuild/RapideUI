@@ -5,6 +5,9 @@ import useAuthStore from "@/stores/useAuthStore";
 
 const uploadLink = createUploadLink({
   uri: "https://zyntra-backend-1.onrender.com/graphql/",
+  headers: {
+    "Apollo-Require-Preflight": "true",
+  },
 });
 
 const authLink = setContext((_, { headers }) => {
