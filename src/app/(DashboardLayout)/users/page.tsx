@@ -32,6 +32,22 @@ import { UPDATE_USER_MUTATION } from "@/graphql";
 import { useQuery, useMutation } from "@apollo/client/react";
 import Divider from '@mui/material/Divider';
 import { debounce } from 'lodash';
+import { User } from '@/stores/useAuthStore';
+
+type GetAllUsersQuery = {
+  users: User[];
+};
+
+type UpdateUserMutationVariables = {
+  updateUserInput: {
+    id: string;
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+    username?: string;
+  };
+};
 
 // --- Accent Color Definition ---
 const ACCENT_COLOR = "#FF5722"; // You can change this to your desired accent color
@@ -91,11 +107,11 @@ const getInitialsAndColor = (user) => {
 
 
 const UsersPage = () => {
-  const { data, loading, error, refetch } = useQuery(GET_ALL_USERS, {
+  const { data, loading, error, refetch } = useQuery<GetAllUsersQuery>(GET_ALL_USERS, {
     fetchPolicy: "cache-and-network",
   });
 
-  const [updateUser, { loading: updating }] = useMutation(UPDATE_USER_MUTATION, {
+  const [updateUser, { loading: updating }] = useMutation<any, UpdateUserMutationVariables>(UPDATE_USER_MUTATION, {
     onCompleted: () => {
       refetch();
       setEditMode(false);

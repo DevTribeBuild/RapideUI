@@ -6,7 +6,7 @@ import { Stack } from '@mui/system';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { REGISTER_MUTATION, VERIFY_OTP_MUTATION } from '@/graphql';
 import { useRouter } from 'next/navigation';
-import useAuthStore from '@/stores/useAuthStore';
+import useAuthStore, { User } from '@/stores/useAuthStore';
 import { handleLoginHelper } from '@/helpers/authHelper';
 import toast from 'react-hot-toast';
 import { GET_FIAT_CURRENCIES } from '@/graphql';
@@ -17,20 +17,55 @@ interface registerType {
         subtext?: React.ReactNode;
 }
 
+type FiatCurrenciesQuery = {
+  currencies: {
+    code: string;
+    name: string;
+  }[];
+};
+
+type RegisterMutationResult = {
+  register: {
+    status: string;
+    msg: string;
+  };
+};
+
+type RegisterMutationVariables = {
+  registerRequest: {
+    email: string;
+    currencyCode: string;
+  };
+};
+
+type VerifyOtpMutationResult = {
+  verifyOtp: {
+    status: string;
+    msg: string;
+    token: string;
+    user: User;
+  };
+};
+
+type VerifyOtpMutationVariables = {
+  email: string;
+  otp: string;
+};
+
 const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
         const [email, setEmail] = useState('');
         const { setToken, setUser } = useAuthStore.getState();
         const [currencyCode, setCurrencyCode] = useState('KES');
         const [step, setStep] = useState<'register' | 'verify'>('register');
         const [otp, setOtp] = useState('');
-        const [register, { loading }] = useMutation(REGISTER_MUTATION);
-        const [verifyOtp, { loading: otpLoading }] = useMutation(VERIFY_OTP_MUTATION);
+        const [register, { loading }] = useMutation<RegisterMutationResult, RegisterMutationVariables>(REGISTER_MUTATION);
+        const [verifyOtp, { loading: otpLoading }] = useMutation<VerifyOtpMutationResult, VerifyOtpMutationVariables>(VERIFY_OTP_MUTATION);
         const router = useRouter();
         const {
                 data: fiat_currencies_data,
                 loading: loading_fiat_currencies,
                 error: error_fiat_currencies,
-        } = useQuery(GET_FIAT_CURRENCIES);
+        } = useQuery<FiatCurrenciesQuery>(GET_FIAT_CURRENCIES);
         console.log(fiat_currencies_data, "(*&*^&%^")
 
         const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -116,7 +151,7 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
                                                                 onChange={(e) => setCurrencyCode(e.target.value)}
                                                                 required
                                                         >
-                                                                {fiat_currencies_data?.currencies?.length > 0 ? (
+                                                                {fiat_currencies_data && fiat_currencies_data.currencies && fiat_currencies_data.currencies.length > 0 ? (
                                                                         fiat_currencies_data.currencies.map((currency: any) => (
                                                                                 <MenuItem key={currency.code} value={currency.code}>
                                                                                         {currency.name} ({currency.code})

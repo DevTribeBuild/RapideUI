@@ -39,13 +39,46 @@ interface Product {
   updatedAt: string;
 }
 
+type ProductsByMerchantQuery = {
+  productsByMerchant: Product[];
+};
+
+type Category = {
+  id: string;
+  name: string;
+};
+
+type GetAllCategoriesQuery = {
+  allCategories: Category[];
+};
+
+type CreateProductMutationVariables = {
+  input: {
+    name: string;
+    description: string;
+    price: number;
+    imageUrl: string;
+    categoryId: string;
+    currencyId: string;
+    merchantId: string;
+  };
+};
+
+type UpdateProductMutationVariables = {
+  input: Product;
+};
+
+type DeleteProductMutationVariables = {
+  id: string;
+};
+
 const ProductManagementApp: React.FC = () => {
   const user = useAppStore((state) => state.user);
   const merchantId = user?.id || "";
-  const { data: productsData, loading: productsLoading, error: productsError } = useQuery(PRODUCTS_BY_MERCHANT_QUERY, {
+  const { data: productsData, loading: productsLoading, error: productsError } = useQuery<ProductsByMerchantQuery>(PRODUCTS_BY_MERCHANT_QUERY, {
     variables: { merchantId },
   });
-  const { data: categoriesData, loading: categoriesLoading, error: categoriesError } = useQuery(GET_ALL_CATEGORIES);
+  const { data: categoriesData, loading: categoriesLoading, error: categoriesError } = useQuery<GetAllCategoriesQuery>(GET_ALL_CATEGORIES);
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
@@ -83,10 +116,10 @@ const ProductManagementApp: React.FC = () => {
     setEditingProduct(null); // Clear editing product on close
   };
 
-  const [createProduct, { loading: creatingProduct }] = useMutation(CREATE_PRODUCT_MUTATION, {
+  const [createProduct, { loading: creatingProduct }] = useMutation<any, CreateProductMutationVariables>(CREATE_PRODUCT_MUTATION, {
     refetchQueries: [{ query: PRODUCTS_BY_MERCHANT_QUERY, variables: { merchantId } }], // Refetch with merchantId
   });
-  const [updateProduct, { loading: updatingProduct }] = useMutation(UPDATE_PRODUCT_MUTATION, {
+  const [updateProduct, { loading: updatingProduct }] = useMutation<any, UpdateProductMutationVariables>(UPDATE_PRODUCT_MUTATION, {
     refetchQueries: [{ query: PRODUCTS_BY_MERCHANT_QUERY, variables: { merchantId } }], // Refetch with merchantId
   });
 

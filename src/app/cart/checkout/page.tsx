@@ -16,6 +16,28 @@ const ConnectWalletButton = () => (
   </Button>
 );
 
+type CartItem = {
+  product: {
+    price: number;
+  };
+  quantity: number;
+};
+
+type MyCartQuery = {
+  myCart: {
+    id: string;
+    items: CartItem[];
+  };
+};
+
+type CreateOrderMutationVariables = {
+  input: {
+    cartId: string;
+    deliveryAddress: string;
+    notes: string;
+  };
+};
+
 const CheckoutPage = () => {
   const router = useRouter();
   const [tab, setTab] = useState(0);
@@ -27,8 +49,8 @@ const CheckoutPage = () => {
   const [postalCode, setPostalCode] = useState("");
   const [country, setCountry] = useState("");
 
-  const { data: cartData, loading: cartLoading, error: cartError } = useQuery(MY_CART_QUERY);
-  const [createOrder, { loading: createOrderLoading }] = useMutation(CREATE_ORDER_MUTATION);
+  const { data: cartData, loading: cartLoading, error: cartError } = useQuery<MyCartQuery>(MY_CART_QUERY);
+  const [createOrder, { loading: createOrderLoading }] = useMutation<any, CreateOrderMutationVariables>(CREATE_ORDER_MUTATION);
   const [clearCart] = useMutation(CLEAR_CART_MUTATION);
 
   const cartItems = cartData?.myCart?.items || [];
@@ -51,6 +73,11 @@ const CheckoutPage = () => {
     }
 
     const deliveryAddress = `${address}, ${city}, ${postalCode}, ${country}`;
+
+    if (!cartId) {
+      toast.error("Cart ID is missing. Please try again.");
+      return;
+    }
 
     try {
         await createOrder({

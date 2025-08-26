@@ -16,6 +16,14 @@ import { gql } from "@apollo/client";
 import { useMutation } from "@apollo/client/react";
 import { UPDATE_USER_MUTATION } from "@/graphql";
 
+
+type UpdateUserMutationVariables = {
+  updateUserInput: {
+    id: string;
+    email?: string;
+  };
+};
+
 interface UserDetails {
     firstName?: string;
     lastName?: string;
@@ -45,7 +53,7 @@ export default function ProfilePage() {
     const [editMode, setEditMode] = useState(false);
     const [form, setForm] = useState<UserDetails>(userDetails);
 
-    const [updateUser, { loading, error }] = useMutation(UPDATE_USER_MUTATION);
+    const [updateUser, { loading, error }] = useMutation<any, UpdateUserMutationVariables>(UPDATE_USER_MUTATION);
 
     useEffect(() => {
         setForm(userDetails);
