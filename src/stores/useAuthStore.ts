@@ -3,13 +3,18 @@ import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
 export type User = {
-  id: string
-  email: string
-  userType: string
-  createdAt: string
-  updatedAt: string
-  walletAddress: string
-}
+  id: string;
+  email: string;
+  userType: string;
+  createdAt: string;
+  updatedAt: string;
+  firstName?: string;
+  lastName?: string;
+  username?: string;
+  imageUrl?: string;
+  phone?: string;
+  walletAddress?: string;
+};
 
 export type UserDetails = {
   me: {

@@ -88,8 +88,8 @@ const FileUploadInput: React.FC<FileUploadInputProps> = ({
         onChange={handleFileChange}
       />
       <label htmlFor={`file-upload-${label.replace(/\s/g, "-")}`}>
-        <Button variant="outlined" component="span" startIcon={<CloudUploadIcon />}>
-          {selectedFile ? selectedFile.name : `Choose ${label}`}
+        <Button variant="outlined" component="span" startIcon={<CloudUploadIcon />} disabled={loading}>
+          {loading ? <CircularProgress size={24} /> : selectedFile ? selectedFile.name : `Choose ${label}`}
         </Button>
       </label>
       

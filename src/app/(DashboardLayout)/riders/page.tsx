@@ -14,78 +14,49 @@ import {
   Avatar,
   Box,
   TextField,
-  Switch,
-  FormControlLabel,
   Tabs,
   Tab,
+  Chip,
 } from "@mui/material";
-import { GET_ALL_USERS } from "@/graphql";
-import { UPDATE_USER_MUTATION } from "@/graphql";
-import { useQuery, useMutation } from "@apollo/client/react";
-import { User } from '@/stores/useAuthStore';
+import { GET_ALL_RIDERS } from "@/graphql/queries";
+import { useQuery } from "@apollo/client/react";
+import { User } from "@/stores/useAuthStore";
 
-type GetAllUsersQuery = {
-  users: User[];
+type Rider = {
+  certificateOfGoodConduct: string;
+  createdAt: string;
+  driverLicense: string;
+  id: string;
+  insurance: string;
+  logbook: string;
+  motorbikeCC: string;
+  nationalIdOrPassport: string;
+  smartphoneType: string;
+  status: string;
+  updatedAt: string;
+  user: User;
+  userId: string;
 };
 
-type UpdateUserMutationVariables = {
-  updateUserInput: {
-    id: string;
-    email?: string;
-  };
+type GetAllRidersQuery = {
+  allRiderDetails: Rider[];
 };
 
-const UsersPage = () => {
-  const { data, loading, error, refetch } = useQuery<GetAllUsersQuery>(GET_ALL_USERS, {
+const RidersPage = () => {
+  const { data, loading, error } = useQuery<GetAllRidersQuery>(GET_ALL_RIDERS, {
     fetchPolicy: "cache-and-network",
   });
 
-  const [updateUser, { loading: updating }] = useMutation<any, UpdateUserMutationVariables>(UPDATE_USER_MUTATION, {
-    onCompleted: () => {
-      refetch();
-      setEditMode(false);
-      setSelectedUser(null);
-    },
-    onError: (err) => {
-      console.error(err);
-    },
-  });
-
-  const users = data?.users || [];
-  const [selectedUser, setSelectedUser] = useState<any>(null);
-  const [editMode, setEditMode] = useState(false);
-  const [form, setForm] = useState<any>({});
+  const [selectedRider, setSelectedRider] = useState<any>(null);
   const [tab, setTab] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleEditToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEditMode(e.target.checked);
-    if (e.target.checked && selectedUser) {
-      setForm(selectedUser);
-    }
-  };
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setTab(newValue);
   };
 
-  const handleSave = () => {
-    updateUser({
-      variables: {
-        updateUserInput: {
-          id: selectedUser.id,
-          email: form.email,
-        },
-      },
-    });
-  };
-
-  const filteredUsers = users.filter((user: any) =>
-    user.userType === "RIDER" && user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredRiders = data?.allRiderDetails?.filter((rider: any) =>
+    rider.user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (loading) return <Typography>Loading...</Typography>;
@@ -108,8 +79,8 @@ const UsersPage = () => {
       />
 
       <Grid container spacing={3}>
-        {filteredUsers.map((user: any) => (
-          <Grid key={user.id} size={{ xs: 12, sm: 6, md: 4, lg: 4 }}>
+        {filteredRiders?.map((rider: any) => (
+          <Grid key={rider.id} size={{xs:12, sm:6, md:4, lg:3}}>
             <Card
               sx={{
                 borderRadius: 2,
@@ -121,18 +92,19 @@ const UsersPage = () => {
                 },
               }}
             >
-              <CardActionArea onClick={() => { setSelectedUser(user); setEditMode(false); setTab(0); }}>
+              <CardActionArea onClick={() => { setSelectedRider(rider); setTab(0); }}>
                 <CardContent sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                   <Avatar
-                    src={user.avatar}
-                    alt={user.name}
+                    src={rider.user.imageUrl}
+                    alt={`${rider.user.firstName} ${rider.user.lastName}`}
                     sx={{ width: 56, height: 56, border: "2px solid #1976d2" }}
                   />
                   <Box>
                     <Typography variant="h6" fontWeight="bold">
-                      {user.name}
+                      {`${rider.user.firstName} ${rider.user.lastName}`}
                     </Typography>
-                    <Typography color="text.secondary">{user.email}</Typography>
+                    <Typography color="text.secondary">{rider.user.email}</Typography>
+                    <Chip label={rider.status} color={rider.status === 'APPROVED' ? 'success' : 'warning'} size="small" />
                   </Box>
                 </CardContent>
               </CardActionArea>
@@ -142,54 +114,53 @@ const UsersPage = () => {
       </Grid>
 
       <Dialog
-        open={!!selectedUser}
-        onClose={() => setSelectedUser(null)}
+        open={!!selectedRider}
+        onClose={() => setSelectedRider(null)}
         maxWidth="sm"
         fullWidth
       >
-        <DialogTitle>User Details</DialogTitle>
+        <DialogTitle>Rider Details</DialogTitle>
         <DialogContent dividers>
-          {selectedUser && (
+          {selectedRider && (
             <Box>
               <Box sx={{ textAlign: "center", mb: 2 }}>
                 <Avatar
-                  src={selectedUser.avatar}
-                  alt={selectedUser.name}
+                  src={selectedRider.user.imageUrl}
+                  alt={`${selectedRider.user.firstName} ${selectedRider.user.lastName}`}
                   sx={{ width: 80, height: 80, mx: "auto", mb: 2 }}
                 />
-                <Typography variant="h6">{selectedUser.userType}</Typography>
+                <Typography variant="h6">{`${selectedRider.user.firstName} ${selectedRider.user.lastName}`}</Typography>
+                <Chip label={selectedRider.status} color={selectedRider.status === 'APPROVED' ? 'success' : 'warning'} />
               </Box>
-
-              <FormControlLabel
-                control={<Switch checked={editMode} onChange={handleEditToggle} />}
-                label="Edit Mode"
-              />
 
               <Tabs value={tab} onChange={handleTabChange} sx={{ mb: 2 }}>
                 <Tab label="Basic Info" />
                 <Tab label="Contact" />
-                <Tab label="Settings" />
+                <Tab label="Documents" />
               </Tabs>
 
               {tab === 0 && (
                 <>
                   <TextField
                     label="First Name"
-                    name="firstName"
-                    value={editMode ? form.firstName || "" : selectedUser.firstName || ""}
-                    onChange={handleInputChange}
+                    value={selectedRider.user.firstName || ""}
                     fullWidth
                     margin="normal"
-                    disabled={!editMode}
+                    disabled
                   />
                   <TextField
                     label="Last Name"
-                    name="lastName"
-                    value={editMode ? form.lastName || "" : selectedUser.lastName || ""}
-                    onChange={handleInputChange}
+                    value={selectedRider.user.lastName || ""}
                     fullWidth
                     margin="normal"
-                    disabled={!editMode}
+                    disabled
+                  />
+                  <TextField
+                    label="Username"
+                    value={selectedRider.user.username || ""}
+                    fullWidth
+                    margin="normal"
+                    disabled
                   />
                 </>
               )}
@@ -198,21 +169,17 @@ const UsersPage = () => {
                 <>
                   <TextField
                     label="Email"
-                    name="email"
-                    value={editMode ? form.email || "" : selectedUser.email || ""}
-                    onChange={handleInputChange}
+                    value={selectedRider.user.email || ""}
                     fullWidth
                     margin="normal"
-                    disabled={!editMode}
+                    disabled
                   />
                   <TextField
                     label="Phone"
-                    name="phone"
-                    value={editMode ? form.phone || "" : selectedUser.phone || ""}
-                    onChange={handleInputChange}
+                    value={selectedRider.user.phone || ""}
                     fullWidth
                     margin="normal"
-                    disabled={!editMode}
+                    disabled
                   />
                 </>
               )}
@@ -220,34 +187,47 @@ const UsersPage = () => {
               {tab === 2 && (
                 <>
                   <TextField
-                    label="Username"
-                    name="username"
-                    value={editMode ? form.username || "" : selectedUser.username || ""}
-                    onChange={handleInputChange}
+                    label="National ID/Passport"
+                    value={selectedRider.nationalIdOrPassport || ""}
                     fullWidth
                     margin="normal"
-                    disabled={!editMode}
+                    disabled
                   />
-                  <Typography mt={2} variant="body2">
-                    Wallet Address: {selectedUser.walletAddress}
-                  </Typography>
+                  <TextField
+                    label="Driver License"
+                    value={selectedRider.driverLicense || ""}
+                    fullWidth
+                    margin="normal"
+                    disabled
+                  />
+                  <TextField
+                    label="Logbook"
+                    value={selectedRider.logbook || ""}
+                    fullWidth
+                    margin="normal"
+                    disabled
+                  />
+                  <TextField
+                    label="Certificate of Good Conduct"
+                    value={selectedRider.certificateOfGoodConduct || ""}
+                    fullWidth
+                    margin="normal"
+                    disabled
+                  />
+                  <TextField
+                    label="Insurance"
+                    value={selectedRider.insurance || ""}
+                    fullWidth
+                    margin="normal"
+                    disabled
+                  />
                 </>
               )}
             </Box>
           )}
         </DialogContent>
         <DialogActions>
-          {editMode && (
-            <Button
-              onClick={handleSave}
-              color="primary"
-              variant="contained"
-              disabled={updating}
-            >
-              {updating ? "Saving..." : "Save Changes"}
-            </Button>
-          )}
-          <Button onClick={() => setSelectedUser(null)} color="primary">
+          <Button onClick={() => setSelectedRider(null)} color="primary">
             Close
           </Button>
         </DialogActions>
@@ -256,4 +236,4 @@ const UsersPage = () => {
   );
 };
 
-export default UsersPage;
+export default RidersPage;

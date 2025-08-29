@@ -104,9 +104,7 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
                                 if (res.data.verifyOtp.status === "SUCCESS") {
                                         toast.success(res.data.verifyOtp.msg || "OTP verified successfully!");
                                         setToken(res.data.verifyOtp.token);
-                                        await handleLoginHelper(res.data.verifyOtp.token);
-                                        setUser(res.data.verifyOtp.user);
-                                        router.push("/explore");
+                                        await handleLoginHelper(res.data.verifyOtp.token, res.data.verifyOtp.user, router);
                                 } else {
                                         toast.error(res.data.verifyOtp.msg || "OTP verification failed.");
                                 }

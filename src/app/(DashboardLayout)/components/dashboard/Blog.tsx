@@ -50,15 +50,26 @@ import toast from 'react-hot-toast';
         product: { id: string };
         quantity: number;
       }[];
-    };
+    } | null;
   };
   
+  import useAuthStore from '@/stores/useAuthStore';
+
+  
   const Blog = () => {
+  const { token } = useAuthStore();
   const router = useRouter();
   const [openPreviewDialog, setOpenPreviewDialog] = useState(false);
 
   const { data: productsData, loading: productsLoading, error: productsError } = useQuery<AllProductsQuery>(ALL_PRODUCTS_QUERY);
-  const { data: cartData, loading: cartLoading, error: cartError } = useQuery<MyCartQuery>(MY_CART_QUERY);
+  const { data: cartData, loading: cartLoading, error: cartError } = useQuery<MyCartQuery>(MY_CART_QUERY, { 
+    skip: !token,
+    onError: (error) => {
+      if (error.message === 'Unauthorized') {
+        useAuthStore.getState().clearAuth();
+      }
+    }
+  });
   const [addToCart, { loading: addToCartLoading }] = useMutation(ADD_TO_CART_MUTATION, { refetchQueries: [{ query: MY_CART_QUERY }] });
   const [updateCartItem, { loading: updateCartItemLoading }] = useMutation(UPDATE_CART_ITEM_MUTATION, { refetchQueries: [{ query: MY_CART_QUERY }] });
   const [products, setProducts] = useState<Product[]>([]);
@@ -74,6 +85,8 @@ import toast from 'react-hot-toast';
     if (cartData && cartData.myCart && cartData.myCart.items) {
       const itemIds = new Set(cartData.myCart.items.map(item => item.product.id));
       setCartItems(itemIds);
+    } else {
+      setCartItems(new Set());
     }
   }, [cartData]);
 
