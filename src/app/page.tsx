@@ -174,7 +174,7 @@ const LandingPage = () => {
             <Grid key={i} size={{ xs: 12, md: 4 }}>
               <TestimonialCard>
                 <ThumbUpAltIcon color="primary" sx={{ mb: 2 }} />
-                <Typography color="text.secondary" sx={{ mb: 2 }}>"{testimonial.text}"</Typography>
+                <Typography color="text.secondary" sx={{ mb: 2 }}>&quot;{testimonial.text}&quot;</Typography>
                 <Typography variant="subtitle1" fontWeight="bold">{testimonial.name}</Typography>
               </TestimonialCard>
             </Grid>
