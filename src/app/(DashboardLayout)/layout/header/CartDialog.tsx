@@ -42,7 +42,7 @@ type MyCartQuery = {
   myCart: {
     items: CartItem[];
     total: number;
-  };
+  } | null;
 };
 
 type UpdateCartItemMutationVariables = {
@@ -56,8 +56,22 @@ type RemoveFromCartMutationVariables = {
   productId: string;
 };
 
+import useAuthStore from '@/stores/useAuthStore';
+
 const CartDialog: React.FC<CartDialogProps> = ({ open, onClose }) => {
-  const { data, loading, error, refetch } = useQuery<MyCartQuery>(MY_CART_QUERY);
+  const { token } = useAuthStore();
+
+  const { data, loading, error, refetch } = useQuery<MyCartQuery>(MY_CART_QUERY, {
+    skip: !token,
+  });
+
+  // Handle auth error from query result
+  React.useEffect(() => {
+    if (error?.message === 'Unauthorized') {
+      useAuthStore.getState().clearAuth();
+    }
+  }, [error]);
+
   const [updateCartItem] = useMutation<any, UpdateCartItemMutationVariables>(UPDATE_CART_ITEM_MUTATION);
   const [removeFromCart] = useMutation<any, RemoveFromCartMutationVariables>(REMOVE_FROM_CART_MUTATION);
   const [clearCart] = useMutation(CLEAR_CART_MUTATION);
@@ -126,13 +140,26 @@ const CartDialog: React.FC<CartDialogProps> = ({ open, onClose }) => {
                       secondary={`$${item.product.price.toFixed(2)} x ${item.quantity}`}
                     />
                     <ListItemSecondaryAction>
-                      <IconButton edge="end" aria-label="remove" onClick={() => handleRemoveItem(item.product.id)}>
+                      <IconButton
+                        edge="end"
+                        aria-label="remove"
+                        onClick={() => handleRemoveItem(item.product.id)}
+                      >
                         <DeleteIcon />
                       </IconButton>
-                      <IconButton edge="end" aria-label="decrease quantity" onClick={() => handleUpdateQuantity(item.product.id, item.quantity - 1)} disabled={item.quantity <= 1}>
+                      <IconButton
+                        edge="end"
+                        aria-label="decrease quantity"
+                        onClick={() => handleUpdateQuantity(item.product.id, item.quantity - 1)}
+                        disabled={item.quantity <= 1}
+                      >
                         <RemoveIcon />
                       </IconButton>
-                      <IconButton edge="end" aria-label="increase quantity" onClick={() => handleUpdateQuantity(item.product.id, item.quantity + 1)}>
+                      <IconButton
+                        edge="end"
+                        aria-label="increase quantity"
+                        onClick={() => handleUpdateQuantity(item.product.id, item.quantity + 1)}
+                      >
                         <AddIcon />
                       </IconButton>
                     </ListItemSecondaryAction>

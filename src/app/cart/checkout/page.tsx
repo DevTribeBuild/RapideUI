@@ -27,7 +27,7 @@ type MyCartQuery = {
   myCart: {
     id: string;
     items: CartItem[];
-  };
+  } | null;
 };
 
 type CreateOrderMutationVariables = {
@@ -38,7 +38,10 @@ type CreateOrderMutationVariables = {
   };
 };
 
+import useAuthStore from "@/stores/useAuthStore";
+
 const CheckoutPage = () => {
+  const { token } = useAuthStore();
   const router = useRouter();
   const [tab, setTab] = useState(0);
   const [phone, setPhone] = useState("");
@@ -49,7 +52,14 @@ const CheckoutPage = () => {
   const [postalCode, setPostalCode] = useState("");
   const [country, setCountry] = useState("");
 
-  const { data: cartData, loading: cartLoading, error: cartError } = useQuery<MyCartQuery>(MY_CART_QUERY);
+  const { data: cartData, loading: cartLoading, error: cartError } = useQuery<MyCartQuery>(MY_CART_QUERY, { 
+    skip: !token,
+    onError: (error) => {
+      if (error.message === 'Unauthorized') {
+        useAuthStore.getState().clearAuth();
+      }
+    }
+  });
   const [createOrder, { loading: createOrderLoading }] = useMutation<any, CreateOrderMutationVariables>(CREATE_ORDER_MUTATION);
   const [clearCart] = useMutation(CLEAR_CART_MUTATION);
 

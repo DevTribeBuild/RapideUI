@@ -44,7 +44,7 @@ type CartItem = {
 type MyCartQuery = {
   myCart: {
     items: CartItem[];
-  };
+  } | null;
 };
 
 type UpdateCartItemMutationVariables = {
@@ -58,9 +58,19 @@ type RemoveFromCartMutationVariables = {
   productId: string;
 };
 
+import useAuthStore from "@/stores/useAuthStore";
+
 const CartPage: React.FC = () => {
+    const { token } = useAuthStore();
     const router = useRouter();
-    const { data, loading, error, refetch } = useQuery<MyCartQuery>(MY_CART_QUERY);
+    const { data, loading, error, refetch } = useQuery<MyCartQuery>(MY_CART_QUERY, { 
+      skip: !token,
+      onError: (error) => {
+        if (error.message === 'Unauthorized') {
+          useAuthStore.getState().clearAuth();
+        }
+      }
+    });
     const [updateCartItem] = useMutation<any, UpdateCartItemMutationVariables>(UPDATE_CART_ITEM_MUTATION);
     const [removeFromCart] = useMutation<any, RemoveFromCartMutationVariables>(REMOVE_FROM_CART_MUTATION);
     const [clearCart] = useMutation(CLEAR_CART_MUTATION);

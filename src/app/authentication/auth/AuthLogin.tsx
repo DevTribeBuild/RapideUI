@@ -94,15 +94,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
       if (res.data?.login) {
         if (res.data.login.token) {
           toast.success(res.data.login.msg || "Login successful!");
-          setToken(res.data.login.token);
-          await handleLoginHelper(res.data.login.token);
-          setUser(res.data.login.user);
-
-          if (res.data.login.user.userType === "ADMIN") {
-            router.push("/");
-          } else {
-            router.push("/explore");
-          }
+          await handleLoginHelper(res.data.login.token, res.data.login.user, router);
         } else {
           toast.error(res.data.login.msg || "Login failed.");
         }
