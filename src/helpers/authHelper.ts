@@ -29,7 +29,7 @@ export const handleLoginHelper = async (token: string, user: User, router: AppRo
   }
 
   if (user.userType === "ADMIN") {
-    router.push("/explore");
+    router.push("/");
   } else {
     router.push("/explore");
   }
