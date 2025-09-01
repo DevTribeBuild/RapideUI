@@ -79,7 +79,7 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
                                 },
                         });
                         if (res.data?.register) {
-                                if (res.data.register.status === "SUCCESS") {
+                                if (res.data.register.msg) {
                                         toast.success(res.data.register.msg || "Registration successful. Check your email for OTP.");
                                         setStep('verify');
                                 } else {
