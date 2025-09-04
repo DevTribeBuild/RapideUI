@@ -28,8 +28,12 @@ export const handleLoginHelper = async (token: string, user: User, router: AppRo
     console.error("Failed to fetch user details:", error);
   }
 
-  if (user.userType === "ADMIN") {
-    router.push("/");
+  if (user.userType === "RIDER") {
+    router.push("/(DashboardLayout)/riders/verify");
+  } else if (user.userType === "MERCHANT") {
+    router.push("/(DashboardLayout)/merchant/verify");
+  } else if (user.userType === "ADMIN") {
+    router.push("/explore");
   } else {
     router.push("/explore");
   }

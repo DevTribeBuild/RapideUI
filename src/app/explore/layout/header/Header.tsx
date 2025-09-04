@@ -66,15 +66,14 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
         <Box flexGrow={1} />
         <Stack spacing={1} direction="row" alignItems="center">
           {!user?.email && (
-            <Button
-              variant="contained"
-              component={Link}
-              href="/authentication/login"
-              disableElevation
-              color="primary"
-            >
-              Login ***
-            </Button>
+            <Stack direction="row" spacing={1}>
+              <Button variant="contained" component={Link} href="/authentication/login" disableElevation color="primary">
+                Login
+              </Button>
+              <Button variant="outlined" component={Link} href="/authentication/register" disableElevation color="primary">
+                Register
+              </Button>
+            </Stack>
           )}
           {user && (
             <Profile />
