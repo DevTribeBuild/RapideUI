@@ -18,8 +18,10 @@ import {
   Tab,
   Chip,
 } from "@mui/material";
+import Link from "next/link";
 import { GET_ALL_RIDERS } from "@/graphql/queries";
-import { useQuery } from "@apollo/client/react";
+import { UPDATE_RIDER_DETAILS_MUTATION } from "@/graphql/mutations";
+import { useQuery, useMutation } from "@apollo/client/react";
 import { User } from "@/stores/useAuthStore";
 
 type Rider = {
@@ -48,8 +50,42 @@ const RidersPage = () => {
   });
 
   const [selectedRider, setSelectedRider] = useState<any>(null);
+  const [rejectionReason, setRejectionReason] = useState("");
   const [tab, setTab] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
+
+  const [updateRiderDetails] = useMutation(UPDATE_RIDER_DETAILS_MUTATION, {
+    refetchQueries: [{ query: GET_ALL_RIDERS }],
+  });
+
+  const handleApprove = async () => {
+    if (selectedRider) {
+      await updateRiderDetails({
+        variables: {
+          updateRiderDetailsInput: {
+            id: selectedRider.id,
+            status: "APPROVED",
+          },
+        },
+      });
+      setSelectedRider(null);
+    }
+  };
+
+  const handleReject = async () => {
+    if (selectedRider) {
+      await updateRiderDetails({
+        variables: {
+          updateRiderDetailsInput: {
+            id: selectedRider.id,
+            status: "REJECTED",
+            rejectionReason,
+          },
+        },
+      });
+      setSelectedRider(null);
+    }
+  };
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setTab(newValue);
@@ -186,41 +222,11 @@ const RidersPage = () => {
 
               {tab === 2 && (
                 <>
-                  <TextField
-                    label="National ID/Passport"
-                    value={selectedRider.nationalIdOrPassport || ""}
-                    fullWidth
-                    margin="normal"
-                    disabled
-                  />
-                  <TextField
-                    label="Driver License"
-                    value={selectedRider.driverLicense || ""}
-                    fullWidth
-                    margin="normal"
-                    disabled
-                  />
-                  <TextField
-                    label="Logbook"
-                    value={selectedRider.logbook || ""}
-                    fullWidth
-                    margin="normal"
-                    disabled
-                  />
-                  <TextField
-                    label="Certificate of Good Conduct"
-                    value={selectedRider.certificateOfGoodConduct || ""}
-                    fullWidth
-                    margin="normal"
-                    disabled
-                  />
-                  <TextField
-                    label="Insurance"
-                    value={selectedRider.insurance || ""}
-                    fullWidth
-                    margin="normal"
-                    disabled
-                  />
+                  <Button component={Link} href={selectedRider.nationalIdOrPassport} target="_blank" fullWidth>View National ID/Passport</Button>
+                  <Button component={Link} href={selectedRider.driverLicense} target="_blank" fullWidth>View Driver License</Button>
+                  <Button component={Link} href={selectedRider.logbook} target="_blank" fullWidth>View Logbook</Button>
+                  <Button component={Link} href={selectedRider.certificateOfGoodConduct} target="_blank" fullWidth>View Certificate of Good Conduct</Button>
+                  <Button component={Link} href={selectedRider.insurance} target="_blank" fullWidth>View Insurance</Button>
                 </>
               )}
             </Box>
@@ -230,7 +236,23 @@ const RidersPage = () => {
           <Button onClick={() => setSelectedRider(null)} color="primary">
             Close
           </Button>
+          <Button onClick={handleApprove} color="success">
+            Approve
+          </Button>
+          <Button onClick={handleReject} color="error">
+            Reject
+          </Button>
         </DialogActions>
+        <DialogContent>
+          <TextField
+            label="Reason for Rejection"
+            fullWidth
+            multiline
+            rows={3}
+            value={rejectionReason}
+            onChange={(e) => setRejectionReason(e.target.value)}
+          />
+        </DialogContent>
       </Dialog>
     </Box>
   );

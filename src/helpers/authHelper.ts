@@ -29,9 +29,9 @@ export const handleLoginHelper = async (token: string, user: User, router: AppRo
   }
 
   if (user.userType === "RIDER") {
-    router.push("/(DashboardLayout)/riders/verify");
+    router.push("/riders/verify");
   } else if (user.userType === "MERCHANT") {
-    router.push("/(DashboardLayout)/merchant/verify");
+    router.push("/merchant/verify");
   } else if (user.userType === "ADMIN") {
     router.push("/explore");
   } else {

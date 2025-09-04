@@ -80,6 +80,24 @@ export const REJECT_RIDER_MUTATION = gql`
   }
 `;
 
+export const UPDATE_RIDER_DETAILS_MUTATION = gql`
+  mutation UpdateRiderDetails($updateRiderDetailsInput: UpdateRiderDetailsInput!) {
+    updateRiderDetails(updateRiderDetailsInput: $updateRiderDetailsInput) {
+      id
+      firstName
+      lastName
+      photoUrl
+      idNumber
+      licenseNumber
+      vehicleType
+      status
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+
 // Input types (assuming they are not globally defined in your GraphQL schema)
 // These should ideally be defined in your GraphQL schema file (.graphql or .gql)
 // For frontend typing purposes, we define them here.
