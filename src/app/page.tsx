@@ -74,7 +74,10 @@ const Footer = styled(Box)(({ theme }) => ({
   textAlign: 'center',
 }));
 
+import useAuthStore from "@/stores/useAuthStore";
+
 const LandingPage = () => {
+  const { user } = useAuthStore();
   return (
     <>
       {/* Transparent AppBar */}
@@ -83,14 +86,22 @@ const LandingPage = () => {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 'bold' }}>
             Swifteroute
           </Typography>
-          <Link href="/authentication/login" passHref>
-            <Button color="inherit">Login</Button>
-          </Link>
-          <Link href="/authentication/register" passHref>
-            <Button variant="outlined" color="inherit" sx={{ ml: 2 }}>
-              Register
-            </Button>
-          </Link>
+          {user ? (
+            <Link href="/(DashboardLayout)/" passHref>
+              <Button color="inherit">Dashboard</Button>
+            </Link>
+          ) : (
+            <>
+              <Link href="/authentication/login" passHref>
+                <Button color="inherit">Login</Button>
+              </Link>
+              <Link href="/authentication/register" passHref>
+                <Button variant="outlined" color="inherit" sx={{ ml: 2 }}>
+                  Register
+                </Button>
+              </Link>
+            </>
+          )}
         </Toolbar>
       </AppBar>
 
@@ -192,16 +203,26 @@ const LandingPage = () => {
             Sign up today and experience the future of deliveries.
           </Typography>
           <Stack sx={{ pt: 4 }} direction="row" spacing={2} justifyContent="center">
-            <Link href="/authentication/register" passHref>
-              <Button variant="contained" size="large">
-                Register Now
-              </Button>
-            </Link>
-            <Link href="/authentication/login" passHref>
-              <Button variant="outlined" size="large">
-                Login
-              </Button>
-            </Link>
+            {user ? (
+              <Link href="/(DashboardLayout)/" passHref>
+                <Button variant="contained" size="large">
+                  Dashboard
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Link href="/authentication/register" passHref>
+                  <Button variant="contained" size="large">
+                    Register Now
+                  </Button>
+                </Link>
+                <Link href="/authentication/login" passHref>
+                  <Button variant="outlined" size="large">
+                    Login
+                  </Button>
+                </Link>
+              </>
+            )}
           </Stack>
         </Container>
       </CTASection>
