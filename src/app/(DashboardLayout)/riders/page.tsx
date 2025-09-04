@@ -20,7 +20,7 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import { GET_ALL_RIDERS } from "@/graphql/queries";
-import { UPDATE_RIDER_DETAILS_MUTATION } from "@/graphql/mutations";
+import { APPROVE_RIDER_MUTATION, REJECT_RIDER_MUTATION } from "@/graphql/mutations";
 import { useQuery, useMutation } from "@apollo/client/react";
 import { User } from "@/stores/useAuthStore";
 
@@ -50,39 +50,26 @@ const RidersPage = () => {
   });
 
   const [selectedRider, setSelectedRider] = useState<any>(null);
-  const [rejectionReason, setRejectionReason] = useState("");
   const [tab, setTab] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const [updateRiderDetails] = useMutation(UPDATE_RIDER_DETAILS_MUTATION, {
+  const [approveRider] = useMutation(APPROVE_RIDER_MUTATION, {
+    refetchQueries: [{ query: GET_ALL_RIDERS }],
+  });
+  const [rejectRider] = useMutation(REJECT_RIDER_MUTATION, {
     refetchQueries: [{ query: GET_ALL_RIDERS }],
   });
 
   const handleApprove = async () => {
     if (selectedRider) {
-      await updateRiderDetails({
-        variables: {
-          updateRiderDetailsInput: {
-            id: selectedRider.id,
-            status: "APPROVED",
-          },
-        },
-      });
+      await approveRider({ variables: { userId: selectedRider.userId } });
       setSelectedRider(null);
     }
   };
 
   const handleReject = async () => {
     if (selectedRider) {
-      await updateRiderDetails({
-        variables: {
-          updateRiderDetailsInput: {
-            id: selectedRider.id,
-            status: "REJECTED",
-            rejectionReason,
-          },
-        },
-      });
+      await rejectRider({ variables: { userId: selectedRider.userId } });
       setSelectedRider(null);
     }
   };
@@ -243,16 +230,7 @@ const RidersPage = () => {
             Reject
           </Button>
         </DialogActions>
-        <DialogContent>
-          <TextField
-            label="Reason for Rejection"
-            fullWidth
-            multiline
-            rows={3}
-            value={rejectionReason}
-            onChange={(e) => setRejectionReason(e.target.value)}
-          />
-        </DialogContent>
+        
       </Dialog>
     </Box>
   );
