@@ -87,7 +87,7 @@ const LandingPage = () => {
             Swifteroute
           </Typography>
           {user ? (
-            <Link href="/(DashboardLayout)/" passHref>
+            <Link href="/explore" passHref>
               <Button color="inherit">Dashboard</Button>
             </Link>
           ) : (

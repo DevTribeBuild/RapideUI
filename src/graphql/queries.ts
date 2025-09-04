@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const GET_ALL_RIDERS = gql`
-  query AllRiderDetails {
-    allRiderDetails {
+  query AllRiders {
+    allRiders {
       certificateOfGoodConduct
       createdAt
       driverLicense

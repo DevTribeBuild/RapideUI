@@ -39,7 +39,7 @@ type Rider = {
 };
 
 type GetAllRidersQuery = {
-  allRiderDetails: Rider[];
+  allRiders: Rider[];
 };
 
 const RidersPage = () => {
@@ -55,7 +55,7 @@ const RidersPage = () => {
     setTab(newValue);
   };
 
-  const filteredRiders = data?.allRiderDetails?.filter((rider: any) =>
+  const filteredRiders = data?.allRiders?.filter((rider: any) =>
     rider.user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 

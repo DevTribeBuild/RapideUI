@@ -53,10 +53,11 @@ type VerifyOtpMutationVariables = {
   otp: string;
 };
 
-const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
+const AuthProfessionalRegister = ({ title, subtitle, subtext }: registerType) => {
         const [email, setEmail] = useState('');
         const { setToken, setUser } = useAuthStore.getState();
         const [currencyCode, setCurrencyCode] = useState('KES');
+        const [userType, setUserType] = useState('MERCHANT');
         const [step, setStep] = useState<'register' | 'verify'>('register');
         const [otp, setOtp] = useState('');
         const [register, { loading }] = useMutation<RegisterMutationResult, RegisterMutationVariables>(REGISTER_MUTATION);
@@ -76,7 +77,7 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
                                         registerRequest: {
                                                 email,
                                                 currencyCode,
-                                                userType: 'USER',
+                                                userType,
                                         },
                                 },
                         });
@@ -128,6 +129,29 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
 
                         {step === 'register' && (
                                 <Box component="form" onSubmit={handleRegister}>
+                                        <Stack mb={3}>
+                                                <Typography
+                                                        variant="subtitle1"
+                                                        fontWeight={600}
+                                                        component="label"
+                                                        htmlFor="userType"
+                                                        mb="5px"
+                                                >
+                                                        I am a...
+                                                </Typography>
+                                                <CustomTextField
+                                                        id="userType"
+                                                        select
+                                                        variant="outlined"
+                                                        fullWidth
+                                                        value={userType}
+                                                        onChange={(e) => setUserType(e.target.value)}
+                                                        required
+                                                >
+                                                    <MenuItem value="MERCHANT">Merchant</MenuItem>
+                                                    <MenuItem value="RIDER">Rider</MenuItem>
+                                                </CustomTextField>
+                                        </Stack>
                                         <Stack mb={3}>
                                                 <Typography
                                                         variant="subtitle1"
@@ -229,4 +253,4 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
         );
 };
 
-export default AuthRegister;
+export default AuthProfessionalRegister;
