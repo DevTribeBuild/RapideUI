@@ -102,16 +102,18 @@ const OrderDetailPage = () => {
                         <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="h6" gutterBottom>Cart Items</Typography>
                             {order.cart.items.map((item) => (
-                                <Box key={item.id} sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                                    <Image
-                                        src={item.product.imageUrl}
-                                        alt={item.product.name}
-                                        width={40}
-                                        height={40}
-                                        style={{ borderRadius: '4px', marginRight: '10px' }}
-                                    />
-                                    <Typography variant="body2">{item.product.name} x {item.quantity} - ${(item.product.price * item.quantity).toFixed(2)}</Typography>
-                                </Box>
+                                item.product && (
+                                    <Box key={item.id} sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                                        <Image
+                                            src={item.product.imageUrl}
+                                            alt={item.product.name}
+                                            width={40}
+                                            height={40}
+                                            style={{ borderRadius: '4px', marginRight: '10px' }}
+                                        />
+                                        <Typography variant="body2">{item.product.name} x {item.quantity} - ${(item.product.price * item.quantity).toFixed(2)}</Typography>
+                                    </Box>
+                                )
                             ))}
                         </Grid>
                     </Grid>
