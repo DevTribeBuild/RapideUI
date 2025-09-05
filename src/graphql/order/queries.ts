@@ -114,3 +114,55 @@ export const GET_ORDER_QUERY = gql`
     }
   }
  `;
+
+export const RIDER_ORDERS_QUERY = gql`
+  query RiderOrders {
+    riderOrders {
+      assignedRiderId
+      cart {
+        createdAt
+        id
+        items {
+          createdAt
+          id
+          product {
+            categoryId
+            createdAt
+            currencyId
+            description
+            id
+            imageUrl
+            merchantId
+            name
+            price
+            quantity
+            updatedAt
+          }
+          quantity
+          updatedAt
+        }
+        total
+        updatedAt
+      }
+      createdAt
+      deliveryAddress
+      deliveryLat
+      deliveryLng
+      id
+      notes
+      payment {
+        amount
+        createdAt
+        id
+        method
+        orderId
+        status
+        transactionHash
+        updatedAt
+      }
+      status
+      total
+      updatedAt
+    }
+  }
+`;
