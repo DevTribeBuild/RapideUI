@@ -123,7 +123,7 @@ import toast from 'react-hot-toast';
     }
   };
 
-  if (productsLoading || cartLoading) return (
+  if (productsLoading) return (
     <Grid container spacing={3}>
       {[...Array(8)].map((_, index) => (
         <Grid size={{xs:12, sm:6, md:4, lg:3}} key={index}>
@@ -135,14 +135,22 @@ import toast from 'react-hot-toast';
     </Grid>
   );
   if (productsError) return <p>Error: {productsError.message}</p>;
-  if (cartError) return <p>Error: {cartError.message}</p>;
+
+  // Render products even if cart data is loading or has an error
+  const productsToDisplay = productsData?.allProducts || [];
+  const cartItemsMap = new Map();
+  if (cartData && cartData.myCart && cartData.myCart.items) {
+    cartData.myCart.items.forEach(item => {
+      cartItemsMap.set(item.product.id, item);
+    });
+  }
 
   return (
     <Grid container spacing={3}>
-      {products.map((product) => {
+      {productsToDisplay.map((product) => {
         const productId = product.id;
-        const isInCart = cartItems.has(productId);
-        const cartItem = cartData?.myCart?.items.find(item => item.product.id === productId);
+        const cartItem = cartItemsMap.get(productId);
+        const isInCart = !!cartItem;
         const currentQuantity = cartItem?.quantity || 1;
 
         return (
@@ -193,28 +201,40 @@ import toast from 'react-hot-toast';
                 </Stack>
 
                 <Stack direction="column" alignItems="center" mt={2} spacing={1}>
-                  {!isInCart ? (
+                  {token && !cartError ? ( // Only show cart actions if logged in and cart has no error
+                    !isInCart ? (
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        onClick={() => handleAddToCartClick(product)}
+                        disabled={addToCartLoading}
+                        sx={{ padding: "8px 16px", fontSize: "0.875rem" }}
+                      >
+                        {addToCartLoading ? "Adding..." : "Add To Cart"}
+                      </Button>
+                    ) : (
+                      <>
+                        <Typography variant="subtitle2">Quantity:</Typography>
+                        <QuantityAdjuster
+                          initialQuantity={currentQuantity}
+                          onQuantityChange={(newQuantity) =>
+                            handleProductQuantityChange(productId, newQuantity)
+                          }
+                          loading={updateCartItemLoading}
+                        />
+                      </>
+                    )
+                  ) : (
                     <Button
                       variant="contained"
                       color="primary"
                       fullWidth
-                      onClick={() => handleAddToCartClick(product)}
-                      disabled={addToCartLoading}
+                      onClick={() => router.push("/authentication/login")}
                       sx={{ padding: "8px 16px", fontSize: "0.875rem" }}
                     >
-                      {addToCartLoading ? "Adding..." : "Add To Cart"}
+                      Login to Add to Cart
                     </Button>
-                  ) : (
-                    <>
-                      <Typography variant="subtitle2">Quantity:</Typography>
-                      <QuantityAdjuster
-                        initialQuantity={currentQuantity}
-                        onQuantityChange={(newQuantity) =>
-                          handleProductQuantityChange(productId, newQuantity)
-                        }
-                        loading={updateCartItemLoading}
-                      />
-                    </>
                   )}
                 </Stack>
               </CardContent>
