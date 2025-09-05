@@ -1,55 +1,5 @@
 import { gql } from "@apollo/client";
 
-export const UPLOAD_NATIONAL_ID_OR_PASSPORT_MUTATION = gql`
-  mutation UploadNationalIdOrPassport($file: Upload!) {
-    uploadNationalIdOrPassport(file: $file) {
-      success
-      message
-      url
-    }
-  }
-`;
-
-export const UPLOAD_DRIVER_LICENSE_MUTATION = gql`
-  mutation UploadDriverLicense($file: Upload!) {
-    uploadDriverLicense(file: $file) {
-      success
-      message
-      url
-    }
-  }
-`;
-
-export const UPLOAD_LOGBOOK_MUTATION = gql`
-  mutation UploadLogbook($file: Upload!) {
-    uploadLogbook(file: $file) {
-      success
-      message
-      url
-    }
-  }
-`;
-
-export const UPLOAD_CERTIFICATE_OF_GOOD_CONDUCT_MUTATION = gql`
-  mutation UploadCertificateOfGoodConduct($file: Upload!) {
-    uploadCertificateOfGoodConduct(file: $file) {
-      success
-      message
-      url
-    }
-  }
-`;
-
-export const UPLOAD_INSURANCE_MUTATION = gql`
-  mutation UploadInsurance($file: Upload!) {
-    uploadInsurance(file: $file) {
-      success
-      message
-      url
-    }
-  }
-`;
-
 export const UPSERT_RIDER_DETAILS_MUTATION = gql`
   mutation UpsertMyRiderDetails($userId: String!, $input: RiderDetailsInput!) {
     upsertRiderDetails(userId: $userId, input: $input) {
@@ -110,5 +60,6 @@ input RiderDetailsInput {
   certificateOfGoodConduct: String
   insurance: String
   motorbikeCC: Int
+  smartphoneType: String
 }
 */

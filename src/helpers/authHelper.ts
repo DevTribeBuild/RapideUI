@@ -45,11 +45,11 @@ export const handleLoginHelper = async (token: string, user: User, router: AppRo
       if (riderData && riderData.riderDetails && riderData.riderDetails.status === "APPROVED") {
         router.push("/explore");
       } else {
-        router.push("/(DashboardLayout)/riders/become-a-rider");
+        router.push("/riders/verify");
       }
     } catch (error) {
       console.error("Failed to fetch rider details:", error);
-      router.push("/(DashboardLayout)/riders/become-a-rider"); // Redirect to form if fetching fails
+      router.push("/riders/verify"); // Redirect to form if fetching fails
     }
   } else if (user.userType === "MERCHANT") {
     router.push("/merchant/verify");

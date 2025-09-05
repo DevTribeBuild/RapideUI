@@ -16,12 +16,8 @@ import { styled } from "@mui/system";
 
 import FileUploadInput from "@/components/FileUploadInput";
 import { useMutation } from "@apollo/client/react";
+import { useRouter } from "next/navigation";
 import {
-  UPLOAD_NATIONAL_ID_OR_PASSPORT_MUTATION,
-  UPLOAD_DRIVER_LICENSE_MUTATION,
-  UPLOAD_LOGBOOK_MUTATION,
-  UPLOAD_CERTIFICATE_OF_GOOD_CONDUCT_MUTATION,
-  UPLOAD_INSURANCE_MUTATION,
   UPSERT_RIDER_DETAILS_MUTATION,
 } from "@/graphql/mutations";
 import toast from "react-hot-toast";
@@ -47,6 +43,7 @@ const steps = [
   "Upload Certificate of Good Conduct",
   "Upload Insurance",
   "Motorbike Details",
+  "Smartphone Type",
 ];
 
 type UpsertRiderDetailsMutationResult = {
@@ -66,6 +63,7 @@ type UpsertRiderDetailsMutationVariables = {
     certificateOfGoodConduct?: string;
     insurance?: string;
     motorbikeCC?: number;
+    smartphoneType?: string;
   };
 };
 
@@ -78,10 +76,12 @@ const RiderVerificationPage = () => {
     certificateOfGoodConduct: "", // Will store URL
     insurance: "", // Will store URL
     motorbikeCC: "",
+    smartphoneType: "",
   });
 
   const user = useAuthStore((state) => state.user);
   const userId = user?.id || "";
+  const router = useRouter();
 
   const [upsertRiderDetails, { loading: isSubmitting }] = useMutation<UpsertRiderDetailsMutationResult, UpsertRiderDetailsMutationVariables>(UPSERT_RIDER_DETAILS_MUTATION);
 
@@ -102,6 +102,7 @@ const RiderVerificationPage = () => {
       certificateOfGoodConduct: "",
       insurance: "",
       motorbikeCC: "",
+      smartphoneType: "",
     });
   };
 
@@ -113,72 +114,51 @@ const RiderVerificationPage = () => {
     setFormData({ ...formData, motorbikeCC: event.target.value });
   };
 
+  const handleSmartphoneTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, smartphoneType: event.target.value });
+  };
+
   const getStepContent = (step: number) => {
     switch (step) {
       case 0:
         return (
-          <Box>
-            <Typography variant="h6" gutterBottom>
-              Upload National ID or Passport
-            </Typography>
-            <FileUploadInput
-              label="National ID or Passport"
-              onUploadSuccess={handleUploadSuccess("nationalIdOrPassport")}
-              currentFileUrl={formData.nationalIdOrPassport}
-            />
-          </Box>
+          <FileUploadInput
+            label="National ID or Passport"
+            onUploadSuccess={handleUploadSuccess("nationalIdOrPassport")}
+            currentFileUrl={formData.nationalIdOrPassport}
+          />
         );
       case 1:
         return (
-          <Box>
-            <Typography variant="h6" gutterBottom>
-              Upload Driver&apos;s License
-            </Typography>
-            <FileUploadInput
-              label="Driver's License"
-              onUploadSuccess={handleUploadSuccess("driverLicense")}
-              currentFileUrl={formData.driverLicense}
-            />
-          </Box>
+          <FileUploadInput
+            label="Driver's License"
+            onUploadSuccess={handleUploadSuccess("driverLicense")}
+            currentFileUrl={formData.driverLicense}
+          />
         );
       case 2:
         return (
-          <Box>
-            <Typography variant="h6" gutterBottom>
-              Upload Logbook
-            </Typography>
-            <FileUploadInput
-              label="Logbook"
-              onUploadSuccess={handleUploadSuccess("logbook")}
-              currentFileUrl={formData.logbook}
-            />
-          </Box>
+          <FileUploadInput
+            label="Logbook"
+            onUploadSuccess={handleUploadSuccess("logbook")}
+            currentFileUrl={formData.logbook}
+          />
         );
       case 3:
         return (
-          <Box>
-            <Typography variant="h6" gutterBottom>
-              Upload Certificate of Good Conduct
-            </Typography>
-            <FileUploadInput
-              label="Certificate of Good Conduct"
-              onUploadSuccess={handleUploadSuccess("certificateOfGoodConduct")}
-              currentFileUrl={formData.certificateOfGoodConduct}
-            />
-          </Box>
+          <FileUploadInput
+            label="Certificate of Good Conduct"
+            onUploadSuccess={handleUploadSuccess("certificateOfGoodConduct")}
+            currentFileUrl={formData.certificateOfGoodConduct}
+          />
         );
       case 4:
         return (
-          <Box>
-            <Typography variant="h6" gutterBottom>
-              Upload Insurance
-            </Typography>
-            <FileUploadInput
-              label="Insurance"
-              onUploadSuccess={handleUploadSuccess("insurance")}
-              currentFileUrl={formData.insurance}
-            />
-          </Box>
+          <FileUploadInput
+            label="Insurance"
+            onUploadSuccess={handleUploadSuccess("insurance")}
+            currentFileUrl={formData.insurance}
+          />
         );
       case 5:
         return (
@@ -191,6 +171,23 @@ const RiderVerificationPage = () => {
               type="number"
               value={formData.motorbikeCC}
               onChange={handleMotorbikeCCChange}
+              fullWidth
+              required
+              sx={{ mt: 2 }}
+            />
+          </Box>
+        );
+      case 6:
+        return (
+          <Box>
+            <Typography variant="h6" gutterBottom>
+              Enter Smartphone Type
+            </Typography>
+            <TextField
+              label="Smartphone Type"
+              type="text"
+              value={formData.smartphoneType}
+              onChange={handleSmartphoneTypeChange}
               fullWidth
               required
               sx={{ mt: 2 }}
@@ -216,6 +213,8 @@ const RiderVerificationPage = () => {
         return formData.insurance !== "";
       case 5:
         return formData.motorbikeCC.trim() !== "" && parseInt(formData.motorbikeCC) > 0;
+      case 6:
+        return formData.smartphoneType.trim() !== "";
       default:
         return false;
     }
@@ -234,12 +233,13 @@ const RiderVerificationPage = () => {
         certificateOfGoodConduct: formData.certificateOfGoodConduct,
         insurance: formData.insurance,
         motorbikeCC: parseInt(formData.motorbikeCC),
+        smartphoneType: formData.smartphoneType,
       };
       const { data } = await upsertRiderDetails({ variables: { userId, input } });
 
       if (data && data.upsertRiderDetails && data.upsertRiderDetails.id) {
         toast.success("Rider verification process completed!");
-        // In a real application, you would navigate away or show a success message
+        router.push("/riders/orders");
       } else {
         toast.error("Rider verification failed.");
       }
@@ -289,9 +289,9 @@ const RiderVerificationPage = () => {
                 <StyledButton
                   onClick={activeStep === steps.length - 1 ? handleFormSubmit : handleNext}
                   variant="contained"
-                  disabled={!isStepComplete(activeStep)}
+                  disabled={!isStepComplete(activeStep) || isSubmitting}
                 >
-                  {activeStep === steps.length - 1 ? "Finish" : "Next"}
+                  {isSubmitting ? "Submitting..." : (activeStep === steps.length - 1 ? "Finish" : "Next")}
                 </StyledButton>
               </Box>
             </Box>

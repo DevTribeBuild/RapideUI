@@ -13,7 +13,7 @@ import {
     Divider,
 } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
-import { MY_ORDERS_QUERY } from '@/graphql/order/queries';
+import { RIDER_ORDERS_QUERY } from '@/graphql/order/queries';
 import PageContainer from "@/app/(DashboardLayout)/components/container/PageContainer";
 import useAuthStore from "@/stores/useAuthStore";
 import { useRouter } from "next/navigation";
@@ -57,37 +57,37 @@ type Order = {
     };
 };
 
-type MyOrdersQuery = {
-    myOrders: Order[];
+type RiderOrdersQuery = {
+    riderOrders: Order[];
 };
 
-const Orders = () => {
+const RiderOrdersPage = () => {
     const { token } = useAuthStore();
     const router = useRouter();
-    const { data, loading, error } = useQuery<MyOrdersQuery>(MY_ORDERS_QUERY, {
+    const { data, loading, error } = useQuery<RiderOrdersQuery>(RIDER_ORDERS_QUERY, {
         skip: !token,
         onError: (err) => {
-            console.error("Error fetching orders:", err);
+            console.error("Error fetching rider orders:", err);
             if (err.message === 'Unauthorized') {
                 useAuthStore.getState().clearAuth();
             }
         },
     });
 
-    if (loading) return <Typography>Loading orders...</Typography>;
+    if (loading) return <Typography>Loading assigned orders...</Typography>;
     if (error) return <Typography color="error">Error: {error.message}</Typography>;
 
-    const orders = data?.myOrders || [];
+    const orders = data?.riderOrders || [];
 
     return (
-        <PageContainer title="My Orders" description="View your past orders">
+        <PageContainer title="Assigned Orders" description="View your assigned orders">
             <Container maxWidth="lg" sx={{ mt: 4 }}>
                 <Typography variant="h4" gutterBottom>
-                    My Orders
+                    Assigned Orders
                 </Typography>
                 <br />
                 {orders.length === 0 ? (
-                    <Typography>You have no orders yet.</Typography>
+                    <Typography>You have no assigned orders yet.</Typography>
                 ) : (
                     <Paper elevation={3}>
                         <List>
@@ -103,8 +103,9 @@ const Orders = () => {
                                             }
                                             secondary={
                                                 <>
-                                                    <Typography variant="body2" component="span">Total: ${order.total.toFixed(2)}</Typography>
-                                                    <Typography variant="body2" component="span">Ordered On: {new Date(order.createdAt).toLocaleDateString()}</Typography>
+                                                    <Typography variant="body2">Total: ${order.total.toFixed(2)}</Typography>
+                                                    <Typography variant="body2">Delivery Address: {order.deliveryAddress}</Typography>
+                                                    <Typography variant="body2">Ordered On: {new Date(order.createdAt).toLocaleDateString()}</Typography>
                                                 </>
                                             }
                                         />
@@ -120,4 +121,4 @@ const Orders = () => {
     );
 };
 
-export default Orders;
+export default RiderOrdersPage;
