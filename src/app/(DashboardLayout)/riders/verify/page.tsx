@@ -102,6 +102,7 @@ const RiderVerificationPage = () => {
       certificateOfGoodConduct: "",
       insurance: "",
       motorbikeCC: "",
+      smartphoneType: "",
     });
   };
 

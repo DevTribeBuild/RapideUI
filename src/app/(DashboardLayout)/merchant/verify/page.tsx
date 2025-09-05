@@ -17,11 +17,6 @@ import { styled } from "@mui/system";
 import FileUploadInput from "@/components/FileUploadInput";
 import { useMutation } from "@apollo/client/react";
 import {
-  UPLOAD_NATIONAL_ID_OR_PASSPORT_MUTATION,
-  UPLOAD_DRIVER_LICENSE_MUTATION,
-  UPLOAD_LOGBOOK_MUTATION,
-  UPLOAD_CERTIFICATE_OF_GOOD_CONDUCT_MUTATION,
-  UPLOAD_INSURANCE_MUTATION,
   UPSERT_RIDER_DETAILS_MUTATION,
 } from "@/graphql/mutations";
 import toast from "react-hot-toast";
