@@ -26,45 +26,45 @@ import { ADD_TO_CART_MUTATION, UPDATE_CART_ITEM_MUTATION } from "@/graphql/cart/
 import toast from 'react-hot-toast';
 
 
-  type Product = {
-    id: string;
-    name: string;
-    description: string;
-    price: number;
-    imageUrl: string;
-    merchantId: string;
-    currencyId: string;
-    categoryId: string;
-    quantity: number;
-    createdAt: string;
-    updatedAt: string;
-  };
+type Product = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  imageUrl: string;
+  merchantId: string;
+  currencyId: string;
+  categoryId: string;
+  quantity: number;
+  createdAt: string;
+  updatedAt: string;
+};
 
-  type AllProductsQuery = {
-    allProducts: Product[];
-  };
+type AllProductsQuery = {
+  allProducts: Product[];
+};
 
-  type MyCartQuery = {
-    myCart: {
-      items: {
-        product: { id: string };
-        quantity: number;
-      }[];
-    } | null;
-  };
-  
-  import useAuthStore from '@/stores/useAuthStore';
+type MyCartQuery = {
+  myCart: {
+    items: {
+      product: { id: string };
+      quantity: number;
+    }[];
+  } | null;
+};
+
+import useAuthStore from '@/stores/useAuthStore';
 import { ApolloError } from "@apollo/client";
 
-  
-  const Blog = () => {
+
+const Blog = () => {
   const { token } = useAuthStore();
   const router = useRouter();
   const [openPreviewDialog, setOpenPreviewDialog] = useState(false);
 
   const { data: productsData, loading: productsLoading, error: productsError } = useQuery<AllProductsQuery>(ALL_PRODUCTS_QUERY);
   const [cartErrorState, setCartErrorState] = useState<ApolloError | undefined>(undefined);
-  const { data: cartData, loading: cartLoading, error: cartError } = useQuery<MyCartQuery>(MY_CART_QUERY, { 
+  const { data: cartData, loading: cartLoading, error: cartError } = useQuery<MyCartQuery>(MY_CART_QUERY, {
     skip: !token || (cartErrorState && cartErrorState.message === 'Unauthorized'),
     onError: (error) => {
       if (error.message === 'Unauthorized') {
@@ -135,7 +135,7 @@ import { ApolloError } from "@apollo/client";
   if (productsLoading) return (
     <Grid container spacing={3}>
       {[...Array(8)].map((_, index) => (
-        <Grid size={{xs:12, sm:6, md:4, lg:3}} key={index}>
+        <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={index}>
           <Skeleton variant="rectangular" width="100%" height={200} />
           <Skeleton variant="text" />
           <Skeleton variant="text" width="60%" />
@@ -163,7 +163,7 @@ import { ApolloError } from "@apollo/client";
         const currentQuantity = cartItem?.quantity || 1;
 
         return (
-          <Grid size={{xs:12, sm:6, md:4, lg:3}} key={product.id}>
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={product.id}>
             <BlankCard>
               <Typography
                 component="div"
@@ -210,7 +210,7 @@ import { ApolloError } from "@apollo/client";
                 </Stack>
 
                 <Stack direction="column" alignItems="center" mt={2} spacing={1}>
-                  {token && !cartError ? ( // Only show cart actions if logged in and cart has no error
+                  {token ? ( // Only show cart actions if logged in and cart has no error
                     !isInCart ? (
                       <Button
                         variant="contained"
@@ -246,6 +246,7 @@ import { ApolloError } from "@apollo/client";
                     </Button>
                   )}
                 </Stack>
+
               </CardContent>
             </BlankCard>
           </Grid>
@@ -345,4 +346,4 @@ import { ApolloError } from "@apollo/client";
     </Grid>
   );
 }
-  export default Blog;
+export default Blog;
