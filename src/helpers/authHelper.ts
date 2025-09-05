@@ -1,6 +1,7 @@
 import useAuthStore, { User, UserDetails } from "@/stores/useAuthStore";
 import client from "@/apolloClient";
-import { GET_ME, GET_MY_RIDER_DETAILS_QUERY } from "../graphql";
+import { GET_MY_RIDER_DETAILS_QUERY } from "@/graphql/queries";
+import { GET_ME } from "@/graphql";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 export const handleLoginHelper = async (token: string, user: User, router: AppRouterInstance) => {
