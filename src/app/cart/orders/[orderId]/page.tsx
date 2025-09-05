@@ -88,7 +88,7 @@ const OrderDetailPage = () => {
                 </Typography>
                 <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
                     <Grid container spacing={2}>
-                        <Grid item xs={12} md={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="h6" gutterBottom>Order Information</Typography>
                             <Typography variant="body1"><strong>Status:</strong> <Box component="span"><Chip label={order.status} color={order.status === 'DELIVERED' ? 'success' : 'warning'} /></Box></Typography>
                             <Typography variant="body1"><strong>Total:</strong> ${order.total.toFixed(2)}</Typography>
@@ -99,7 +99,7 @@ const OrderDetailPage = () => {
                             {order.notes && <Typography variant="body1"><strong>Notes:</strong> {order.notes}</Typography>}
                             <Typography variant="body1"><strong>Ordered On:</strong> {new Date(order.createdAt).toLocaleDateString()}</Typography>
                         </Grid>
-                        <Grid item xs={12} md={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="h6" gutterBottom>Cart Items</Typography>
                             {order.cart.items.map((item) => (
                                 <Box key={item.id} sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
