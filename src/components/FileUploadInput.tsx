@@ -47,9 +47,9 @@ const FileUploadInput: React.FC<FileUploadInputProps> = ({
         } else {
           toast.error(data?.singleUpload?.message || `Failed to upload ${label}.`);
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error(`Error uploading ${label}:`, err);
-        toast.error(`Error uploading ${label}. Please try again.`);
+        toast.error(err.message || `Error uploading ${label}. Please try again.`);
       }
     }
   };
