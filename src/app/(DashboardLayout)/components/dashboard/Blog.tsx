@@ -54,6 +54,7 @@ import toast from 'react-hot-toast';
   };
   
   import useAuthStore from '@/stores/useAuthStore';
+import { ApolloError } from "@apollo/client";
 
   
   const Blog = () => {
@@ -62,14 +63,22 @@ import toast from 'react-hot-toast';
   const [openPreviewDialog, setOpenPreviewDialog] = useState(false);
 
   const { data: productsData, loading: productsLoading, error: productsError } = useQuery<AllProductsQuery>(ALL_PRODUCTS_QUERY);
+  const [cartErrorState, setCartErrorState] = useState<ApolloError | undefined>(undefined);
   const { data: cartData, loading: cartLoading, error: cartError } = useQuery<MyCartQuery>(MY_CART_QUERY, { 
-    skip: !token,
+    skip: !token || (cartErrorState && cartErrorState.message === 'Unauthorized'),
     onError: (error) => {
       if (error.message === 'Unauthorized') {
         useAuthStore.getState().clearAuth();
+        setCartErrorState(error);
       }
     }
   });
+
+  useEffect(() => {
+    if (cartError) {
+      setCartErrorState(cartError);
+    }
+  }, [cartError]);
   const [addToCart, { loading: addToCartLoading }] = useMutation(ADD_TO_CART_MUTATION, { refetchQueries: [{ query: MY_CART_QUERY }] });
   const [updateCartItem, { loading: updateCartItemLoading }] = useMutation(UPDATE_CART_ITEM_MUTATION, { refetchQueries: [{ query: MY_CART_QUERY }] });
   const [products, setProducts] = useState<Product[]>([]);
