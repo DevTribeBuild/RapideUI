@@ -103,8 +103,8 @@ const Orders = () => {
                                             }
                                             secondary={
                                                 <>
-                                                    <Typography variant="body2">Total: ${order.total.toFixed(2)}</Typography>
-                                                    <Typography variant="body2">Ordered On: {new Date(order.createdAt).toLocaleDateString()}</Typography>
+                                                    <Typography variant="body2" component="span">Total: ${order.total.toFixed(2)}</Typography>
+                                                    <Typography variant="body2" component="span">Ordered On: {new Date(order.createdAt).toLocaleDateString()}</Typography>
                                                 </>
                                             }
                                         />
