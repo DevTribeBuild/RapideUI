@@ -60,7 +60,7 @@ type CreateProductMutationVariables = {
     imageUrl: string;
     categoryId: string;
     currencyId: string;
-    merchantId: string;
+    // merchantId: string;
   };
 };
 
@@ -131,12 +131,12 @@ const ProductManagementApp: React.FC = () => {
       } else {
         const createProductInput = {
           categoryId: productToSave.category,
-          currencyId: productToSave.currencyId,
+          currencyId: "983ffabb-f015-457a-a02b-b2d91c071edf",
           description: productToSave.description,
           imageUrl: productToSave.imageUrl,
           name: productToSave.name,
           price: Number(productToSave.price),
-          merchantId: merchantId, // Add merchantId here
+          // merchantId: merchantId, // Add merchantId here
         };
         await createProduct({ variables: { input: createProductInput } });
         toast.success('Product created successfully!');

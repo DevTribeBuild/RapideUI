@@ -1,6 +1,6 @@
 import useAuthStore, { User, UserDetails } from "@/stores/useAuthStore";
 import client from "@/apolloClient";
-import { GET_ME } from "../graphql";
+import { GET_ME, GET_MY_RIDER_DETAILS_QUERY } from "../graphql";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 export const handleLoginHelper = async (token: string, user: User, router: AppRouterInstance) => {
@@ -29,9 +29,29 @@ export const handleLoginHelper = async (token: string, user: User, router: AppRo
   }
 
   if (user.userType === "RIDER") {
-    router.push("/(DashboardLayout)/riders/verify");
+    try {
+      const { data: riderData } = await client.query({
+        query: GET_MY_RIDER_DETAILS_QUERY,
+        variables: { userId: user.id },
+        fetchPolicy: "no-cache",
+        context: {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      });
+
+      if (riderData && riderData.riderDetails && riderData.riderDetails.status === "APPROVED") {
+        router.push("/explore");
+      } else {
+        router.push("/(DashboardLayout)/riders/become-a-rider");
+      }
+    } catch (error) {
+      console.error("Failed to fetch rider details:", error);
+      router.push("/(DashboardLayout)/riders/become-a-rider"); // Redirect to form if fetching fails
+    }
   } else if (user.userType === "MERCHANT") {
-    router.push("/(DashboardLayout)/merchant/verify");
+    router.push("/merchant/verify");
   } else if (user.userType === "ADMIN") {
     router.push("/explore");
   } else {

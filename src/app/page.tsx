@@ -204,7 +204,7 @@ const LandingPage = () => {
           </Typography>
           <Stack sx={{ pt: 4 }} direction="row" spacing={2} justifyContent="center">
             {user ? (
-              <Link href="/(DashboardLayout)/" passHref>
+              <Link href="/explore/" passHref>
                 <Button variant="contained" size="large">
                   Dashboard
                 </Button>
