@@ -79,10 +79,11 @@ const Blog = () => {
       setCartErrorState(cartError);
     }
   }, [cartError]);
-  const [addToCart, { loading: addToCartLoading }] = useMutation(ADD_TO_CART_MUTATION, { refetchQueries: [{ query: MY_CART_QUERY }] });
+  const [addToCart] = useMutation(ADD_TO_CART_MUTATION, { refetchQueries: [{ query: MY_CART_QUERY }] });
   const [updateCartItem, { loading: updateCartItemLoading }] = useMutation(UPDATE_CART_ITEM_MUTATION, { refetchQueries: [{ query: MY_CART_QUERY }] });
   const [products, setProducts] = useState<Product[]>([]);
   const [cartItems, setCartItems] = useState(new Set());
+  const [loadingProductId, setLoadingProductId] = useState<string | null>(null);
 
   useEffect(() => {
     if (productsData && productsData.allProducts) {
@@ -113,12 +114,15 @@ const Blog = () => {
   };
 
   const handleAddToCartClick = async (product: Product) => {
+    setLoadingProductId(product.id);
     try {
       await addToCart({ variables: { input: { productId: product.id, quantity: 1 } } });
       toast.success(`${product.name} added to cart!`);
     } catch (err) {
       console.error("Error adding to cart:", err);
       toast.error(`Failed to add ${product.name} to cart.`);
+    } finally {
+      setLoadingProductId(null);
     }
   };
 
@@ -217,10 +221,10 @@ const Blog = () => {
                         color="primary"
                         fullWidth
                         onClick={() => handleAddToCartClick(product)}
-                        disabled={addToCartLoading}
+                        disabled={loadingProductId === product.id}
                         sx={{ padding: "8px 16px", fontSize: "0.875rem" }}
                       >
-                        {addToCartLoading ? "Adding..." : "Add To Cart"}
+                        {loadingProductId === product.id ? "Adding..." : "Add To Cart"}
                       </Button>
                     ) : (
                       <>
@@ -326,6 +330,7 @@ const Blog = () => {
               <Button
                 variant="contained"
                 onClick={async () => {
+                  setLoadingProductId(selectedProduct.id);
                   try {
                     await addToCart({ variables: { input: { productId: selectedProduct.id, quantity: 1 } } });
                     toast.success(`${selectedProduct.name} added to cart!`);
@@ -333,11 +338,13 @@ const Blog = () => {
                   } catch (err) {
                     console.error("Error adding to cart from preview:", err);
                     toast.error(`Failed to add ${selectedProduct.name} to cart.`);
+                  } finally {
+                    setLoadingProductId(null);
                   }
                 }}
-                disabled={addToCartLoading}
+                disabled={loadingProductId === selectedProduct.id}
               >
-                {addToCartLoading ? "Adding..." : "Add to Cart"}
+                {loadingProductId === selectedProduct.id ? "Adding..." : "Add to Cart"}
               </Button>
             </DialogActions>
           </>

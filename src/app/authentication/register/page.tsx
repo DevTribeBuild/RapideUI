@@ -57,6 +57,7 @@ const Register2 = () => (
                 </Typography>
               }
               subtitle={
+                <>
                 <Stack
                   direction="row"
                   justifyContent="center"
@@ -81,7 +82,28 @@ const Register2 = () => (
                   >
                     Sign In
                   </Typography>
+                  <br/>
                 </Stack>
+                                <Stack
+                  direction="row"
+                  justifyContent="center"
+                  spacing={1}
+                  mt={3}
+                >
+
+                  <Typography
+                    component={Link}
+                    href="/authentication/register/professional"
+                    fontWeight="500"
+                    sx={{
+                      textDecoration: "none",
+                      color: "primary.main",
+                    }}
+                    >
+                    Register as a merchant or rider ?
+                  </Typography>
+                    </Stack>
+                  </>
               }
             />
           </Card>

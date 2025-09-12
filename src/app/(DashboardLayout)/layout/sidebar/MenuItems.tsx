@@ -81,6 +81,13 @@ export const getMenuItems = (user: { userType?: string } | null) => {
     },
     {
       id: uniqueId(),
+      title: "Manage Orders",
+      icon: IconMoodHappy,
+      href: "/admin/orders",
+      userType: ["ADMIN"],
+    },
+    {
+      id: uniqueId(),
       title: "Payments",
       icon: IconMoodHappy,
       href: "/payments",
