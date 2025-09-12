@@ -1,6 +1,5 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import useAppStore from "@/stores/useAuthStore";
 import {
     Box,
     Tabs,
@@ -13,14 +12,20 @@ import {
     Paper,
 } from '@mui/material';
 import { gql } from "@apollo/client";
-import { useMutation } from "@apollo/client/react";
+import useAppStore from "@/stores/useAuthStore";
+import { useMutation, useQuery } from "@apollo/client/react";
 import { UPDATE_USER_MUTATION } from "@/graphql";
+import { FIND_ONE_USER_QUERY } from "@/graphql/user/queries";
 
 
 type UpdateUserMutationVariables = {
   updateUserInput: {
     id: string;
     email?: string;
+    firstName?: string;
+    lastName?: string;
+    username?: string;
+    phone?: string;
   };
 };
 
@@ -51,13 +56,21 @@ export default function ProfilePage() {
     const userDetails: any = useAppStore((state) => state.userDetails);
     const [tab, setTab] = useState(0);
     const [editMode, setEditMode] = useState(false);
-    const [form, setForm] = useState<UserDetails>(userDetails);
+    const [form, setForm] = useState<UserDetails>({});
 
-    const [updateUser, { loading, error }] = useMutation<any, UpdateUserMutationVariables>(UPDATE_USER_MUTATION);
+    const { data: userData, loading: userLoading, error: userError } = useQuery(FIND_ONE_USER_QUERY, {
+        variables: { email: userDetails?.email },
+        skip: !userDetails?.email,
+    });
+    const [updateUser, { loading, error }] = useMutation<any, UpdateUserMutationVariables>(UPDATE_USER_MUTATION, {
+        refetchQueries: [{ query: FIND_ONE_USER_QUERY, variables: { email: userDetails?.email } }]
+    });
 
     useEffect(() => {
-        setForm(userDetails);
-    }, [userDetails]);
+        if (userData && userData.user) {
+            setForm(userData.user);
+        }
+    }, [userData]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -75,13 +88,12 @@ export default function ProfilePage() {
         updateUser({
             variables: {
                 updateUserInput: {
-                    id: userDetails.id,
-                    // firstName: form?.firstName || "",
-                    // lastName: form?.lastName || "",
+                    id: userData.user.id,
+                    firstName: form?.firstName || "",
+                    lastName: form?.lastName || "",
                     email: form?.email,
-                    // username: form?.username || "",
-                    // phone: form?.phone || "",
-                    // walletAddress: form?.walletAddress || "",
+                    username: form?.username || "",
+                    phone: form?.phone || "",
                 },
             },
         })
@@ -92,6 +104,9 @@ export default function ProfilePage() {
                 console.error("Error updating profile:", err);
             });
     };
+
+    if (userLoading) return <p>Loading profile...</p>;
+    if (userError) return <p>Error loading profile: {userError.message}</p>;
 
     return (
         <Paper sx={{ maxWidth: 1000, mx: 'auto', mt: 4, p: 3 }}>

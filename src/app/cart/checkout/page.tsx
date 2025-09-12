@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@apollo/client/react";
 import { MY_CART_QUERY } from '@/graphql/cart/queries';
 import { CREATE_ORDER_MUTATION } from '@/graphql/order/mutations';
+import { CREATE_PAYMENT_MUTATION } from '@/graphql/payment/mutations';
 import { CLEAR_CART_MUTATION } from '@/graphql/cart/mutations';
 import toast from 'react-hot-toast';
 import { Grid, Typography, Paper, Button, Divider, TextField, Tabs, Tab, Box, Stack, CircularProgress, Skeleton } from "@mui/material";
@@ -38,6 +39,14 @@ type CreateOrderMutationVariables = {
   };
 };
 
+type CreatePaymentMutationVariables = {
+  input: {
+    orderId: string;
+    amount: number;
+    method: string;
+  };
+};
+
 import useAuthStore from "@/stores/useAuthStore";
 
 const CheckoutPage = () => {
@@ -61,6 +70,7 @@ const CheckoutPage = () => {
     }
   });
   const [createOrder, { loading: createOrderLoading }] = useMutation<any, CreateOrderMutationVariables>(CREATE_ORDER_MUTATION);
+  const [createPayment, { loading: createPaymentLoading }] = useMutation<any, CreatePaymentMutationVariables>(CREATE_PAYMENT_MUTATION);
   const [clearCart] = useMutation(CLEAR_CART_MUTATION);
 
   const cartItems = cartData?.myCart?.items || [];
@@ -90,7 +100,7 @@ const CheckoutPage = () => {
     }
 
     try {
-        await createOrder({
+        const orderResponse = await createOrder({
             variables: {
                 input: {
                     cartId,
@@ -99,6 +109,20 @@ const CheckoutPage = () => {
                 },
             },
         });
+
+        const orderId = orderResponse.data.createOrder.id;
+        const paymentMethod = ["Card", "Mpesa", "Crypto"][tab];
+
+        await createPayment({
+            variables: {
+                input: {
+                    orderId,
+                    amount: total,
+                    method: paymentMethod,
+                },
+            },
+        });
+
         toast.success("Order placed successfully!");
         await clearCart();
         router.push("/cart/tracking");
@@ -162,8 +186,8 @@ const CheckoutPage = () => {
                         <TextField label="Card Number" fullWidth />
                         <TextField label="Expiry Date" fullWidth />
                         <TextField label="CVV" fullWidth />
-                        <Button variant="contained" color="primary" fullWidth onClick={handleCheckout} disabled={createOrderLoading || cartLoading}>
-                            {createOrderLoading || cartLoading ? 'Processing...' : `Pay with Card`}
+                        <Button variant="contained" color="primary" fullWidth onClick={handleCheckout} disabled={createOrderLoading || createPaymentLoading || cartLoading}>
+                            {createOrderLoading || createPaymentLoading || cartLoading ? 'Processing...' : `Pay with Card`}
                         </Button>
                     </Stack>
                     )}
@@ -175,16 +199,16 @@ const CheckoutPage = () => {
                         value={phone}
                         onChange={e => setPhone(e.target.value)}
                         />
-                        <Button variant="contained" color="success" fullWidth onClick={handleCheckout} disabled={createOrderLoading || cartLoading}>
-                            {createOrderLoading || cartLoading ? 'Processing...' : `Send Mpesa Prompt`}
+                        <Button variant="contained" color="success" fullWidth onClick={handleCheckout} disabled={createOrderLoading || createPaymentLoading || cartLoading}>
+                            {createOrderLoading || createPaymentLoading || cartLoading ? 'Processing...' : `Send Mpesa Prompt`}
                         </Button>
                     </Stack>
                     )}
                     {tab === 2 && (
                     <Stack spacing={2}>
                         <ConnectWalletButton />
-                        <Button variant="contained" color="secondary" fullWidth sx={{ mt: 2 }} onClick={handleCheckout} disabled={createOrderLoading || cartLoading}>
-                            {createOrderLoading || cartLoading ? 'Processing...' : `Pay with Crypto`}
+                        <Button variant="contained" color="secondary" fullWidth sx={{ mt: 2 }} onClick={handleCheckout} disabled={createOrderLoading || createPaymentLoading || cartLoading}>
+                            {createOrderLoading || createPaymentLoading || cartLoading ? 'Processing...' : `Pay with Crypto`}
                         </Button>
                     </Stack>
                     )}
