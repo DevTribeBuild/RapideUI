@@ -116,40 +116,65 @@ export const GET_ORDER_QUERY = gql`
  `;
 
 export const ALL_ORDERS_QUERY = gql`
-  query AllOrders {
-    allOrders {
-      id
-      status
-      deliveryAddress
-      notes
-      assignedRiderId
+  query AllOrders($status: String) {
+  allOrders(status: $status) {
+    assignedRiderId
+    cart {
       createdAt
-      updatedAt
-      cart {
-        id
-        userId
-        total
+      id
+      items {
         createdAt
-        updatedAt
-        items {
-          quantity
-          product {
+        id
+        product {
+          categoryId
+          createdAt
+          currency {
+            code
+            createdAt
+            decimals
             id
             name
-            description
-            quantity
-            price
-            imageUrl
-            merchantId
-            currencyId
-            categoryId
-            createdAt
+            rateToUSD
+            symbol
             updatedAt
           }
+          currencyId
+          description
+          id
+          imageUrl
+          merchantId
+          name
+          price
+          quantity
+          updatedAt
         }
+        quantity
+        updatedAt
       }
+      total
+      updatedAt
     }
+    createdAt
+    deliveryAddress
+    deliveryLat
+    deliveryLng
+    id
+    notes
+    payment {
+      amount
+      createdAt
+      id
+      method
+      orderId
+      status
+      transactionHash
+      updatedAt
+    }
+    status
+    total
+    updatedAt
   }
+}
 `;
 
 export const RIDER_ORDERS_QUERY = gql`
