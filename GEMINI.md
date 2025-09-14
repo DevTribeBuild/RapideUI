@@ -14,3 +14,7 @@ This is a Next.js project built with React, Material-UI, Apollo Client, and Zust
 *   **Styling:** Uses Emotion for styling, integrated with Material-UI.
 *   **Notifications:** `react-hot-toast` for displaying toast notifications.
 *   **Image Handling:** Configured `next.config.js` to allow images from `placehold.co`, `res.cloudinary.com`, `images.unsplash.com`, `cdn.pixabay.com`, `images.pexels.com`, `cdn.shopify.com`, `www.gravatar.com`, and `avatars.githubusercontent.com`.
+
+## Gemini Rules
+
+*   Do not run `npm run build` or `npm run dev`.
