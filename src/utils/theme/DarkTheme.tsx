@@ -8,26 +8,27 @@ export const inter = Inter({
   fallback: ["Helvetica", "Arial", "sans-serif"],
 });
 
-const baselightTheme = createTheme({
+const basedarkTheme = createTheme({
   direction: "ltr",
   palette: {
+    mode: "dark",
     primary: {
-      main: "#ffd700", // Accent color
-      light: "#ffdf33",
-      dark: "#b29600",
+      main: "#FFD700", // Gold
+      light: "#FFFF00",
+      dark: "#B8860B",
     },
     secondary: {
-      main: "#4caf50", // Green
-      light: "#81c784",
-      dark: "#388e3c",
+      main: "#FFFFFF", // White
+      light: "#F5F5F5",
+      dark: "#A9A9A9",
     },
     background: {
-      default: "#f4f6f8",
-      paper: "#ffffff",
+      default: "#121212",
+      paper: "#1E1E1E",
     },
     text: {
-      primary: "#212121",
-      secondary: "#757575",
+      primary: "#FFFFFF",
+      secondary: "#A9A9A9",
     },
   },
   typography: {
@@ -84,6 +85,11 @@ const baselightTheme = createTheme({
           borderRadius: "8px",
           padding: "10px 20px",
         },
+        containedPrimary: {
+          "&:hover": {
+            backgroundColor: "#B8860B",
+          },
+        },
       },
     },
     MuiCard: {
@@ -96,4 +102,4 @@ const baselightTheme = createTheme({
   },
 });
 
-export { baselightTheme };
+export { basedarkTheme };

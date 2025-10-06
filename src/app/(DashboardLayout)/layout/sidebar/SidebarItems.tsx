@@ -18,8 +18,9 @@ import Image from "next/image";
 
 import { IconProps } from "@tabler/icons-react";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
+import useThemeStore from "@/stores/useThemeStore";
 
-type MenuItem =
+type MenuItemType =
     {
       id?: string;
       navlabel?: boolean;
@@ -32,13 +33,17 @@ type MenuItem =
 
 
 
-const renderMenuItems = (items: any, pathDirect: any) => {
+const renderMenuItems = (items: any, pathDirect: any, theme: any, currentTheme: 'light' | 'dark') => {
 
   return items.map((item: any) => {
 
     const Icon = item.icon ? item.icon : IconPoint;
 
     const itemIcon = <Icon stroke={1.5} size="1.3rem" />;
+
+    // const textColor = currentTheme === 'dark' ? '#FFD700' : '#000000';
+    const textColor = '#ffd700';
+    const selectedColor = theme.palette.primary.main;
 
     if (item.subheader) {
       // Display Subheader
@@ -59,7 +64,7 @@ const renderMenuItems = (items: any, pathDirect: any) => {
           icon={itemIcon}
           borderRadius='7px'
         >
-          {renderMenuItems(item.children, pathDirect)}
+          {renderMenuItems(item.children, pathDirect, theme, currentTheme)}
         </Submenu>
       );
     }
@@ -71,12 +76,32 @@ const renderMenuItems = (items: any, pathDirect: any) => {
         key={item.id}
         isSelected={pathDirect === item?.href}
         borderRadius='8px'
-        icon={itemIcon}
+        icon={
+          React.cloneElement(itemIcon, {
+            sx: {
+              color: pathDirect === item?.href ? selectedColor : textColor,
+              fontSize: 24, // optional
+            },
+          })
+        }
         link={item.href}
         component={Link}
-        sx={{ px: 3 }} // Add padding directly to MenuItem
+        sx={{ 
+          px: 3,
+          color: pathDirect === item?.href ? selectedColor : textColor,
+          backgroundColor: pathDirect === item?.href ? (currentTheme === 'dark' ? 'rgba(255, 215, 0, 0.1)' : 'rgba(0, 0, 0, 0.05)') : 'transparent',
+        }} // Add padding directly to MenuItem
       >
-        {item.title}
+        <Typography
+
+          variant="body1"
+          sx={{
+            fontWeight: 500,
+            color: pathDirect === item?.href ? selectedColor : textColor,
+          }}
+        >
+          {item.title}
+        </Typography>
       </MenuItem >
     );
   });
@@ -87,8 +112,9 @@ const SidebarItems = () => {
   const pathname = usePathname();
   const pathDirect = pathname;
   const user = useAppStore((state) => state.user);
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [menuItems, setMenuItems] = useState<MenuItemType[]>([]);
   const theme = useTheme();
+  const { theme: currentTheme } = useThemeStore();
 
   useEffect(() => {
     try{
@@ -102,19 +128,22 @@ const SidebarItems = () => {
 
   return (
     < >
-      <MUI_Sidebar width={"100%"} showProfile={false} themeColor={theme.palette.primary.main} themeSecondaryColor={theme.palette.secondary.main} >
+      <MUI_Sidebar width={"100%"} showProfile={false} >
 
         <Box sx={{ p: 2, display: "flex", justifyContent: "center", alignItems: "center" }}>
-          <Image
-            src="/images/logos/image.png"
+          {/* <Image
+            src={currentTheme === 'dark' ? "/images/logos/dark-logo.png" : "/images/logos/image.png"}
             alt="logo"
             style={{ objectFit: 'contain' }}
             width={200}
             height={70}
-          />
+          /> */}
+          <Typography variant="h5" fontWeight="bold" color={theme.palette.primary.main}>
+            Swifteroute
+          </Typography>
         </Box>
         <Divider />
-        {renderMenuItems(menuItems, pathDirect)}
+        {renderMenuItems(menuItems, pathDirect, theme, currentTheme)}
         <Box px={2}>
           <Upgrade />
         </Box>
@@ -124,3 +153,5 @@ const SidebarItems = () => {
   );
 };
 export default SidebarItems;
+
+

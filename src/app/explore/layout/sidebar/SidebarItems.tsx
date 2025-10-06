@@ -67,19 +67,17 @@ const renderMenuItems = (items: any, pathDirect: any) => {
     // If the item has no children, render a MenuItem
 
     return (
-      <Box px={3} key={item.id}>
-        <MenuItem
-          key={item.id}
-          isSelected={pathDirect === item?.href}
-          borderRadius='8px'
-          icon={itemIcon}
-          link={item.href}
-          component={Link}
-        >
-          {item.title}
-        </MenuItem >
-      </Box>
-
+      <MenuItem
+        key={item.id}
+        isSelected={pathDirect === item?.href}
+        borderRadius='8px'
+        icon={itemIcon}
+        link={item.href}
+        component={Link}
+        sx={{ px: 3 }}
+      >
+        {item.title}
+      </MenuItem >
     );
   });
 };

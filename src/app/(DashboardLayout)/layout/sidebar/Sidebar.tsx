@@ -21,11 +21,11 @@ const MSidebar = ({
   // Custom CSS for short scrollbar
   const scrollbarStyles = {
     '&::-webkit-scrollbar': {
-      width: '7px',
+      width: '5px',
 
     },
     '&::-webkit-scrollbar-thumb': {
-      backgroundColor: '#eff2f7',
+      backgroundColor: '#444',
       borderRadius: '15px',
     },
   };
@@ -49,11 +49,12 @@ const MSidebar = ({
           slotProps={{
             paper: {
               sx: {
-                boxSizing: "border-box",
-                ...scrollbarStyles,
-                width: sidebarWidth,
-                bgcolor: (theme) => theme.palette.background.paper, // Set background color
-                boxShadow: (theme) => theme.shadows[8], // Ensure consistent shadow
+                sx: {
+            boxSizing: "border-box",
+            ...scrollbarStyles,
+            width: sidebarWidth,
+            borderRight: (theme) => `1px solid ${theme.palette.divider}`,
+          },
               },
             }
           }}
@@ -89,9 +90,7 @@ const MSidebar = ({
       slotProps={{
         paper: {
           sx: {
-            boxShadow: (theme) => theme.shadows[8],
             ...scrollbarStyles,
-            bgcolor: (theme) => theme.palette.background.paper, // Set background color
           },
         }
       }}

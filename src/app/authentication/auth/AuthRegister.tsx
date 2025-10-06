@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Box, Typography, Button, MenuItem, Skeleton } from '@mui/material';
+import { Box, Typography, Button, MenuItem, Skeleton, TextField } from '@mui/material';
 import Link from 'next/link';
-import CustomTextField from '@/app/(DashboardLayout)/components/forms/theme-elements/CustomTextField';
 import { Stack } from '@mui/system';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { REGISTER_MUTATION, VERIFY_OTP_MUTATION } from '@/graphql';
@@ -128,22 +127,14 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
 
                         {step === 'register' && (
                                 <Box component="form" onSubmit={handleRegister}>
-                                        <Stack mb={3}>
-                                                <Typography
-                                                        variant="subtitle1"
-                                                        fontWeight={600}
-                                                        component="label"
-                                                        htmlFor="currency"
-                                                        mb="5px"
-                                                >
-                                                        Select Currency
-                                                </Typography>
+                                        <Stack spacing={2} mb={3}>
                                                 {loading_fiat_currencies ? (
                                                         <Skeleton variant="rectangular" height={56} width="100%" sx={{ borderRadius: 1 }} />
                                                 ) : (
-                                                        <CustomTextField
+                                                        <TextField
                                                                 id="currency"
                                                                 select
+                                                                label="Select Currency"
                                                                 variant="outlined"
                                                                 fullWidth
                                                                 value={currencyCode}
@@ -161,21 +152,11 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
                                                                                 No currencies found
                                                                         </MenuItem>
                                                                 )}
-                                                        </CustomTextField>
+                                                        </TextField>
                                                 )}
-                                        </Stack>
-                                        <Stack mb={3}>
-                                                <Typography
-                                                        variant="subtitle1"
-                                                        fontWeight={600}
-                                                        component="label"
-                                                        htmlFor="email"
-                                                        mb="5px"
-                                                >
-                                                        Email Address
-                                                </Typography>
-                                                <CustomTextField
+                                                <TextField
                                                         id="email"
+                                                        label="Email Address"
                                                         variant="outlined"
                                                         fullWidth
                                                         value={email}
@@ -199,11 +180,9 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
                         {step === 'verify' && (
                                 <Box component="form" onSubmit={handleVerifyOtp}>
                                         <Stack mb={3}>
-                                                <Typography variant="subtitle1" fontWeight={600} mb="5px">
-                                                        Enter OTP sent to your email
-                                                </Typography>
-                                                <CustomTextField
+                                                <TextField
                                                         id="otp"
+                                                        label="Enter OTP sent to your email"
                                                         variant="outlined"
                                                         fullWidth
                                                         value={otp}

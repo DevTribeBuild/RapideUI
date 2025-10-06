@@ -72,13 +72,13 @@ export const getMenuItems = (user: { userType?: string } | null) => {
       href: "/cart/orders",
       userType: ["USER", "RIDER", "MERCHANT"],
     },
-    {
-      id: uniqueId(),
-      title: "All Orders",
-      icon: IconMoodHappy,
-      href: "/orders",
-      userType: ["ADMIN"],
-    },
+    // {
+    //   id: uniqueId(),
+    //   title: "All Orders",
+    //   icon: IconMoodHappy,
+    //   href: "/orders",
+    //   userType: ["ADMIN"],
+    // },
     {
       id: uniqueId(),
       title: "Manage Orders",

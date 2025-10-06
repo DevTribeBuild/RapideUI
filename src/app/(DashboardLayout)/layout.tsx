@@ -1,5 +1,5 @@
 "use client";
-import { styled, Container, Box } from "@mui/material";
+import { styled, Container, Box, useTheme } from "@mui/material";
 import React, { useState } from "react";
 import Header from "@/app/(DashboardLayout)/layout/header/Header";
 import Sidebar from "@/app/(DashboardLayout)/layout/sidebar/Sidebar";
@@ -11,7 +11,7 @@ const MainWrapper = styled("div")(() => ({
   width: "100%",
 }));
 
-const PageWrapper = styled("div")(() => ({
+const PageWrapper = styled("div")(({ theme }) => ({
   display: "flex",
   flexGrow: 1,
   paddingBottom: "60px",
@@ -33,6 +33,8 @@ export default function RootLayout({
 }) {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const theme = useTheme();
+
   return (
     <MainWrapper className="mainwrapper">
       {/* ------------------------------------------- */}
@@ -57,7 +59,6 @@ export default function RootLayout({
         <Container
           sx={{
             paddingTop: "20px",
-            maxWidth: "1200px",
           }}
         >
           {/* ------------------------------------------- */}

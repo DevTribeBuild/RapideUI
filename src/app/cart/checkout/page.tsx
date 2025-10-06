@@ -36,6 +36,8 @@ type CreateOrderMutationVariables = {
     cartId: string;
     deliveryAddress: string;
     notes: string;
+    deliveryLat: number;
+    deliveryLng: number;
   };
 };
 
@@ -60,6 +62,8 @@ const CheckoutPage = () => {
   const [city, setCity] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [country, setCountry] = useState("");
+  const [deliveryLat, setDeliveryLat] = useState<number | null>(null);
+  const [deliveryLng, setDeliveryLng] = useState<number | null>(null);
 
   const { data: cartData, loading: cartLoading, error: cartError } = useQuery<MyCartQuery>(MY_CART_QUERY, { 
     skip: !token,
@@ -72,10 +76,16 @@ const CheckoutPage = () => {
   const [createOrder, { loading: createOrderLoading }] = useMutation<any, CreateOrderMutationVariables>(CREATE_ORDER_MUTATION);
   const [createPayment, { loading: createPaymentLoading }] = useMutation<any, CreatePaymentMutationVariables>(CREATE_PAYMENT_MUTATION);
   const [clearCart] = useMutation(CLEAR_CART_MUTATION);
+  const [localCartId, setLocalCartId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (cartData?.myCart?.id) {
+      setLocalCartId(cartData.myCart.id);
+    }
+  }, [cartData]);
 
   const cartItems = cartData?.myCart?.items || [];
-  const cartId = cartData?.myCart?.id;
-
+  console.log(cartData?.myCart, "Cart ID in checkout")
   const calculateTotal = () => {
     return cartItems.reduce((acc: number, item: any) => acc + item.product.price * item.quantity, 0);
   };
@@ -86,6 +96,23 @@ const CheckoutPage = () => {
     setTab(newValue);
   };
 
+  const getCurrentLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setDeliveryLat(position.coords.latitude);
+          setDeliveryLng(position.coords.longitude);
+          toast.success("Location fetched successfully!");
+        },
+        (error) => {
+          toast.error(`Error getting location: ${error.message}`);
+        }
+      );
+    } else {
+      toast.error("Geolocation is not supported by this browser.");
+    }
+  };
+
   const handleCheckout = async () => {
     if (!fullName || !email || !address || !city || !postalCode || !country) {
         toast.error("Please fill in all shipping information fields.");
@@ -94,8 +121,13 @@ const CheckoutPage = () => {
 
     const deliveryAddress = `${address}, ${city}, ${postalCode}, ${country}`;
 
-    if (!cartId) {
+    if (!localCartId) {
       toast.error("Cart ID is missing. Please try again.");
+      return;
+    }
+
+    if (deliveryLat === null || deliveryLng === null) {
+      toast.error("Please provide your delivery location.");
       return;
     }
 
@@ -103,9 +135,11 @@ const CheckoutPage = () => {
         const orderResponse = await createOrder({
             variables: {
                 input: {
-                    cartId,
+                    cartId: localCartId,
                     deliveryAddress,
                     notes: "", // You can add a notes field if you want
+                    deliveryLat,
+                    deliveryLng,
                 },
             },
         });
@@ -167,6 +201,16 @@ const CheckoutPage = () => {
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
                     <TextField label="Country" fullWidth value={country} onChange={(e) => setCountry(e.target.value)} />
+                    </Grid>
+                    <Grid size={{ xs: 12 }}>
+                      <Button variant="outlined" fullWidth onClick={getCurrentLocation} sx={{ mt: 2 }}>
+                        Use Current Location
+                      </Button>
+                      {deliveryLat !== null && deliveryLng !== null && (
+                        <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+                          Location: {deliveryLat.toFixed(4)}, {deliveryLng.toFixed(4)}
+                        </Typography>
+                      )}
                     </Grid>
                 </Grid>
 
