@@ -11,6 +11,8 @@ import {
   Box,
   Stack,
   Divider,
+  Switch,
+  useTheme,
 } from '@mui/material';
 import Link from 'next/link';
 import { styled } from "@mui/system";
@@ -26,12 +28,13 @@ import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 
 import useAuthStore from "@/stores/useAuthStore";
+import useThemeStore from "@/stores/useThemeStore";
 
 // ================== STYLES ==================
-const HeroSection = styled('section')(({ theme }) => ({
-  background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
-  color: "#fff",
-  padding: theme.spacing(20, 2, 16),
+const HeroSection = styled('section')(({ theme: muiTheme }) => ({
+  background: muiTheme.palette.background.default,
+  color: muiTheme.palette.text.primary,
+  padding: muiTheme.spacing(20, 2, 16),
   textAlign: 'center',
   minHeight: '90vh',
   display: 'flex',
@@ -42,72 +45,79 @@ const HeroSection = styled('section')(({ theme }) => ({
   overflow: "hidden",
 }));
 
-const FeaturePaper = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(5),
+const FeaturePaper = styled(Paper)(({ theme: muiTheme }) => ({
+  padding: muiTheme.spacing(5),
   textAlign: 'center',
   height: '100%',
   borderRadius: "20px",
   backdropFilter: "blur(10px)",
-  background: "rgba(255,255,255,0.8)",
+  background: muiTheme.palette.background.paper,
   transition: 'transform 0.3s ease, box-shadow 0.3s ease',
   '&:hover': {
     transform: 'translateY(-8px)',
-    boxShadow: "0 12px 40px rgba(0,0,0,0.15)",
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
   },
 }));
 
-const HowItWorksStep = styled(Box)(({ theme }) => ({
+const HowItWorksStep = styled(Box)(({ theme: muiTheme }) => ({
   textAlign: 'center',
-  padding: theme.spacing(4),
+  padding: muiTheme.spacing(4),
 }));
 
-const TestimonialCard = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(5),
+const TestimonialCard = styled(Paper)(({ theme: muiTheme }) => ({
+  padding: muiTheme.spacing(5),
   borderRadius: "20px",
-  boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
+  // boxShadow: '',
   textAlign: 'center',
-  background: "#fff",
+  background: muiTheme.palette.background.paper,
 }));
 
-const CTASection = styled(Box)(({ theme }) => ({
-  background: `linear-gradient(to right, ${theme.palette.primary.light}, ${theme.palette.secondary.light})`,
-  color: "#fff",
-  padding: theme.spacing(14, 2),
+const CTASection = styled(Box)(({ theme: muiTheme }) => ({
+  background: muiTheme.palette.background.paper,
+  color: muiTheme.palette.text.primary,
+  padding: muiTheme.spacing(14, 2),
   textAlign: 'center',
   borderRadius: "24px",
-  margin: theme.spacing(10, 2),
+  margin: muiTheme.spacing(10, 2),
 }));
 
-const Footer = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.grey[900],
-  color: theme.palette.common.white,
-  padding: theme.spacing(6, 2),
+const Footer = styled(Box)(({ theme: muiTheme }) => ({
+  backgroundColor: muiTheme.palette.background.paper,
+  color: muiTheme.palette.text.secondary,
+  padding: muiTheme.spacing(6, 2),
   textAlign: 'center',
 }));
 
 // ================== COMPONENT ==================
 const LandingPage = () => {
   const { user } = useAuthStore();
+  const { theme, toggleTheme } = useThemeStore();
+  const muiTheme = useTheme();
 
   return (
     <>
       {/* AppBar */}
-      <AppBar position="absolute" color="transparent" elevation={0}>
+      <AppBar position="absolute" sx={{ bgcolor: muiTheme.palette.background.paper }} elevation={0}>
         <Toolbar sx={{ maxWidth: "1200px", mx: "auto", width: "100%" }}>
-          <Typography variant="h6" fontWeight="bold" sx={{ flexGrow: 1 }}>
+          <Typography variant="h6" fontWeight="bold" sx={{ flexGrow: 1, color: muiTheme.palette.text.primary }}>
             Swifteroute
           </Typography>
+          <Switch
+            checked={theme === 'dark'}
+            onChange={toggleTheme}
+            inputProps={{ 'aria-label': 'controlled' }}
+          />
           {user ? (
             <Link href="/explore" passHref>
-              <Button color="inherit">Dashboard</Button>
+              <Button color="primary">Dashboard</Button>
             </Link>
           ) : (
             <>
               <Link href="/authentication/login" passHref>
-                <Button color="inherit">Login</Button>
+                <Button color="primary">Login</Button>
               </Link>
               <Link href="/authentication/register" passHref>
-                <Button variant="contained" sx={{ ml: 2, borderRadius: "50px" }}>
+                <Button variant="contained" sx={{ ml: 2, borderRadius: "50px" }} color="primary">
                   Register
                 </Button>
               </Link>
@@ -122,7 +132,7 @@ const LandingPage = () => {
           <Typography variant="h2" fontWeight="900" gutterBottom sx={{ mb: 3 }}>
             Fast. Reliable. Effortless Deliveries.
           </Typography>
-          <Typography variant="h6" sx={{ opacity: 0.9, mb: 5, maxWidth: "700px", mx: "auto" }}>
+          <Typography variant="h6" sx={{ opacity: 0.9, mb: 5, maxWidth: "700px", mx: "auto", color: muiTheme.palette.text.secondary }}>
             Swifteroute connects you with a trusted rider network for seamless, secure, and lightning-fast deliveries.
           </Typography>
           <Link href="/authentication/register" passHref>
@@ -165,7 +175,7 @@ const LandingPage = () => {
       </Container>
 
       {/* How It Works */}
-      <Box sx={{ bgcolor: "grey.100", py: 12 }}>
+      <Box sx={{ bgcolor: muiTheme.palette.background.default, py: 12 }}>
         <Container>
           <Typography variant="h4" fontWeight="bold" align="center" gutterBottom>
             How It Works
@@ -240,7 +250,7 @@ const LandingPage = () => {
                   </Button>
                 </Link>
                 <Link href="/authentication/login" passHref>
-                  <Button variant="outlined" size="large" sx={{ borderRadius: "50px", px: 4, color: "#fff", borderColor: "#fff" }}>
+                  <Button variant="outlined" size="large" sx={{ borderRadius: "50px", px: 4, color: muiTheme.palette.text.primary, borderColor: muiTheme.palette.text.primary }}>
                     Login
                   </Button>
                 </Link>

@@ -8,12 +8,13 @@ import {
   Skeleton,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
   IconButton,
+  Button,
+  useTheme,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import InfoIcon from '@mui/icons-material/Info';
-import { YellowButton } from '@/styled-components/buttons';
 import toast from 'react-hot-toast';
 import { useQuery, useMutation } from "@apollo/client/react";
 import { GET_ALL_CATEGORIES } from '@/graphql';
@@ -29,7 +30,6 @@ interface Product {
   name: string;
   description: string;
   price: number;
-  stock: number;
   imageUrl: string;
   category: string;
   merchantId: string;
@@ -59,13 +59,23 @@ type CreateProductMutationVariables = {
     price: number;
     imageUrl: string;
     categoryId: string;
-    currencyId: string;
+    // currencyId: string;
     // merchantId: string;
   };
 };
 
+type UpdateProductInputType = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  imageUrl: string;
+  categoryId: string;
+  quantity: number;
+};
+
 type UpdateProductMutationVariables = {
-  input: Product;
+  input: UpdateProductInputType;
 };
 
 type DeleteProductMutationVariables = {
@@ -75,6 +85,7 @@ type DeleteProductMutationVariables = {
 const ProductManagementApp: React.FC = () => {
   const user = useAppStore((state) => state.user);
   const merchantId = user?.id || "";
+  const theme = useTheme();
   const { data: productsData, loading: productsLoading, error: productsError } = useQuery<ProductsByMerchantQuery>(PRODUCTS_BY_MERCHANT_QUERY, {
     variables: { merchantId },
   });
@@ -126,12 +137,24 @@ const ProductManagementApp: React.FC = () => {
   const handleSaveProduct = async (productToSave: Product) => {
     try {
       if (productToSave.id) {
-        await updateProduct({ variables: { input: { ...productToSave, price: Number(productToSave.price), stock: Number(productToSave.stock) } } });
+        await updateProduct({
+          variables: {
+            input: {
+              id: productToSave.id,
+              name: productToSave.name,
+              description: productToSave.description,
+              price: Number(productToSave.price),
+              imageUrl: productToSave.imageUrl,
+              categoryId: productToSave.category,
+              quantity: Number(productToSave.quantity),
+            },
+          },
+        });
         toast.success('Product updated successfully!');
       } else {
         const createProductInput = {
           categoryId: productToSave.category,
-          currencyId: "983ffabb-f015-457a-a02b-b2d91c071edf",
+          // currencyId: "983ffabb-f015-457a-a02b-b2d91c071edf",
           description: productToSave.description,
           imageUrl: productToSave.imageUrl,
           name: productToSave.name,
@@ -232,11 +255,12 @@ const ProductManagementApp: React.FC = () => {
         alignItems: 'center',
         p: 3,
         fontFamily: 'Inter, sans-serif',
+        bgcolor: theme.palette.background.default,
       }}
     >
       <Box
         sx={{
-          bgcolor: '#ffffff',
+          bgcolor: theme.palette.background.paper,
           p: 4,
           borderRadius: '12px',
           width: '100%',
@@ -244,27 +268,28 @@ const ProductManagementApp: React.FC = () => {
         }}
       >
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Typography variant="h5" component="h1" sx={{ fontWeight: 'bold', color: '#1F2937' }}>
+          <Typography variant="h5" component="h1" sx={{ fontWeight: 'bold', color: theme.palette.text.primary }}>
             Product Management
           </Typography>
-          <YellowButton
+          <Button
             variant="contained"
             startIcon={<AddIcon />}
             onClick={handleOpenCreateForm}
+            color="primary"
           >
             Add New Product
-          </YellowButton>
+          </Button>
         </Box>
-        <TableContainer component={Paper} sx={{ borderRadius: '8px', boxShadow: 'none', border: '1px solid #E5E7EB' }}>
+        <TableContainer component={Paper} sx={{ borderRadius: '8px', boxShadow: 'none', border: `1px solid ${theme.palette.divider}` }}>
           <Table sx={{ minWidth: 650 }} aria-label="product table">
-            <TableHead sx={{ bgcolor: '#FEF3C7' }}>
+            <TableHead sx={{ bgcolor: theme.palette.background.paper }}>
               <TableRow>
-                <TableCell sx={{ fontWeight: 'bold', color: '#92400E' }}>Image</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: '#92400E' }}>Name</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: '#92400E' }}>Category</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 'bold', color: '#92400E' }}>Price</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 'bold', color: '#92400E' }}>Stock</TableCell>
-                <TableCell align="center" sx={{ fontWeight: 'bold', color: '#92400E' }}>Actions</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: theme.palette.text.primary }}>Image</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: theme.palette.text.primary }}>Name</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: theme.palette.text.primary }}>Category</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 'bold', color: theme.palette.text.primary }}>Price</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 'bold', color: theme.palette.text.primary }}>Stock</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 'bold', color: theme.palette.text.primary }}>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -283,13 +308,13 @@ const ProductManagementApp: React.FC = () => {
                 </>
               ) : productsError || categoriesError ? (
                 <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ py: 4, color: 'red' }}>
+                  <TableCell colSpan={6} align="center" sx={{ py: 4, color: theme.palette.error.main }}>
                     Error loading data. Please try again.
                   </TableCell>
                 </TableRow>
               ) : products.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ py: 4, color: '#6B7280' }}>
+                  <TableCell colSpan={6} align="center" sx={{ py: 4, color: theme.palette.text.secondary }}>
                     No products found. Click &quot;Add New Product&quot; to get started!
                   </TableCell>
                 </TableRow>
@@ -299,9 +324,9 @@ const ProductManagementApp: React.FC = () => {
                     key={product.id}
                     sx={{
                       '&:last-child td, &:last-child th': { border: 0 },
-                      '&:nth-of-type(odd)': { bgcolor: '#F9FAFB' },
+                      '&:nth-of-type(odd)': { bgcolor: theme.palette.action.hover },
                       cursor: 'pointer', // Indicate clickable row
-                      '&:hover': { bgcolor: '#FEEBC8' }, // Light yellow on hover
+                      '&:hover': { bgcolor: theme.palette.action.hover },
                     }}
                     onClick={() => handleOpenDetailsDialog(product)} // Open details dialog on row click
                   >
@@ -316,25 +341,25 @@ const ProductManagementApp: React.FC = () => {
                         }}
                       />
                     </TableCell>
-                    <TableCell sx={{ color: '#374151' }}>
+                    <TableCell sx={{ color: theme.palette.text.primary }}>
                       <Typography variant="subtitle1" sx={{ fontWeight: 'medium' }}>{product.name}</Typography>
                       <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.8rem' }}>
                         {product.description.substring(0, 50)}{product.description.length > 50 ? '...' : ''}
                       </Typography>
                     </TableCell>
-                    <TableCell sx={{ color: '#374151' }}>{getCategoryName(product.category)}</TableCell>
-                    <TableCell align="right" sx={{ color: '#374151', fontWeight: 'medium' }}>${product.price.toFixed(2)}</TableCell>
-                    <TableCell align="right" sx={{ color: product.stock <= 5 ? '#EF4444' : '#374151', fontWeight: 'medium' }}>
-                      {product.stock}
+                    <TableCell sx={{ color: theme.palette.text.primary }}>{getCategoryName(product.category)}</TableCell>
+                    <TableCell align="right" sx={{ color: theme.palette.text.primary, fontWeight: 'medium' }}>${product.price.toFixed(2)}</TableCell>
+                    <TableCell align="right" sx={{ color: product.quantity <= 5 ? theme.palette.error.main : theme.palette.text.primary, fontWeight: 'medium' }}>
+                      {product.quantity}
                     </TableCell>
                     <TableCell align="center" onClick={(e) => e.stopPropagation()}> {/* Stop propagation to prevent details dialog from opening again */}
-                      <IconButton aria-label="details" onClick={() => handleOpenDetailsDialog(product)} sx={{ color: '#2196F3' }}>
+                      <IconButton aria-label="details" onClick={() => handleOpenDetailsDialog(product)} sx={{ color: theme.palette.info.main }}>
                         <InfoIcon />
                       </IconButton>
-                      <IconButton aria-label="edit" onClick={() => handleOpenEditForm(product)} sx={{ color: '#F59E0B' }}>
+                      <IconButton aria-label="edit" onClick={() => handleOpenEditForm(product)} sx={{ color: theme.palette.warning.main }}>
                         <EditIcon />
                       </IconButton>
-                      <IconButton aria-label="delete" onClick={() => handleOpenDeleteConfirm(product)} sx={{ color: '#EF4444' }}>
+                      <IconButton aria-label="delete" onClick={() => handleOpenDeleteConfirm(product)} sx={{ color: theme.palette.error.main }}>
                         <DeleteIcon />
                       </IconButton>
                     </TableCell>

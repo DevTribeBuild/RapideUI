@@ -21,7 +21,6 @@ interface Product {
   name: string;
   description: string;
   price: number;
-  stock: number;
   imageUrl: string;
   category: string;
   merchantId: string;
@@ -114,7 +113,7 @@ export const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({ open
             </Typography>
             <Typography variant="body1" sx={{ mb: 1.5, color: '#1F2937' }}>
               <Typography component="span" sx={{ fontWeight: 'medium' }}>Stock:</Typography>{' '}
-              {product.stock} units
+              {product.quantity} units
             </Typography>
             <Typography variant="body2" sx={{ mt: 2, color: '#6B7280', fontSize: '0.8rem' }}>
               Product ID: {product.id}

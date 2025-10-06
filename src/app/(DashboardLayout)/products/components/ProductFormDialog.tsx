@@ -25,7 +25,6 @@ interface Product {
   name: string;
   description: string;
   price: number;
-  stock: number;
   imageUrl: string;
   category: string;
   merchantId: string;
@@ -74,26 +73,27 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({ open, onCl
     name: '',
     description: '',
     price: 0,
-    stock: 0,
+    quantity: 0,
     imageUrl: '',
     category: '',
     merchantId: '',
     currencyId: '',
-    quantity: 0,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   });
 
   useEffect(() => {
     if (product) {
-      setFormData(product);
+      setFormData({
+        ...product,
+        category: product.category || '',
+      });
     } else {
       setFormData({
         id: '',
         name: '',
         description: '',
         price: 0,
-        stock: 0,
         imageUrl: '',
         category: '',
         merchantId: '',
@@ -109,7 +109,7 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({ open, onCl
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name as keyof Product]: name === 'price' || name === 'stock' ? parseFloat(value) || 0 : value,
+      [name as keyof Product]: name === 'price' || name === 'quantity' ? parseFloat(value) || 0 : value,
     }));
   };
 
@@ -165,7 +165,7 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({ open, onCl
     onSave({ ...formData, currencyId:"e5ee3050-426a-47eb-9488-11695096c008" });
   };
 
-  const isFormValid = formData.name && formData.description && formData.price > 0 && formData.stock >= 0 && formData.imageUrl && formData.category;
+  const isFormValid = formData.name && formData.description && formData.price > 0 && formData.quantity >= 0 && formData.imageUrl && formData.category;
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
@@ -224,11 +224,11 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({ open, onCl
               '& .MuiInputLabel-root.Mui-focused': { color: '#F59E0B' },
             }}
           />
-          <TextField
+          {product ? <></> :           <TextField
             label="Stock Quantity"
-            name="stock"
+            name="quantity"
             type="number"
-            value={formData.stock}
+            value={formData.quantity}
             onChange={handleChange}
             fullWidth
             required
@@ -238,7 +238,7 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({ open, onCl
               '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#D97706' },
               '& .MuiInputLabel-root.Mui-focused': { color: '#F59E0B' },
             }}
-          />
+          /> }
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
             <TextField
               label="Image URL"
