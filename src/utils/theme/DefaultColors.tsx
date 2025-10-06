@@ -1,7 +1,7 @@
 import { createTheme } from "@mui/material/styles";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Inter } from "next/font/google";
 
-export const plus = Plus_Jakarta_Sans({
+export const inter = Inter({
   weight: ["300", "400", "500", "600", "700"],
   subsets: ["latin"],
   display: "swap",
@@ -12,136 +12,87 @@ const baselightTheme = createTheme({
   direction: "ltr",
   palette: {
     primary: {
-      main: "#E9C33B",
-      light: "#ECF2FF",
-      dark: "#9BCFB5",
+      main: "#1976d2", // Blue
+      light: "#42a5f5",
+      dark: "#1565c0",
     },
     secondary: {
-      main: "#49BEFF",
-      light: "#E8F7FF",
-      dark: "#23afdb",
+      main: "#4caf50", // Green
+      light: "#81c784",
+      dark: "#388e3c",
     },
-    success: {
-      main: "#13DEB9",
-      light: "#E6FFFA",
-      dark: "#02b3a9",
-      contrastText: "#ffffff",
-    },
-    info: {
-      main: "#539BFF",
-      light: "#EBF3FE",
-      dark: "#1682d4",
-      contrastText: "#ffffff",
-    },
-    error: {
-      main: "#FA896B",
-      light: "#FDEDE8",
-      dark: "#f3704d",
-      contrastText: "#ffffff",
-    },
-    warning: {
-      main: "#FFAE1F",
-      light: "#FEF5E5",
-      dark: "#ae8e59",
-      contrastText: "#ffffff",
-    },
-    grey: {
-      100: "#F2F6FA",
-      200: "#EAEFF4",
-      300: "#DFE5EF",
-      400: "#7C8FAC",
-      500: "#5A6A85",
-      600: "#2A3547",
+    background: {
+      default: "#f4f6f8",
+      paper: "#ffffff",
     },
     text: {
-      primary: "#2A3547",
-      secondary: "#5A6A85",
+      primary: "#212121",
+      secondary: "#757575",
     },
-    action: {
-      disabledBackground: "rgba(73,82,88,0.12)",
-      hoverOpacity: 0.02,
-      hover: "#f6f9fc",
-    },
-    divider: "#e5eaef",
   },
   typography: {
-    fontFamily: plus.style.fontFamily,
+    fontFamily: inter.style.fontFamily,
     h1: {
-      fontWeight: 600,
-      fontSize: "2.25rem",
-      lineHeight: "2.75rem",
-      fontFamily: plus.style.fontFamily,
+      fontWeight: 700,
+      fontSize: "2.5rem",
+      lineHeight: "3rem",
     },
     h2: {
-      fontWeight: 600,
-      fontSize: "1.875rem",
-      lineHeight: "2.25rem",
-      fontFamily: plus.style.fontFamily,
+      fontWeight: 700,
+      fontSize: "2rem",
+      lineHeight: "2.5rem",
     },
     h3: {
       fontWeight: 600,
-      fontSize: "1.5rem",
-      lineHeight: "1.75rem",
-      fontFamily: plus.style.fontFamily,
+      fontSize: "1.75rem",
+      lineHeight: "2.25rem",
     },
     h4: {
       fontWeight: 600,
-      fontSize: "1.3125rem",
-      lineHeight: "1.6rem",
+      fontSize: "1.5rem",
+      lineHeight: "2rem",
     },
     h5: {
-      fontWeight: 600,
-      fontSize: "1.125rem",
-      lineHeight: "1.6rem",
+      fontWeight: 500,
+      fontSize: "1.25rem",
+      lineHeight: "1.75rem",
     },
     h6: {
-      fontWeight: 600,
+      fontWeight: 500,
       fontSize: "1rem",
-      lineHeight: "1.2rem",
+      lineHeight: "1.5rem",
     },
     button: {
-      textTransform: "capitalize",
-      fontWeight: 400,
+      textTransform: "none",
+      fontWeight: 600,
     },
     body1: {
-      fontSize: "0.875rem",
+      fontSize: "1rem",
       fontWeight: 400,
-      lineHeight: "1.334rem",
+      lineHeight: "1.5rem",
     },
     body2: {
-      fontSize: "0.75rem",
-      letterSpacing: "0rem",
-      fontWeight: 400,
-      lineHeight: "1rem",
-    },
-    subtitle1: {
       fontSize: "0.875rem",
       fontWeight: 400,
-    },
-    subtitle2: {
-      fontSize: "0.875rem",
-      fontWeight: 400,
+      lineHeight: "1.25rem",
     },
   },
   components: {
-    MuiCssBaseline: {
+    MuiButton: {
       styleOverrides: {
-        ".MuiPaper-elevation9, .MuiPopover-root .MuiPaper-elevation": {
-          boxShadow:
-            "rgb(145 158 171 / 30%) 0px 0px 2px 0px, rgb(145 158 171 / 12%) 0px 12px 24px -4px !important",
+        root: {
+          borderRadius: "8px",
+          padding: "10px 20px",
         },
-
       },
     },
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: "7px",
+          borderRadius: "12px",
         },
       },
     },
-
-
   },
 });
 

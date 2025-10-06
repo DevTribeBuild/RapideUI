@@ -19,7 +19,7 @@ import Image from "next/image";
 import { IconProps } from "@tabler/icons-react";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
 
-type MenuItem =
+type MenuItemType =
     {
       id?: string;
       navlabel?: boolean;
@@ -32,7 +32,7 @@ type MenuItem =
 
 
 
-const renderMenuItems = (items: any, pathDirect: any) => {
+const renderMenuItems = (items: any, pathDirect: any, theme: any) => {
 
   return items.map((item: any) => {
 
@@ -59,7 +59,7 @@ const renderMenuItems = (items: any, pathDirect: any) => {
           icon={itemIcon}
           borderRadius='7px'
         >
-          {renderMenuItems(item.children, pathDirect)}
+          {renderMenuItems(item.children, pathDirect, theme)}
         </Submenu>
       );
     }
@@ -74,7 +74,10 @@ const renderMenuItems = (items: any, pathDirect: any) => {
         icon={itemIcon}
         link={item.href}
         component={Link}
-        sx={{ px: 3 }} // Add padding directly to MenuItem
+        sx={{ 
+          px: 3,
+          color: pathDirect === item?.href ? theme.palette.primary.main : theme.palette.text.secondary,
+        }} // Add padding directly to MenuItem
       >
         {item.title}
       </MenuItem >
@@ -87,7 +90,7 @@ const SidebarItems = () => {
   const pathname = usePathname();
   const pathDirect = pathname;
   const user = useAppStore((state) => state.user);
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [menuItems, setMenuItems] = useState<MenuItemType[]>([]);
   const theme = useTheme();
 
   useEffect(() => {
@@ -114,7 +117,7 @@ const SidebarItems = () => {
           />
         </Box>
         <Divider />
-        {renderMenuItems(menuItems, pathDirect)}
+        {renderMenuItems(menuItems, pathDirect, theme)}
         <Box px={2}>
           <Upgrade />
         </Box>
@@ -124,3 +127,4 @@ const SidebarItems = () => {
   );
 };
 export default SidebarItems;
+

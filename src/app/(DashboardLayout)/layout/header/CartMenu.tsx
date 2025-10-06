@@ -71,7 +71,7 @@ const CartMenu = () => {
           </Typography>
         )}
         {cartItems.map((item: any) => (
-          <MenuItem key={item.id}>
+          <MenuItem key={`${item.id}-${item.product.id}`}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
               <Typography variant="body1">{item.product.name}</Typography>
               <Typography variant="body1">{item.quantity}</Typography>

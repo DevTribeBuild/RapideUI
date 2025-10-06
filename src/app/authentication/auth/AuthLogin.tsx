@@ -121,6 +121,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
           required
           fullWidth
           disabled={step === "LOGIN"}
+          variant="outlined"
         />
         {step === "LOGIN" && (
           <TextField
@@ -130,6 +131,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
             onChange={(e) => setOtp(e.target.value)}
             required
             fullWidth
+            variant="outlined"
           />
         )}
         <Button
@@ -138,6 +140,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
           color="primary"
           disabled={otpLoading || loginLoading}
           fullWidth
+          size="large"
         >
           {step === "REQUEST_OTP"
             ? otpLoading

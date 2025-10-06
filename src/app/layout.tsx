@@ -20,14 +20,8 @@ export default function RootLayout({
             <CssBaseline />
             {children}
             <Toaster
-              position="bottom-center"
+              position="top-right"
               reverseOrder={false}
-              toastOptions={{
-                style: {
-                  background: '#333',
-                  color: '#fff',
-                },
-              }}
             />
           </ThemeProvider>
         </ApolloProviderWrapper>

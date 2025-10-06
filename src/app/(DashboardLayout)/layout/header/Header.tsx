@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
-import { Box, AppBar, Toolbar, styled, Stack, IconButton, Badge, Button } from '@mui/material';
+import React from 'react';
+import { Box, AppBar, Toolbar, styled, Stack, IconButton, Button } from '@mui/material';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
 // components
 import Notifications from './Notifications';
 import CartMenu from './CartMenu';
 import Profile from './Profile';
-
 
 import { IconMenu } from '@tabler/icons-react';
 import useAuthStore from '@/stores/useAuthStore'
@@ -16,24 +15,15 @@ interface ItemType {
 }
 
 const Header = ({toggleMobileSidebar}: ItemType) => {
-  
-
-  // const lgUp = useMediaQuery((theme) => theme.breakpoints.up('lg'));
-  // const lgDown = useMediaQuery((theme) => theme.breakpoints.down('lg'));
-
 
   const AppBarStyled = styled(AppBar)(({ theme }) => ({
-    boxShadow: theme.shadows[1],
-    background: theme.palette.background.paper,
+    boxShadow: 'none',
     justifyContent: 'center',
-    backdropFilter: 'blur(4px)',
-    [theme.breakpoints.up('lg')]: {
-      minHeight: '70px',
-    },
+    minHeight: '70px',
   }));
 
-    const user = useAuthStore((state) => state.user)
-    const token = useAuthStore((state) => state.token) 
+  const user = useAuthStore((state) => state.user)
+
   const ToolbarStyled = styled(Toolbar)(({ theme }) => ({
     width: '100%',
     color: theme.palette.text.secondary,
@@ -64,10 +54,10 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
         <Stack spacing={1} direction="row" alignItems="center">
            {!user?.email && (
             <Stack direction="row" spacing={1}>
-              <Button variant="contained" component={Link} href="/authentication/login" disableElevation color="primary">
+              <Button variant="text" component={Link} href="/authentication/login" color="primary">
                 Login
               </Button>
-              <Button variant="outlined" component={Link} href="/authentication/register" disableElevation color="primary">
+              <Button variant="contained" component={Link} href="/authentication/register" disableElevation color="primary">
                 Register
               </Button>
             </Stack>

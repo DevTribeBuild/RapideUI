@@ -13,7 +13,7 @@ import {
   IconButton,
   Skeleton,
 } from "@mui/material";
-import { Stack } from "@mui/system";
+import { Box, Stack } from "@mui/material";
 import { IconBasket, IconX, IconCheck } from "@tabler/icons-react";
 import { QuantityAdjuster } from "./QuantityAdjuster";
 import BlankCard from "@/app/(DashboardLayout)/components/shared/BlankCard";
@@ -169,8 +169,8 @@ const Blog = () => {
         return (
           <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={product.id}>
             <BlankCard>
-              <Typography
-                component="div"
+              <Box
+                sx={{ height: 200, overflow: 'hidden' }}
                 onClick={() => handleOpenPreviewDialog(product)}
                 style={{ cursor: "pointer" }}
               >
@@ -181,11 +181,12 @@ const Blog = () => {
                   height={400}
                   style={{
                     width: "100%",
-                    height: "auto",
+                    height: "100%",
+                    objectFit: "cover",
                     borderRadius: "4px",
                   }}
                 />
-              </Typography>
+              </Box>
 
               <CardContent sx={{ p: 3, pt: 2 }}>
                 <Typography variant="h6">{product.name}</Typography>
@@ -283,17 +284,20 @@ const Blog = () => {
             <DialogContent dividers>
               <Grid container spacing={2}>
                 <Grid size={{ xs: 12, md: 6 }}>
-                  <Image
-                    src={selectedProduct.imageUrl}
-                    alt={selectedProduct.name}
-                    width={500}
-                    height={400}
-                    style={{
-                      width: "100%",
-                      height: "auto",
-                      borderRadius: "4px",
-                    }}
-                  />
+                  <Box sx={{ height: 400, overflow: 'hidden' }}>
+                    <Image
+                      src={selectedProduct.imageUrl}
+                      alt={selectedProduct.name}
+                      width={500}
+                      height={400}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        borderRadius: "4px",
+                      }}
+                    />
+                  </Box>
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="h5" gutterBottom>
