@@ -26,7 +26,7 @@ export const getMenuItems = (user: { userType?: string } | null) => {
     },
     {
       id: uniqueId(),
-      title: "Dashboard",
+      title: "Home",
       icon: IconLayoutDashboard,
       href: "/",
       userType: ["ADMIN", "RIDER", "MERCHANT"],
