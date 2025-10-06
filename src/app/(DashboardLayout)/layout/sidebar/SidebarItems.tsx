@@ -18,6 +18,7 @@ import Image from "next/image";
 
 import { IconProps } from "@tabler/icons-react";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
+import useThemeStore from "@/stores/useThemeStore";
 
 type MenuItemType =
     {
@@ -46,6 +47,7 @@ const renderMenuItems = (items: any, pathDirect: any, theme: any) => {
         <Menu
           subHeading={item.subheader}
           key={item.subheader}
+          sx={{color: pathDirect === item?.href ? theme.palette.primary.main : theme.palette.text.secondary}}
         />
       );
     }
@@ -58,6 +60,7 @@ const renderMenuItems = (items: any, pathDirect: any, theme: any) => {
           title={item.title}
           icon={itemIcon}
           borderRadius='7px'
+          sx={{color: pathDirect === item?.href ? theme.palette.primary.main : theme.palette.text.secondary}}
         >
           {renderMenuItems(item.children, pathDirect, theme)}
         </Submenu>
@@ -76,10 +79,14 @@ const renderMenuItems = (items: any, pathDirect: any, theme: any) => {
         component={Link}
         sx={{ 
           px: 3,
-          color: pathDirect === item?.href ? theme.palette.primary.main : theme.palette.text.secondary,
+          // color: pathDirect === item?.href ? theme.palette.primary.main : theme.palette.text.secondary,
+          border:"1px solid red",
+          color:"red !important"
         }} // Add padding directly to MenuItem
       >
-        {item.title}
+        <Typography variant="body1" sx={{color: pathDirect === item?.href ? theme.palette.primary.main : theme.palette.text.secondary}} fontWeight={500}>
+        {item.title} 
+        </Typography>
       </MenuItem >
     );
   });
@@ -92,6 +99,7 @@ const SidebarItems = () => {
   const user = useAppStore((state) => state.user);
   const [menuItems, setMenuItems] = useState<MenuItemType[]>([]);
   const theme = useTheme();
+  const { theme: currentTheme } = useThemeStore();
 
   useEffect(() => {
     try{
@@ -109,7 +117,7 @@ const SidebarItems = () => {
 
         <Box sx={{ p: 2, display: "flex", justifyContent: "center", alignItems: "center" }}>
           <Image
-            src="/images/logos/image.png"
+            src={currentTheme === 'dark' ? "/images/logos/image.png" : "/images/logos/image.png"}
             alt="logo"
             style={{ objectFit: 'contain' }}
             width={200}

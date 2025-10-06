@@ -72,10 +72,16 @@ const CheckoutPage = () => {
   const [createOrder, { loading: createOrderLoading }] = useMutation<any, CreateOrderMutationVariables>(CREATE_ORDER_MUTATION);
   const [createPayment, { loading: createPaymentLoading }] = useMutation<any, CreatePaymentMutationVariables>(CREATE_PAYMENT_MUTATION);
   const [clearCart] = useMutation(CLEAR_CART_MUTATION);
+  const [localCartId, setLocalCartId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (cartData?.myCart?.id) {
+      setLocalCartId(cartData.myCart.id);
+    }
+  }, [cartData]);
 
   const cartItems = cartData?.myCart?.items || [];
-  const cartId = cartData?.myCart?.id;
-
+  console.log(cartData?.myCart, "Cart ID in checkout")
   const calculateTotal = () => {
     return cartItems.reduce((acc: number, item: any) => acc + item.product.price * item.quantity, 0);
   };
@@ -94,7 +100,7 @@ const CheckoutPage = () => {
 
     const deliveryAddress = `${address}, ${city}, ${postalCode}, ${country}`;
 
-    if (!cartId) {
+    if (!localCartId) {
       toast.error("Cart ID is missing. Please try again.");
       return;
     }
@@ -103,7 +109,7 @@ const CheckoutPage = () => {
         const orderResponse = await createOrder({
             variables: {
                 input: {
-                    cartId,
+                    cartId: localCartId,
                     deliveryAddress,
                     notes: "", // You can add a notes field if you want
                 },

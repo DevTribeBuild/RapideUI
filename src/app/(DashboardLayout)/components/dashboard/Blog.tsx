@@ -12,6 +12,7 @@ import {
   DialogActions,
   IconButton,
   Skeleton,
+  CircularProgress,
 } from "@mui/material";
 import { Box, Stack } from "@mui/material";
 import { IconBasket, IconX, IconCheck } from "@tabler/icons-react";
@@ -114,6 +115,7 @@ const Blog = () => {
   };
 
   const handleAddToCartClick = async (product: Product) => {
+    console.log(product, "Adding to cart...")
     setLoadingProductId(product.id);
     try {
       await addToCart({ variables: { input: { productId: product.id, quantity: 1 } } });
@@ -127,12 +129,15 @@ const Blog = () => {
   };
 
   const handleProductQuantityChange = async (productId: string, newQuantity: number) => {
+    setLoadingProductId(productId);
     try {
       await updateCartItem({ variables: { input: { productId: productId, quantity: newQuantity } } });
       toast.success(`Cart updated!`);
     } catch (err) {
       console.error("Error updating cart:", err);
       toast.error(`Failed to update cart.`);
+    } finally {
+      setLoadingProductId(null);
     }
   };
 
@@ -157,7 +162,6 @@ const Blog = () => {
       cartItemsMap.set(item.product.id, item);
     });
   }
-
   return (
     <Grid container spacing={3}>
       {productsToDisplay.map((product) => {
@@ -217,6 +221,7 @@ const Blog = () => {
                 <Stack direction="column" alignItems="center" mt={2} spacing={1}>
                   {token ? ( // Only show cart actions if logged in and cart has no error
                     !isInCart ? (
+                      <>
                       <Button
                         variant="contained"
                         color="primary"
@@ -225,8 +230,9 @@ const Blog = () => {
                         disabled={loadingProductId === product.id}
                         sx={{ padding: "8px 16px", fontSize: "0.875rem" }}
                       >
-                        {loadingProductId === product.id ? "Adding..." : "Add To Cart"}
+                        {loadingProductId === product.id ? <CircularProgress size={24} color="inherit" /> : "Add To Cart"}
                       </Button>
+                        </>
                     ) : (
                       <>
                         <Typography variant="subtitle2">Quantity:</Typography>
@@ -235,7 +241,7 @@ const Blog = () => {
                           onQuantityChange={(newQuantity) =>
                             handleProductQuantityChange(productId, newQuantity)
                           }
-                          loading={updateCartItemLoading}
+                          loading={updateCartItemLoading && loadingProductId === productId}
                         />
                       </>
                     )

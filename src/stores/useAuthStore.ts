@@ -1,5 +1,5 @@
 // stores/useAppStore.ts
-import { create } from 'zustand'
+import {create} from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
 export type User = {
