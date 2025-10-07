@@ -1,12 +1,15 @@
 "use client";
 import Link from "next/link";
-import { Grid, Box, Card, Stack, Typography } from "@mui/material";
+import { Grid, Box, Card, Stack, Typography, useTheme } from "@mui/material";
 // components
 import PageContainer from "@/app/(DashboardLayout)/components/container/PageContainer";
 import Logo from "@/app/(DashboardLayout)/layout/shared/logo/Logo";
 import AuthLogin from "../auth/AuthLogin";
+import useThemeStore from "@/stores/useThemeStore";
 
 const Login2 = () => {
+    const theme = useTheme();
+    const { theme: currentTheme } = useThemeStore();
   return (
     <PageContainer title="Login" description="this is Login page">
       <Box
@@ -34,7 +37,9 @@ const Login2 = () => {
               sx={{ p: 4, zIndex: 1, width: "100%" }}
             >
               <Box display="flex" alignItems="center" justifyContent="center">
-                <Logo />
+                          <Typography variant="h5" fontWeight="bold" color={theme.palette.primary.main}>
+                            Swifteroute
+                          </Typography>
               </Box>
               <AuthLogin
                 subtext={

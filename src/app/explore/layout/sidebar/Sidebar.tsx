@@ -37,7 +37,6 @@ const MSidebar = ({
         sx={{
           width: sidebarWidth,
           flexShrink: 0,
-          border:"1px solid red"
         }}
       >
         {/* ------------------------------------------- */}

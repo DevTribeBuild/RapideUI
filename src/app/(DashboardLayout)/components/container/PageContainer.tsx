@@ -1,4 +1,5 @@
 // import { Helmet } from 'react-helmet';
+import { Box } from '@mui/material';
 import react from 'react'
 
 
@@ -14,8 +15,9 @@ const PageContainer = ({ title, description, children }: Props) => (
 
     <title>{title}</title>
     <meta name="description" content={description} />
-
-    {children}
+    <Box sx={{width: "100%", height: "100%" }}>
+      {children}
+    </Box>
   </div>
 
 );

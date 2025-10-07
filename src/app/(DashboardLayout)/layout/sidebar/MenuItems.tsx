@@ -24,13 +24,13 @@ export const getMenuItems = (user: { userType?: string } | null) => {
       navlabel: true,
       subheader: "HOME",
     },
-    {
-      id: uniqueId(),
-      title: "Home",
-      icon: IconLayoutDashboard,
-      href: "/",
-      userType: ["ADMIN", "RIDER", "MERCHANT"],
-    },
+    // {
+    //   id: uniqueId(),
+    //   title: "Home",
+    //   icon: IconLayoutDashboard,
+    //   href: "/",
+    //   userType: ["ADMIN", "RIDER", "MERCHANT"],
+    // },
     {
       id: uniqueId(),
       title: "Explore",

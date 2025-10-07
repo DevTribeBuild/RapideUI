@@ -65,7 +65,7 @@ const MSidebar = ({
           <Box
             sx={{
               height: "100%",
-              width: sidebarWidth
+              width: sidebarWidth, 
             }}
           >
 

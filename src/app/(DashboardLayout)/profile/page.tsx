@@ -13,6 +13,9 @@ import {
     Grid,
 } from '@mui/material';
 import useAppStore from "@/stores/useAuthStore";
+import useThemeStore from "@/stores/useThemeStore";
+import { styled } from '@mui/material';
+
 import { useMutation, useQuery } from "@apollo/client/react";
 import { UPDATE_USER_MUTATION, MY_MERCHANT_DETAILS, RIDER_DETAILS } from "@/graphql";
 import { FIND_ONE_USER_QUERY } from "@/graphql/user/queries";
@@ -82,6 +85,50 @@ export default function ProfilePage() {
     const [tab, setTab] = useState(0);
     const [editMode, setEditMode] = useState(false);
     const [form, setForm] = useState<UserDetails>({});
+    const { theme, toggleTheme } = useThemeStore();
+
+    const ThemeSwitch = styled(Switch)(({ theme }) => ({
+        width: 62,
+        height: 34,
+        padding: 7,
+        "& .MuiSwitch-switchBase": {
+            margin: 1,
+            padding: 0,
+            transform: "translateX(6px)",
+            "&.Mui-checked": {
+                color: "#fff",
+                transform: "translateX(22px)",
+                "& .MuiSwitch-thumb:before": {
+                    content: "'🌙'",
+                    fontSize: 16,
+                },
+                "& + .MuiSwitch-track": {
+                    backgroundColor: theme.palette.mode === "dark" ? "#8796A5" : "#aab4be",
+                    opacity: 1,
+                },
+            },
+        },
+        "& .MuiSwitch-thumb": {
+            backgroundColor: theme.palette.mode === "dark" ? "#003892" : "#ffd700",
+            width: 24,
+            height: 24,
+            "&:before": {
+                content: "'🌞'",
+                position: "absolute",
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 16,
+            },
+        },
+        "& .MuiSwitch-track": {
+            borderRadius: 20 / 2,
+            backgroundColor: theme.palette.mode === "dark" ? "#8796A5" : "#aab4be",
+            opacity: 1,
+        },
+    }));
 
     const { data: userData, loading: userLoading, error: userError } = useQuery(FIND_ONE_USER_QUERY, {
         variables: { email: userDetails?.email },
@@ -214,6 +261,10 @@ export default function ProfilePage() {
                     fullWidth
                     margin="normal"
                     disabled={!editMode}
+                />
+                <FormControlLabel
+                    control={<ThemeSwitch checked={theme === 'dark'} onChange={toggleTheme} />}
+                    label="Dark Mode"
                 />
             </TabPanel>
 

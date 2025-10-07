@@ -9,8 +9,8 @@ const ExplorePage = () => {
 
   return (
     <PageContainer title="Dashboard" description="this is Dashboard">
-      <Box>
-        <Grid container spacing={3}>
+      <Box sx={{ width:"100%"}}>
+        <Grid container spacing={0} justifyContent="center" sx={{ width: '100%' }}>
           <Grid size={{ xs: 12 }}>
             {token ? <Blog /> : <p>Please log in to see the content.</p>}
           </Grid>
