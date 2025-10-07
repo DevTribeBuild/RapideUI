@@ -1,6 +1,7 @@
 import useAuthStore, { User, UserDetails } from "@/stores/useAuthStore";
 import client from "@/apolloClient";
 import { GET_MY_RIDER_DETAILS_QUERY } from "@/graphql/queries";
+import {  MY_MERCHANT_DETAILS } from "@/graphql";
 import { GET_ME } from "@/graphql";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
@@ -52,7 +53,26 @@ export const handleLoginHelper = async (token: string, user: User, router: AppRo
       router.push("/riders/verify"); // Redirect to form if fetching fails
     }
   } else if (user.userType === "MERCHANT") {
-    router.push("/merchant/verify");
+    try {
+      const { data: merchantData } = await client.query({
+        query: MY_MERCHANT_DETAILS,
+        fetchPolicy: "no-cache",
+        context: {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      });
+
+      if (merchantData && merchantData.myMerchantDetails && merchantData.myMerchantDetails.status === "APPROVED") {
+        router.push("/products");
+      } else {
+        router.push("/merchant/verify");
+      }
+    } catch (error) {
+      console.error("Failed to fetch merchant details:", error);
+      router.push("/merchant/verify"); // Redirect to form if fetching fails
+    }
   } else if (user.userType === "ADMIN") {
     router.push("/explore");
   } else {
