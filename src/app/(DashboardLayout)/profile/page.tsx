@@ -10,13 +10,12 @@ import {
     FormControlLabel,
     Button,
     Paper,
+    Grid,
 } from '@mui/material';
-import { gql } from "@apollo/client";
 import useAppStore from "@/stores/useAuthStore";
 import { useMutation, useQuery } from "@apollo/client/react";
-import { UPDATE_USER_MUTATION } from "@/graphql";
+import { UPDATE_USER_MUTATION, MY_MERCHANT_DETAILS, RIDER_DETAILS } from "@/graphql";
 import { FIND_ONE_USER_QUERY } from "@/graphql/user/queries";
-
 
 type UpdateUserMutationVariables = {
   updateUserInput: {
@@ -52,8 +51,34 @@ function TabPanel({ children, value, index }: TabPanelProps) {
     );
 }
 
+function DetailsGrid({ details, loading, error }: { details: any, loading: boolean, error: any }) {
+    if (loading) return <p>Loading details...</p>;
+    if (error) return <p>Error loading details: {error.message}</p>;
+    if (!details) return <p>No details found.</p>;
+
+    return (
+        <Grid container spacing={2}>
+            {Object.entries(details).map(([key, value]) => {
+                if (key === '__typename' || key === 'user') return null;
+                return (
+                    <Grid size={{xs:12, md:6}} key={key}>
+                        <TextField
+                            label={key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}
+                            value={value || ''}
+                            fullWidth
+                            margin="normal"
+                            disabled
+                        />
+                    </Grid>
+                );
+            })}
+        </Grid>
+    );
+}
+
 export default function ProfilePage() {
     const userDetails: any = useAppStore((state) => state.userDetails);
+    const userType = userDetails?.userType;
     const [tab, setTab] = useState(0);
     const [editMode, setEditMode] = useState(false);
     const [form, setForm] = useState<UserDetails>({});
@@ -62,6 +87,18 @@ export default function ProfilePage() {
         variables: { email: userDetails?.email },
         skip: !userDetails?.email,
     });
+    console.log("userDetails", userDetails?.me);
+    const { data: merchantData, loading: merchantLoading, error: merchantError } = useQuery(MY_MERCHANT_DETAILS, {
+        // variables: { userId: userDetails?.id },
+        skip: userDetails?.me?.userType !== 'MERCHANT',
+    });
+    console.log("merchantData", merchantData);
+
+    const { data: riderData, loading: riderLoading, error: riderError } = useQuery(RIDER_DETAILS, {
+        variables: { userId: userDetails?.me?.id },
+        skip: userDetails?.me?.userType !== 'RIDER' || !userDetails?.me?.id,
+    });
+
     const [updateUser, { loading, error }] = useMutation<any, UpdateUserMutationVariables>(UPDATE_USER_MUTATION, {
         refetchQueries: [{ query: FIND_ONE_USER_QUERY, variables: { email: userDetails?.email } }]
     });
@@ -122,6 +159,8 @@ export default function ProfilePage() {
                 <Tab label="Basic Info" />
                 <Tab label="Contact" />
                 <Tab label="Settings" />
+                {userDetails?.me?.userType === 'MERCHANT' && <Tab label="Merchant Details" />}
+                {userDetails?.me?.userType === 'RIDER' && <Tab label="Rider Details" />}
             </Tabs>
 
             <TabPanel value={tab} index={0}>
@@ -177,6 +216,18 @@ export default function ProfilePage() {
                     disabled={!editMode}
                 />
             </TabPanel>
+
+            {userDetails?.me?.userType === 'MERCHANT' && (
+                <TabPanel value={tab} index={3}>
+                    <DetailsGrid details={merchantData?.myMerchantDetails} loading={merchantLoading} error={merchantError} />
+                </TabPanel>
+            )}
+
+            {userDetails?.me?.userType === 'RIDER' && (
+                <TabPanel value={tab} index={3}>
+                    <DetailsGrid details={riderData?.riderDetails} loading={riderLoading} error={riderError} />
+                </TabPanel>
+            )}
 
             {editMode && (
                 <Box mt={2} display="flex" justifyContent="flex-end">
