@@ -63,7 +63,7 @@ const renderMenuItems = (items: any, pathDirect: any, theme: any, currentTheme: 
               pt: 2,
               pb: 1,
               fontWeight: 'bold',
-              color: currentTheme === 'dark' ? '#FFD700' : '#000000'
+              color: currentTheme === 'dark' ? '#fff' : '#000000'
             }}
           >
             {item.subheader}
