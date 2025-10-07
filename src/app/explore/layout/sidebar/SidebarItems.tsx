@@ -43,10 +43,13 @@ const renderMenuItems = (items: any, pathDirect: any) => {
     if (item.subheader) {
       // Display Subheader
       return (
+        <Box sx={{ border:'1px solid red'}}>
+
         <Menu
           subHeading={item.subheader}
           key={item.subheader}
-        />
+          />
+          </Box>
       );
     }
 
@@ -76,7 +79,7 @@ const renderMenuItems = (items: any, pathDirect: any) => {
         component={Link}
         sx={{ px: 3 }}
       >
-        {item.title}
+        {item.title} 
       </MenuItem >
     );
   });

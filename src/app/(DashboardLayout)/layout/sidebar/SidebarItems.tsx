@@ -39,7 +39,7 @@ const renderMenuItems = (items: any, pathDirect: any, theme: any, currentTheme: 
 
     const Icon = item.icon ? item.icon : IconPoint;
 
-    const itemIcon = <Icon stroke={1.5} size="1.3rem" />;
+    const itemIcon = <Icon stroke={1.5} size="1.3rem" style={{color:currentTheme === 'dark' ? '#FFD700' : '#000000'}}/>;
 
     // const textColor = currentTheme === 'dark' ? '#FFD700' : '#000000';
     const textColor = '#ffd700';
@@ -48,10 +48,27 @@ const renderMenuItems = (items: any, pathDirect: any, theme: any, currentTheme: 
     if (item.subheader) {
       // Display Subheader
       return (
-        <Menu
-          subHeading={item.subheader}
-          key={item.subheader}
-        />
+        <Box>
+          {/* <Menu
+            subHeading={item.subheader}
+            key={item.subheader}
+            style={{
+              color: currentTheme === 'dark' ? '#FFD700' : '#000000'
+            }}
+          /> */}
+          <Typography
+            variant="subtitle2"
+            sx={{
+              pl: 3,
+              pt: 2,
+              pb: 1,
+              fontWeight: 'bold',
+              color: currentTheme === 'dark' ? '#FFD700' : '#000000'
+            }}
+          >
+            {item.subheader}
+          </Typography>
+        </Box>
       );
     }
 
