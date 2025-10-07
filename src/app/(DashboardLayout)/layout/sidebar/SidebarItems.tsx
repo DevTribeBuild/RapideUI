@@ -48,7 +48,7 @@ const renderMenuItems = (items: any, pathDirect: any, theme: any, currentTheme: 
     if (item.subheader) {
       // Display Subheader
       return (
-        <Box>
+        <Box key={item.subheader}>
           {/* <Menu
             subHeading={item.subheader}
             key={item.subheader}
