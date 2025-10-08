@@ -235,7 +235,7 @@ const Blog = () => {
                         </>
                     ) : (
                       <>
-                        <Typography variant="subtitle2">Quantity:</Typography>
+                        {/* <Typography variant="subtitle2">Quantity:</Typography> */}
                         <QuantityAdjuster
                           initialQuantity={currentQuantity}
                           onQuantityChange={(newQuantity) =>

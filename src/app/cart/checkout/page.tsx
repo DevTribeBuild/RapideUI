@@ -45,7 +45,7 @@ type CreatePaymentMutationVariables = {
   input: {
     orderId: string;
     amount: number;
-    method: string;
+    // method: string;
   };
 };
 
@@ -65,7 +65,7 @@ const CheckoutPage = () => {
   const [deliveryLat, setDeliveryLat] = useState<number | null>(null);
   const [deliveryLng, setDeliveryLng] = useState<number | null>(null);
 
-  const { data: cartData, loading: cartLoading, error: cartError } = useQuery<MyCartQuery>(MY_CART_QUERY, { 
+  const { data: cartData, loading: cartLoading, error: cartError } = useQuery<MyCartQuery>(MY_CART_QUERY, {
     skip: !token,
     onError: (error) => {
       if (error.message === 'Unauthorized') {
@@ -115,8 +115,8 @@ const CheckoutPage = () => {
 
   const handleCheckout = async () => {
     if (!fullName || !email || !address || !city || !postalCode || !country) {
-        toast.error("Please fill in all shipping information fields.");
-        return;
+      toast.error("Please fill in all shipping information fields.");
+      return;
     }
 
     const deliveryAddress = `${address}, ${city}, ${postalCode}, ${country}`;
@@ -132,37 +132,37 @@ const CheckoutPage = () => {
     }
 
     try {
-        const orderResponse = await createOrder({
-            variables: {
-                input: {
-                    cartId: localCartId,
-                    deliveryAddress,
-                    notes: "", // You can add a notes field if you want
-                    deliveryLat,
-                    deliveryLng,
-                },
-            },
-        });
+      const orderResponse = await createOrder({
+        variables: {
+          input: {
+            cartId: localCartId,
+            deliveryAddress,
+            notes: "", // You can add a notes field if you want
+            deliveryLat,
+            deliveryLng,
+          },
+        },
+      });
 
-        const orderId = orderResponse.data.createOrder.id;
-        const paymentMethod = ["Card", "Mpesa", "Crypto"][tab];
+      const orderId = orderResponse.data.createOrder.id;
+      const paymentMethod = ["Zyntra","Card", "Mpesa", "Crypto"][tab];
 
-        await createPayment({
-            variables: {
-                input: {
-                    orderId,
-                    amount: total,
-                    method: paymentMethod,
-                },
-            },
-        });
+      // await createPayment({
+      //   variables: {
+      //     input: {
+      //       orderId,
+      //       amount: total,
+      //       // method: paymentMethod,
+      //     },
+      //   },
+      // });
 
-        toast.success("Order placed successfully!");
-        await clearCart();
-        router.push("/cart/tracking");
+      toast.success("Order placed successfully!");
+      await clearCart();
+      router.push("/cart/tracking");
     } catch (err) {
-        console.error("Error creating order:", err);
-        toast.error("Failed to place order.");
+      console.error("Error creating order:", err);
+      toast.error("Failed to place order.");
     }
   }
 
@@ -180,113 +180,121 @@ const CheckoutPage = () => {
 
           <Grid container spacing={3}>
             <Grid size={{ xs: 12, md: 7 }}>
-                <Typography variant="h6" gutterBottom>
-                    Shipping Information
-                </Typography>
-                <Grid container spacing={2} sx={{ mb: 3 }}>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                    <TextField label="Full Name" fullWidth value={fullName} onChange={(e) => setFullName(e.target.value)} />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                    <TextField label="Email" fullWidth value={email} onChange={(e) => setEmail(e.target.value)} />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                    <TextField label="Address" fullWidth value={address} onChange={(e) => setAddress(e.target.value)} />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                    <TextField label="City" fullWidth value={city} onChange={(e) => setCity(e.target.value)} />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                    <TextField label="Postal Code" fullWidth value={postalCode} onChange={(e) => setPostalCode(e.target.value)} />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                    <TextField label="Country" fullWidth value={country} onChange={(e) => setCountry(e.target.value)} />
-                    </Grid>
-                    <Grid size={{ xs: 12 }}>
-                      <Button variant="outlined" fullWidth onClick={getCurrentLocation} sx={{ mt: 2 }}>
-                        Use Current Location
-                      </Button>
-                      {deliveryLat !== null && deliveryLng !== null && (
-                        <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-                          Location: {deliveryLat.toFixed(4)}, {deliveryLng.toFixed(4)}
-                        </Typography>
-                      )}
-                    </Grid>
+              <Typography variant="h6" gutterBottom>
+                Shipping Information
+              </Typography>
+              <Grid container spacing={2} sx={{ mb: 3 }}>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <TextField label="Full Name" fullWidth value={fullName} onChange={(e) => setFullName(e.target.value)} />
                 </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <TextField label="Email" fullWidth value={email} onChange={(e) => setEmail(e.target.value)} />
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <TextField label="Address" fullWidth value={address} onChange={(e) => setAddress(e.target.value)} />
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <TextField label="City" fullWidth value={city} onChange={(e) => setCity(e.target.value)} />
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <TextField label="Postal Code" fullWidth value={postalCode} onChange={(e) => setPostalCode(e.target.value)} />
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <TextField label="Country" fullWidth value={country} onChange={(e) => setCountry(e.target.value)} />
+                </Grid>
+                <Grid size={{ xs: 12 }}>
+                  <Button variant="outlined" fullWidth onClick={getCurrentLocation} sx={{ mt: 2 }}>
+                    Use Current Location
+                  </Button>
+                  {deliveryLat !== null && deliveryLng !== null && (
+                    <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+                      Location: {deliveryLat.toFixed(4)}, {deliveryLng.toFixed(4)}
+                    </Typography>
+                  )}
+                </Grid>
+              </Grid>
 
-                <Divider sx={{ mb: 3 }} />
+              <Divider sx={{ mb: 3 }} />
 
-                <Typography variant="h6" gutterBottom>
-                    Payment Details
-                </Typography>
-                <Tabs value={tab} onChange={handleTabChange} centered>
-                    <Tab label="Card" />
-                    <Tab label="Mpesa" />
-                    <Tab label="Crypto" />
-                </Tabs>
-                <Box mt={3}>
-                    {tab === 0 && (
-                    <Stack spacing={2}>
-                        <TextField label="Card Number" fullWidth />
-                        <TextField label="Expiry Date" fullWidth />
-                        <TextField label="CVV" fullWidth />
-                        <Button variant="contained" color="primary" fullWidth onClick={handleCheckout} disabled={createOrderLoading || createPaymentLoading || cartLoading}>
-                            {createOrderLoading || createPaymentLoading || cartLoading ? 'Processing...' : `Pay with Card`}
-                        </Button>
-                    </Stack>
-                    )}
-                    {tab === 1 && (
-                    <Stack spacing={2}>
-                        <TextField
-                        label="Mpesa Phone Number"
-                        fullWidth
-                        value={phone}
-                        onChange={e => setPhone(e.target.value)}
-                        />
-                        <Button variant="contained" color="success" fullWidth onClick={handleCheckout} disabled={createOrderLoading || createPaymentLoading || cartLoading}>
-                            {createOrderLoading || createPaymentLoading || cartLoading ? 'Processing...' : `Send Mpesa Prompt`}
-                        </Button>
-                    </Stack>
-                    )}
-                    {tab === 2 && (
-                    <Stack spacing={2}>
-                        <ConnectWalletButton />
-                        <Button variant="contained" color="secondary" fullWidth sx={{ mt: 2 }} onClick={handleCheckout} disabled={createOrderLoading || createPaymentLoading || cartLoading}>
-                            {createOrderLoading || createPaymentLoading || cartLoading ? 'Processing...' : `Pay with Crypto`}
-                        </Button>
-                    </Stack>
-                    )}
-                </Box>
+              <Typography variant="h6" gutterBottom>
+                Payment Details
+              </Typography>
+              <Tabs value={tab} onChange={handleTabChange} centered>
+                <Tab label="Zyntra wallet" />
+                <Tab label="Mpesa" />
+                <Tab label="Card" />
+                <Tab label="Crypto" />
+              </Tabs>
+              <Box mt={3}>
+                {tab === 0 && (
+                  <Stack spacing={2}>
+                    <Button variant="contained" color="primary" fullWidth onClick={handleCheckout} disabled={createOrderLoading || createPaymentLoading || cartLoading}>
+                      {createOrderLoading || createPaymentLoading || cartLoading ? 'Processing...' : `Pay with Card`}
+                    </Button>
+                  </Stack>
+                )}
+                {tab === 1 && (
+                  <Stack spacing={2}>
+                    <TextField label="Card Number" fullWidth />
+                    <TextField label="Expiry Date" fullWidth />
+                    <TextField label="CVV" fullWidth />
+                    <Button variant="contained" color="primary" fullWidth onClick={handleCheckout} disabled={createOrderLoading || createPaymentLoading || cartLoading}>
+                      {createOrderLoading || createPaymentLoading || cartLoading ? 'Processing...' : `Pay with Card`}
+                    </Button>
+                  </Stack>
+                )}
+                {tab === 2 && (
+                  <Stack spacing={2}>
+                    <TextField
+                      label="Mpesa Phone Number"
+                      fullWidth
+                      value={phone}
+                      onChange={e => setPhone(e.target.value)}
+                    />
+                    <Button variant="contained" color="success" fullWidth onClick={handleCheckout} disabled={createOrderLoading || createPaymentLoading || cartLoading}>
+                      {createOrderLoading || createPaymentLoading || cartLoading ? 'Processing...' : `Send Mpesa Prompt`}
+                    </Button>
+                  </Stack>
+                )}
+                {tab === 3 && (
+                  <Stack spacing={2}>
+                    <ConnectWalletButton />
+                    <Button variant="contained" color="secondary" fullWidth sx={{ mt: 2 }} onClick={handleCheckout} disabled={createOrderLoading || createPaymentLoading || cartLoading}>
+                      {createOrderLoading || createPaymentLoading || cartLoading ? 'Processing...' : `Pay with Crypto`}
+                    </Button>
+                  </Stack>
+                )}
+              </Box>
             </Grid>
             <Grid size={{ xs: 12, md: 5 }}>
-                <Typography variant="h6" gutterBottom>
-                    Order Summary
-                </Typography>
-                {cartLoading ? (
-                    <Stack spacing={1} sx={{ width: '100%' }}>
-                        <Skeleton variant="rectangular" width="100%" height={40} />
-                        <Skeleton variant="rectangular" width="100%" height={40} />
-                        <Skeleton variant="rectangular" width="100%" height={40} />
-                        <Divider sx={{ my: 2 }} />
-                        <Skeleton variant="rectangular" width="100%" height={50} />
-                    </Stack>
-                ) : cartError ? (
-                    <Typography color="error">Error: {cartError.message}</Typography>
-                ) : (
-                    <Paper elevation={1} sx={{ p: 2 }}>
-                        {cartItems.map((item: any) => (
-                            <Box key={item.product.id} sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                                <Typography>{item.product.name} x {item.quantity}</Typography>
-                                <Typography>${(item.product.price * item.quantity).toFixed(2)}</Typography>
-                            </Box>
-                        ))}
-                        <Divider sx={{ my: 2 }} />
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <Typography variant="h6">Total</Typography>
-                            <Typography variant="h6">${total.toFixed(2)}</Typography>
-                        </Box>
-                    </Paper>
-                )}
+              <Typography variant="h6" gutterBottom>
+                Order Summary
+              </Typography>
+              {cartLoading ? (
+                <Stack spacing={1} sx={{ width: '100%' }}>
+                  <Skeleton variant="rectangular" width="100%" height={40} />
+                  <Skeleton variant="rectangular" width="100%" height={40} />
+                  <Skeleton variant="rectangular" width="100%" height={40} />
+                  <Divider sx={{ my: 2 }} />
+                  <Skeleton variant="rectangular" width="100%" height={50} />
+                </Stack>
+              ) : cartError ? (
+                <Typography color="error">Error: {cartError.message}</Typography>
+              ) : (
+                <Paper elevation={1} sx={{ p: 2 }}>
+                  {cartItems.map((item: any) => (
+                    <Box key={item.product.id} sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                      <Typography>{item.product.name} x {item.quantity}</Typography>
+                      <Typography>${(item.product.price * item.quantity).toFixed(2)}</Typography>
+                    </Box>
+                  ))}
+                  <Divider sx={{ my: 2 }} />
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography variant="h6">Total</Typography>
+                    <Typography variant="h6">${total.toFixed(2)}</Typography>
+                  </Box>
+                </Paper>
+              )}
             </Grid>
           </Grid>
         </Paper>
