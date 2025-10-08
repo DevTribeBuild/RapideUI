@@ -26,7 +26,10 @@ import {
   Typography,
   Skeleton,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
+  Card,
+  CardActions,
+  CardContent
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { styled } from '@mui/system';
@@ -36,8 +39,8 @@ import { ASSIGN_NEAREST_RIDER_MUTATION, PAY_ORDER_MUTATION } from '../../../../g
 import { toast } from 'react-hot-toast';
 
 const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
-  backgroundColor: '#F9FAFB',
-  borderTop: '1px solid #E0E0E0',
+  backgroundColor: '#212121',
+  borderTop: '1px solid #ffd700',
   '& .MuiAccordionSummary-content': {
     margin: '12px 0',
   },
@@ -58,7 +61,7 @@ export default function OrderManagement() {
         Order Management
       </Typography>
       <Grid container spacing={3}>
-        <Grid size={{ xs: 12, md: isMobile ? 12 : 3 }}>
+        <Grid size={{ xs: 12, md: isMobile ? 12 : 12 }}>
           {isMobile ? (
             <Accordion>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -111,48 +114,31 @@ export default function OrderManagement() {
             </Tabs>
           )}
         </Grid>
-        <Grid size={{ xs: 12, md: isMobile ? 12 : 9 }}>
-          <OrderTable status={tabValue} />
+        <Grid size={{ xs: 12, md: isMobile ? 12 : 12 }}>
+          <OrderCards status={tabValue} />
         </Grid>
       </Grid>
     </Box>
   );
 }
 
-function OrderTableSkeleton() {
+function OrderCardSkeleton() {
   return (
-    <TableContainer sx={{ border: '1px solid #E0E0E0', borderRadius: 2, mt: 2 }}>
-      <Table aria-label="order management table skeleton">
-        <TableHead sx={{ bgcolor: '#FEF3C7' }}>
-          <TableRow>
-            <TableCell><Skeleton variant="text" /></TableCell>
-            <TableCell><Skeleton variant="text" /></TableCell>
-            <TableCell><Skeleton variant="text" /></TableCell>
-            <TableCell><Skeleton variant="text" /></TableCell>
-            <TableCell><Skeleton variant="text" /></TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {[...Array(5)].map((_, index) => (
-            <TableRow key={index}>
-              <TableCell><Skeleton variant="text" /></TableCell>
-              <TableCell><Skeleton variant="text" /></TableCell>
-              <TableCell><Skeleton variant="text" /></TableCell>
-              <TableCell><Skeleton variant="text" /></TableCell>
-              <TableCell><Skeleton variant="text" /></TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <Grid container spacing={3}>
+      {[...Array(3)].map((_, index) => (
+        <Grid size={{ xs: 12, md: 6, lg: 4 }} key={index}>
+          <Skeleton variant="rectangular" height={200} />
+        </Grid>
+      ))}
+    </Grid>
   );
 }
 
-function OrderTable({ status }: { status: string }) {
+function OrderCards({ status }: { status: string }) {
   const [expandedOrder, setExpandedOrder] = useState<string | false>(false);
 
   const { data: ordersData, loading: ordersLoading, error: ordersError } = useQuery(ALL_ORDERS_QUERY, {
-    // variables: { status: status === 'ALL' ? null : status.toUpperCase() },
+    variables: { status: status === 'ALL' ? null : status.toUpperCase() },
   });
 
   const [assignNearestRider, { loading: assignRiderLoading }] = useMutation(ASSIGN_NEAREST_RIDER_MUTATION, {
@@ -187,98 +173,76 @@ function OrderTable({ status }: { status: string }) {
     await payOrder({ variables: { orderId, tokenSymbol } });
   };
 
-  if (ordersLoading) return <OrderTableSkeleton />;
+  if (ordersLoading) return <OrderCardSkeleton />;
   if (ordersError) return <p>Error loading orders: {ordersError.message}</p>;
 
   return (
-    <>
-      <TableContainer sx={{ border: '1px solid #E0E0E0', borderRadius: 2, mt: 2 }}>
-        <Table aria-label="order management table">
-          <TableHead sx={{ bgcolor: '#FEF3C7' }}>
-            <TableRow>
-              <TableCell sx={{ fontWeight: 'bold', color: '#92400E', borderBottom: '1px solid #D1AA2B' }}>Order ID</TableCell>
-              
-              <TableCell sx={{ fontWeight: 'bold', color: '#92400E', borderBottom: '1px solid #D1AA2B' }}>Date</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', color: '#92400E', borderBottom: '1px solid #D1AA2B' }}>Status</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', color: '#92400E', borderBottom: '1px solid #D1AA2B' }}>Assigned Rider</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', color: '#92400E', borderBottom: '1px solid #D1AA2B' }}>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {ordersData.allOrders.map((order: any) => (
-              <React.Fragment key={order.id}>
-                <TableRow sx={{ '&:last-child td, &:last-child th': { borderBottom: 0 } }}>
-                  <TableCell sx={{ borderRight: '1px solid #E0E0E0', borderBottom: '1px solid #E0E0E0' }}>{order.id}</TableCell>
-                  
-                  <TableCell sx={{ borderRight: '1px solid #E0E0E0', borderBottom: '1px solid #E0E0E0' }}>{new Date(order.createdAt).toLocaleDateString()}</TableCell>
-                  <TableCell sx={{ borderRight: '1px solid #E0E0E0', borderBottom: '1px solid #E0E0E0' }}>
-                    <Typography
-                      sx={{
-                        fontWeight: 500,
-                        color: '#4B5563',
-                        backgroundColor: '#E5E7EB',
-                        borderRadius: '4px',
-                        padding: '4px 8px',
-                        display: 'inline-block',
-                        minWidth: '80px',
-                        textAlign: 'center',
-                      }}
-                    >
-                      {order.status}
-                    </Typography>
-                  </TableCell>
-                  <TableCell sx={{ borderRight: '1px solid #E0E0E0', borderBottom: '1px solid #E0E0E0' }}>
-                    {order.assignedRiderId ? order.assignedRiderId : 'Unassigned'}
-                  </TableCell>
-                  <TableCell sx={{ borderBottom: '1px solid #E0E0E0' }}>
-                    <Button variant="outlined" onClick={() => handleAssignRider(order.id)} size="small" sx={{ color: '#6B7280', borderColor: '#B0B0B0', mr: 1 }}>
-                      Assign Rider
-                    </Button>
-                    <Button variant="outlined" onClick={() => handlePayOrder(order.id, order.cart.items[0].product.currency.symbol)} size="small" sx={{ color: '#6B7280', borderColor: '#B0B0B0' }}>
-                      Pay for Order
-                    </Button>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell colSpan={6} sx={{ p: 0, borderBottom: '1px solid #E0E0E0' }}>
-                    <Accordion
-                      expanded={expandedOrder === order.id}
-                      onChange={handleExpand(order.id)}
-                      sx={{ boxShadow: 'none', '&:before': { display: 'none' }, borderRadius: 0 }}
-                    >
-                      <StyledAccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: '#6B7280' }} />}>
-                        <Typography variant="body2" sx={{ fontWeight: 'medium', color: '#6B7280' }}>
-                          View Products
-                        </Typography>
-                      </StyledAccordionSummary>
-                      <AccordionDetails sx={{ bgcolor: '#F9FAFB', borderTop: '1px solid #E0E0E0' }}>
-                        <Table size="small" aria-label="products in order">
-                          <TableHead>
-                            <TableRow>
-                              <TableCell sx={{ fontWeight: 'bold', color: '#4B5563', borderBottom: '1px solid #E0E0E0' }}>Product</TableCell>
-                              <TableCell sx={{ fontWeight: 'bold', color: '#4B5563', borderBottom: '1px solid #E0E0E0' }}>Quantity</TableCell>
-                              <TableCell sx={{ fontWeight: 'bold', color: '#4B5563', borderBottom: '1px solid #E0E0E0' }}>Price</TableCell>
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {order.cart.items.map((item: any, idx: number) => (
-                              <TableRow key={idx}>
-                                <TableCell sx={{ borderRight: '1px solid #E0E0E0', borderBottom: '1px solid #E0E0E0' }}>{item.product.name}</TableCell>
-                                <TableCell sx={{ borderRight: '1px solid #E0E0E0', borderBottom: '1px solid #E0E0E0' }}>{item.quantity}</TableCell>
-                                <TableCell sx={{ borderBottom: '1px solid #E0E0E0' }}>${item.product.price.toFixed(2)}</TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </AccordionDetails>
-                    </Accordion>
-                  </TableCell>
-                </TableRow>
-              </React.Fragment>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </>
+    <Grid container spacing={3}>
+      {ordersData.allOrders.map((order: any) => (
+        <Grid size={{ xs: 12, md: 6, lg: 4 }} key={order.id}>
+          <Card sx={{ border: '1px solid #ffd700', borderRadius: 2 }}>
+            <CardContent>
+              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Order #{order.id.substring(0, 8)}</Typography>
+              <Typography variant="body2" color="text.secondary">Date: {new Date(order.createdAt).toLocaleDateString()}</Typography>
+              <Box sx={{ my: 2 }}>
+                <Typography
+                  sx={{
+                    fontWeight: 500,
+                    color: '#000',
+                    backgroundColor: '#ffd700',
+                    borderRadius: '4px',
+                    padding: '4px 8px',
+                    display: 'inline-block',
+                  }}
+                >
+                  {order.status}
+                </Typography>
+              </Box>
+              <Typography variant="body2" color="text.secondary">Assigned Rider: {order.assignedRiderId ? order.assignedRiderId.substring(0, 8) : 'Unassigned'}</Typography>
+            </CardContent>
+            <CardActions sx={{ justifyContent: 'space-between', px: 2 }}>
+              <Button variant="outlined" onClick={() => handleAssignRider(order.id)} size="small" sx={{ color: '#ffd700', borderColor: '#ffd700', '&:hover': { borderColor: '#ffd700', backgroundColor: 'rgba(255, 215, 0, 0.1)' } }}>
+                Assign Rider
+              </Button>
+              <Button variant="outlined" onClick={() => handlePayOrder(order.id, order.cart.items[0].product.currency.symbol)} size="small" sx={{ color: '#ffd700', borderColor: '#ffd700', '&:hover': { borderColor: '#ffd700', backgroundColor: 'rgba(255, 215, 0, 0.1)' } }}>
+                Pay for Order
+              </Button>
+            </CardActions>
+            <br/>
+            <Accordion
+              expanded={expandedOrder === order.id}
+              onChange={handleExpand(order.id)}
+              sx={{ boxShadow: 'none', '&:before': { display: 'none' }, borderRadius: 0 }}
+            >
+              <StyledAccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: '#b8860b' }} />}>
+                <Typography variant="body2" sx={{ fontWeight: 'medium', color: '#b8860b' }}>
+                  View Products
+                </Typography>
+              </StyledAccordionSummary>
+              <AccordionDetails sx={{ bgcolor: '#151515ff', borderTop: '1px solid #E0E0E0' }}>
+                <Table size="small" aria-label="products in order">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Product</TableCell>
+                      <TableCell>Quantity</TableCell>
+                      <TableCell>Price</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {order.cart.items.map((item: any, idx: number) => (
+                      <TableRow key={idx}>
+                        <TableCell>{item.product.name}</TableCell>
+                        <TableCell>{item.quantity}</TableCell>
+                        <TableCell>${item.product.price.toFixed(2)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </AccordionDetails>
+            </Accordion>
+          </Card>
+        </Grid>
+      ))}
+    </Grid>
   );
 }
