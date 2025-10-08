@@ -116,8 +116,8 @@ export const GET_ORDER_QUERY = gql`
  `;
 
 export const ALL_ORDERS_QUERY = gql`
-  query AllOrders($status: String) {
-  allOrders(status: $status) {
+  query AllOrders {
+  allOrders{
     assignedRiderId
     cart {
       createdAt

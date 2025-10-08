@@ -11,6 +11,7 @@ import {
   DialogContent,
   DialogTitle,
   FormControl,
+  Grid,
   InputLabel,
   MenuItem,
   Select,
@@ -23,7 +24,9 @@ import {
   TableHead,
   TableRow,
   Typography,
-  Skeleton
+  Skeleton,
+  useTheme,
+  useMediaQuery
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { styled } from '@mui/system';
@@ -42,6 +45,8 @@ const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
 
 export default function OrderManagement() {
   const [tabValue, setTabValue] = useState('ALL');
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
@@ -52,22 +57,64 @@ export default function OrderManagement() {
       <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 3 }}>
         Order Management
       </Typography>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={tabValue} onChange={handleTabChange} aria-label="order status tabs">
-          <Tab label="All" value="ALL" />
-          <Tab label="Pending" value="PENDING" />
-          <Tab label="Awaiting Payment" value="AWAITING_PAYMENT_CONFIRMATION" />
-          <Tab label="Paid" value="PAID" />
-          <Tab label="Confirmed" value="CONFIRMED" />
-          <Tab label="Processing" value="PROCESSING" />
-          <Tab label="Assigned" value="ASSIGNED" />
-          <Tab label="In Transit" value="IN_TRANSIT" />
-          <Tab label="Delivered" value="DELIVERED" />
-          <Tab label="Rejected" value="REJECTED" />
-          <Tab label="Cancelled" value="CANCELLED" />
-        </Tabs>
-      </Box>
-      <OrderTable status={tabValue} />
+      <Grid container spacing={3}>
+        <Grid size={{ xs: 12, md: isMobile ? 12 : 3 }}>
+          {isMobile ? (
+            <Accordion>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography>Filter by Status</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Tabs
+                  value={tabValue}
+                  onChange={handleTabChange}
+                  aria-label="order status tabs"
+                  orientation="vertical"
+                  variant="scrollable"
+                  scrollButtons="auto"
+                >
+                  <Tab label="All" value="ALL" />
+                  <Tab label="Pending" value="PENDING" />
+                  <Tab label="Awaiting Payment" value="AWAITING_PAYMENT_CONFIRMATION" />
+                  <Tab label="Paid" value="PAID" />
+                  <Tab label="Confirmed" value="CONFIRMED" />
+                  <Tab label="Processing" value="PROCESSING" />
+                  <Tab label="Assigned" value="ASSIGNED" />
+                  <Tab label="In Transit" value="IN_TRANSIT" />
+                  <Tab label="Delivered" value="DELIVERED" />
+                  <Tab label="Rejected" value="REJECTED" />
+                  <Tab label="Cancelled" value="CANCELLED" />
+                </Tabs>
+              </AccordionDetails>
+            </Accordion>
+          ) : (
+            <Tabs
+              value={tabValue}
+              onChange={handleTabChange}
+              aria-label="order status tabs"
+              orientation="horizontal"
+              variant="scrollable"
+              scrollButtons="auto"
+              sx={{ borderRight: 1, borderColor: 'divider' }}
+            >
+              <Tab label="All" value="ALL" />
+              <Tab label="Pending" value="PENDING" />
+              <Tab label="Awaiting Payment" value="AWAITING_PAYMENT_CONFIRMATION" />
+              <Tab label="Paid" value="PAID" />
+              <Tab label="Confirmed" value="CONFIRMED" />
+              <Tab label="Processing" value="PROCESSING" />
+              <Tab label="Assigned" value="ASSIGNED" />
+              <Tab label="In Transit" value="IN_TRANSIT" />
+              <Tab label="Delivered" value="DELIVERED" />
+              <Tab label="Rejected" value="REJECTED" />
+              <Tab label="Cancelled" value="CANCELLED" />
+            </Tabs>
+          )}
+        </Grid>
+        <Grid size={{ xs: 12, md: isMobile ? 12 : 9 }}>
+          <OrderTable status={tabValue} />
+        </Grid>
+      </Grid>
     </Box>
   );
 }
@@ -105,11 +152,11 @@ function OrderTable({ status }: { status: string }) {
   const [expandedOrder, setExpandedOrder] = useState<string | false>(false);
 
   const { data: ordersData, loading: ordersLoading, error: ordersError } = useQuery(ALL_ORDERS_QUERY, {
-    variables: { status: status === 'ALL' ? null : status },
+    // variables: { status: status === 'ALL' ? null : status.toUpperCase() },
   });
 
   const [assignNearestRider, { loading: assignRiderLoading }] = useMutation(ASSIGN_NEAREST_RIDER_MUTATION, {
-    refetchQueries: [{ query: ALL_ORDERS_QUERY, variables: { status: status === 'ALL' ? null : status } }],
+    refetchQueries: [{ query: ALL_ORDERS_QUERY, variables: { status: status === 'ALL' ? null : status.toUpperCase() } }],
     onCompleted: () => {
       toast.success('Rider assigned successfully');
     },
@@ -119,7 +166,7 @@ function OrderTable({ status }: { status: string }) {
   });
 
   const [payOrder, { loading: payOrderLoading }] = useMutation(PAY_ORDER_MUTATION, {
-    refetchQueries: [{ query: ALL_ORDERS_QUERY, variables: { status: status === 'ALL' ? null : status } }],
+    refetchQueries: [{ query: ALL_ORDERS_QUERY, variables: { status: status === 'ALL' ? null : status.toUpperCase() } }],
     onCompleted: () => {
       toast.success('Order paid successfully');
     },
