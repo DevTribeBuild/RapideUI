@@ -47,6 +47,7 @@ type CreatePaymentMutationVariables = {
   input: {
     orderId: string;
     amount: number;
+    method: string;
   };
 };
 
@@ -166,14 +167,15 @@ const CheckoutPage = () => {
     }
 
     try {
-      // await createPayment({
-      //   variables: {
-      //     input: {
-      //       orderId,
-      //       amount: total,
-      //     },
-      //   },
-      // });
+      await createPayment({
+        variables: {
+          input: {
+            orderId,
+            amount: total,
+            method: "CRYPTO",
+          },
+        },
+      });
       toast.success("Payment successful!");
       await clearCart();
       handleNext();
@@ -313,7 +315,7 @@ const CheckoutPage = () => {
             <Typography variant="subtitle1">
               Your order number is #{orderId}. We have emailed your order confirmation, and will send you an update when your order has shipped.
             </Typography>
-            <Button variant="contained" color="primary" sx={{ mt: 3 }} onClick={() => router.push('/cart/tracking')}>
+            <Button variant="contained" color="primary" sx={{ mt: 3 }} onClick={() => router.push(`/cart/tracking/${orderId}`)}>
               Track Order
             </Button>
           </Box>
