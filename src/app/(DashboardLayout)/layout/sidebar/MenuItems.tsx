@@ -49,9 +49,9 @@ export const getMenuItems = (user: { userType?: string } | null) => {
       title: "Products",
       icon: IconBasket,
       href: "/products",
-      userType: ["ADMIN","MERCHANT"],
+      userType: ["ADMIN", "MERCHANT"],
     },
-        {
+    {
       id: uniqueId(),
       title: "Users",
       icon: IconBasket,

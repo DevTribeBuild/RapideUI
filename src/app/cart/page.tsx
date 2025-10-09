@@ -137,7 +137,7 @@ const CartPage: React.FC = () => {
                     <Grid container spacing={3}>
                         <Grid size={{ xs: 12 }}>
                             <OrderStatusStepper status="Order Placed" />
-                            <TableContainer component={Paper}>
+                            <TableContainer component={Paper} sx={{ p:2}}>
                                 <Table>
                                     <TableHead>
                                         <TableRow>

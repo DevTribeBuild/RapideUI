@@ -103,7 +103,7 @@ const RidersPage = () => {
 
       <Grid container spacing={3}>
         {filteredRiders?.map((rider: any) => (
-          <Grid key={rider.id} size={{xs:12, sm:6, md:4, lg:3}}>
+          <Grid key={rider.id} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
             <Card
               sx={{
                 borderRadius: 2,
@@ -215,12 +215,82 @@ const RidersPage = () => {
 
               {tab === 2 && (
                 <>
-                  <Button component={Link} href={selectedRider.nationalIdOrPassport} target="_blank" fullWidth>View National ID/Passport</Button>
-                  <Button component={Link} href={selectedRider.driverLicense} target="_blank" fullWidth>View Driver License</Button>
-                  <Button component={Link} href={selectedRider.logbook} target="_blank" fullWidth>View Logbook</Button>
-                  <Button component={Link} href={selectedRider.certificateOfGoodConduct} target="_blank" fullWidth>View Certificate of Good Conduct</Button>
-                  <Button component={Link} href={selectedRider.insurance} target="_blank" fullWidth>View Insurance</Button>
+                  <Button
+                    component={Link}
+                    href={selectedRider.nationalIdOrPassport}
+                    target="_blank"
+                    fullWidth
+                    sx={{
+                      justifyContent: 'flex-start',
+                      textAlign: 'left',
+                      borderBottom: '1px solid #ddd',
+                      borderRadius: 0,
+                    }}
+                  >
+                    View National ID/Passport
+                  </Button>
+
+                  <Button
+                    component={Link}
+                    href={selectedRider.driverLicense}
+                    target="_blank"
+                    fullWidth
+                    sx={{
+                      justifyContent: 'flex-start',
+                      textAlign: 'left',
+                      borderBottom: '1px solid #ddd',
+                      borderRadius: 0,
+                    }}
+                  >
+                    View Driver License
+                  </Button>
+
+                  <Button
+                    component={Link}
+                    href={selectedRider.logbook}
+                    target="_blank"
+                    fullWidth
+                    sx={{
+                      justifyContent: 'flex-start',
+                      textAlign: 'left',
+                      borderBottom: '1px solid #ddd',
+                      borderRadius: 0,
+                    }}
+                  >
+                    View Logbook
+                  </Button>
+
+                  <Button
+                    component={Link}
+                    href={selectedRider.certificateOfGoodConduct}
+                    target="_blank"
+                    fullWidth
+                    sx={{
+                      justifyContent: 'flex-start',
+                      textAlign: 'left',
+                      borderBottom: '1px solid #ddd',
+                      borderRadius: 0,
+                    }}
+                  >
+                    View Certificate of Good Conduct
+                  </Button>
+
+                  <Button
+                    component={Link}
+                    href={selectedRider.insurance}
+                    target="_blank"
+                    fullWidth
+                    sx={{
+                      justifyContent: 'flex-start',
+                      textAlign: 'left',
+                      borderBottom: '1px solid #ddd',
+                      borderRadius: 0,
+                    }}
+                  >
+                    View Insurance
+                  </Button>
                 </>
+
               )}
             </Box>
           )}
@@ -236,7 +306,7 @@ const RidersPage = () => {
             Reject
           </Button>
         </DialogActions>
-        
+
       </Dialog>
     </Box>
   );
