@@ -165,6 +165,7 @@ const Blog = () => {
   return (
     <Grid container spacing={3}>
       {productsToDisplay.map((product) => {
+        console.log(product, "Product...")
         const productId = product.id;
         const cartItem = cartItemsMap.get(productId);
         const isInCart = !!cartItem;

@@ -56,7 +56,7 @@ export default function RootLayout({
         {/* ------------------------------------------- */}
         {/* PageContent */}
         {/* ------------------------------------------- */}
-        <Container
+        <Box
           sx={{
             paddingTop: "20px",
           }}
@@ -68,7 +68,7 @@ export default function RootLayout({
           {/* ------------------------------------------- */}
           {/* End Page */}
           {/* ------------------------------------------- */}
-        </Container>
+        </Box>
       </PageWrapper>
     </MainWrapper>
   );

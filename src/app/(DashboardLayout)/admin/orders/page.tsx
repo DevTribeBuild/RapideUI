@@ -204,7 +204,7 @@ function OrderCards({ status }: { status: string }) {
               <Button variant="outlined" onClick={() => handleAssignRider(order.id)} size="small" sx={{ color: '#ffd700', borderColor: '#ffd700', '&:hover': { borderColor: '#ffd700', backgroundColor: 'rgba(255, 215, 0, 0.1)' } }}>
                 Assign Rider
               </Button>
-              <Button variant="outlined" onClick={() => handlePayOrder(order.id, order.cart.items[0].product.currency.symbol)} size="small" sx={{ color: '#ffd700', borderColor: '#ffd700', '&:hover': { borderColor: '#ffd700', backgroundColor: 'rgba(255, 215, 0, 0.1)' } }}>
+              <Button variant="outlined" onClick={() => handlePayOrder(order.id, 'BNB')} size="small" sx={{ color: '#ffd700', borderColor: '#ffd700', '&:hover': { borderColor: '#ffd700', backgroundColor: 'rgba(255, 215, 0, 0.1)' } }}>
                 Pay for Order
               </Button>
             </CardActions>
