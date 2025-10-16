@@ -40,8 +40,8 @@ type GetAllUsersQuery = {
 
 type UpdateUserMutationVariables = {
   updateUserInput: {
-    id: string;
-    email?: string;
+    // id: string;
+    // email?: string;
     firstName?: string;
     lastName?: string;
     phone?: string;
@@ -162,8 +162,8 @@ const UsersPage = () => {
     updateUser({
       variables: {
         updateUserInput: {
-          id: selectedUser.id,
-          email: form.email,
+          // id: selectedUser.id,
+          // email: form.email,
           firstName: form.firstName,
           lastName: form.lastName,
           phone: form.phone,

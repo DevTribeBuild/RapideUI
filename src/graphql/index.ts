@@ -2,6 +2,7 @@ export * from './auth/mutations';
 export * from './auth/queries';
 export * from './merchant/queries';
 export * from './rider/queries';
+export * from './rider/mutations';
 export * from './merchant/mutations';
 
 export * from "./user/queries";
