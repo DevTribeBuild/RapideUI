@@ -9,6 +9,8 @@ import { Toaster } from 'react-hot-toast';
 import useThemeStore from "@/stores/useThemeStore";
 import createEmotionCache from "@/utils/createEmotionCache";
 import { CacheProvider } from "@emotion/react";
+import useAuthStore from '@/stores/useAuthStore';
+import RiderLocationTracker from '@/components/RiderLocationTracker';
 
 const clientSideEmotionCache = createEmotionCache();
 
@@ -18,6 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const { theme } = useThemeStore();
+  const { user } = useAuthStore();
   const currentTheme = theme === 'light' ? baselightTheme : basedarkTheme;
 
   return (
@@ -28,6 +31,7 @@ export default function RootLayout({
             <ThemeProvider theme={currentTheme}>
               {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
               <CssBaseline />
+              {user?.userType === 'RIDER' && <RiderLocationTracker />}
               {children}
               <Toaster
                 position="top-right"
