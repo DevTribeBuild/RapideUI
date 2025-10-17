@@ -88,9 +88,9 @@ const TrackingPage = () => {
             <Grid size={{ xs: 12, md: 6 }}>
               <Box sx={{ my: 2 }}>
                 <Typography variant="subtitle1" fontWeight="bold">Items:</Typography>
-                {order.cart.items.map((item: any, idx: number) => (
+                {order?.cart?.items?.map((item: any, idx: number) => (
                   <Typography key={idx}>
-                    {item.quantity} × {item.product.name} — Kes {item.product.price.toFixed(2)}
+                    {item.quantity} × {item?.product?.name} — Kes {item?.product?.price.toFixed(2)}
                   </Typography>
                 ))}
                 <Typography sx={{ mt: 1 }} fontWeight="bold">

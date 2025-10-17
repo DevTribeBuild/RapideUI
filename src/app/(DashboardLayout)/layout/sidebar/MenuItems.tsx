@@ -72,6 +72,13 @@ export const getMenuItems = (user: { userType?: string } | null) => {
       href: "/cart/orders",
       userType: ["USER", "RIDER", "MERCHANT"],
     },
+    {
+      id: uniqueId(),
+      title: "Assigned Orders",
+      icon: IconBasket,
+      href: "/riders/assigned-orders",
+      userType: ["RIDER"],
+    },
     // {
     //   id: uniqueId(),
     //   title: "All Orders",
@@ -112,13 +119,13 @@ export const getMenuItems = (user: { userType?: string } | null) => {
       href: "/wallet",
       userType: ["ADMIN", "USER", "RIDER", "MERCHANT"],
     },
-    {
-      id: uniqueId(),
-      title: "Settings",
-      icon: IconSettings,
-      href: "/utilities/shadow",
-      userType: ["ADMIN", "USER", "RIDER", "MERCHANT"],
-    },
+    // {
+    //   id: uniqueId(),
+    //   title: "Settings",
+    //   icon: IconSettings,
+    //   href: "/utilities/shadow",
+    //   userType: ["ADMIN", "USER", "RIDER", "MERCHANT"],
+    // },
     // {
     //   navlabel: true,
     //   subheader: "AUTH",
@@ -137,22 +144,22 @@ export const getMenuItems = (user: { userType?: string } | null) => {
     //   href: "/authentication/register",
     //   userType: ["ADMIN", "USER"],
     // },
-    {
-      navlabel: true,
-      subheader: "GUIDE",
-    },
-    {
-      id: uniqueId(),
-      title: "FAQ",
-      icon: IconMoodHappy,
-      href: "/icons",
-    },
-    {
-      id: uniqueId(),
-      title: "Help",
-      icon: IconAperture,
-      href: "/sample-page",
-    },
+    // {
+    //   navlabel: true,
+    //   subheader: "GUIDE",
+    // },
+    // {
+    //   id: uniqueId(),
+    //   title: "FAQ",
+    //   icon: IconMoodHappy,
+    //   href: "/icons",
+    // },
+    // {
+    //   id: uniqueId(),
+    //   title: "Help",
+    //   icon: IconAperture,
+    //   href: "/sample-page",
+    // },
   ];
 
   return Menuitems.filter(

@@ -1,15 +1,21 @@
 
 "use client";
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useMutation } from '@apollo/client';
 import { UPDATE_RIDER_LOCATION_MUTATION } from '@/graphql/rider/mutations';
 import useAuthStore from '@/stores/useAuthStore';
 
 const RiderLocationTracker = () => {
-  console.log('RiderLocationTracker component rendered');
   const { user } = useAuthStore();
-  const [updateRiderLocation] = useMutation(UPDATE_RIDER_LOCATION_MUTATION);
+  const [updateRiderLocation, { data, loading, error }] = useMutation(UPDATE_RIDER_LOCATION_MUTATION);
+  const lastLocation = useRef<{ latitude: number; longitude: number } | null>(null);
+
+  useEffect(() => {
+    if (error) {
+      console.error('Failed to update rider location:', error);
+    }
+  }, [error]);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
@@ -18,15 +24,25 @@ const RiderLocationTracker = () => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          updateRiderLocation({
-            variables: {
-              input: {
-                latitude,
-                longitude,
+
+          if (
+            !lastLocation.current ||
+            latitude !== lastLocation.current.latitude ||
+            longitude !== lastLocation.current.longitude
+          ) {
+            updateRiderLocation({
+              variables: {
+                input: {
+                  latitude,
+                  longitude,
+                },
               },
-            },
-          });
-          console.log('Rider location updated:', { latitude, longitude });
+            });
+            lastLocation.current = { latitude, longitude };
+            console.log('Rider location updated:', { latitude, longitude });
+          } else {
+            console.log('Rider location has not changed.');
+          }
         },
         (error) => {
           console.error('Error getting location:', error);
