@@ -8,8 +8,14 @@ import useAuthStore from '@/stores/useAuthStore';
 
 const RiderLocationTracker = () => {
   const { user } = useAuthStore();
-  const [updateRiderLocation] = useMutation(UPDATE_RIDER_LOCATION_MUTATION);
+  const [updateRiderLocation, { data, loading, error }] = useMutation(UPDATE_RIDER_LOCATION_MUTATION);
   const lastLocation = useRef<{ latitude: number; longitude: number } | null>(null);
+
+  useEffect(() => {
+    if (error) {
+      console.error('Failed to update rider location:', error);
+    }
+  }, [error]);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;

@@ -101,7 +101,7 @@ const OrderDetailPage = () => {
                         </Grid>
                         <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="h6" gutterBottom>Cart Items</Typography>
-                            {order.cart.items.map((item) => (
+                            {order?.cart?.items?.map((item) => (
                                 item.product && (
                                     <Box key={item.id} sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                                         <Image

@@ -229,7 +229,7 @@ function OrderCards({ status }: { status: string }) {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {order.cart.items.map((item: any, idx: number) => (
+                    {order?.cart?.items?.map((item: any, idx: number) => (
                       <TableRow key={idx}>
                         <TableCell>{item.product.name}</TableCell>
                         <TableCell>{item.quantity}</TableCell>
