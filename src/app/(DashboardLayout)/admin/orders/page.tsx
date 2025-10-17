@@ -29,7 +29,8 @@ import {
   useMediaQuery,
   Card,
   CardActions,
-  CardContent
+  CardContent,
+  CircularProgress
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { styled } from '@mui/system';
@@ -201,10 +202,36 @@ function OrderCards({ status }: { status: string }) {
               <Typography variant="body2" color="text.secondary">Assigned Rider: {order.assignedRiderId ? order.assignedRiderId.substring(0, 8) : 'Unassigned'}</Typography>
             </CardContent>
             <CardActions sx={{ justifyContent: 'space-between', px: 2 }}>
-              <Button variant="outlined" onClick={() => handleAssignRider(order.id)} size="small" sx={{ color: '#ffd700', borderColor: '#ffd700', '&:hover': { borderColor: '#ffd700', backgroundColor: 'rgba(255, 215, 0, 0.1)' } }}>
-                Assign Rider
+              <Button
+                variant="outlined"
+                onClick={() => handleAssignRider(order.id)}
+                size="small"
+                disabled={assignRiderLoading || order.assignedRiderId}
+                sx={{
+                  color: '#ffd700',
+                  borderColor: '#ffd700',
+                  '&:hover': {
+                    borderColor: '#ffd700',
+                    backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                  },
+                }}
+              >
+                {assignRiderLoading ? <CircularProgress size={24} color="inherit" /> : 'Assign Rider'}
               </Button>
-              <Button variant="outlined" onClick={() => handlePayOrder(order.id, 'BNB')} size="small" sx={{ color: '#ffd700', borderColor: '#ffd700', '&:hover': { borderColor: '#ffd700', backgroundColor: 'rgba(255, 215, 0, 0.1)' } }}>
+              <Button
+                variant="outlined"
+                onClick={() => handlePayOrder(order.id, 'BNB')}
+                size="small"
+                disabled={order.status !== 'PENDING'}
+                sx={{
+                  color: '#ffd700',
+                  borderColor: '#ffd700',
+                  '&:hover': {
+                    borderColor: '#ffd700',
+                    backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                  },
+                }}
+              >
                 Pay for Order
               </Button>
             </CardActions>
