@@ -90,7 +90,7 @@ const OrderDetailPage = () => {
                     <Grid container spacing={2}>
                         <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="h6" gutterBottom>Order Information</Typography>
-                            <Typography variant="body1"><strong>Status:</strong> <Box component="span"><Chip label={order.status} color={order.status === 'DELIVERED' ? 'success' : 'warning'} /></Box></Typography>
+                            <Typography variant="body1" component="div"><strong>Status:</strong> <Box component="span"><Chip label={order.status} color={order.status === 'DELIVERED' ? 'success' : 'warning'} /></Box></Typography>
                             <Typography variant="body1"><strong>Total:</strong> ${order.total.toFixed(2)}</Typography>
                             {order.payment && (
                                 <Typography variant="body1"><strong>Payment Method:</strong> {order.payment.method}</Typography>

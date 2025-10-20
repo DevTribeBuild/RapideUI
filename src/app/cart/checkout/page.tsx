@@ -7,7 +7,7 @@ import { CREATE_ORDER_MUTATION } from '@/graphql/order/mutations';
 import { CREATE_PAYMENT_MUTATION } from '@/graphql/payment/mutations';
 import { CLEAR_CART_MUTATION } from '@/graphql/cart/mutations';
 import toast from 'react-hot-toast';
-import { Grid, Typography, Paper, Button, Divider, TextField, Tabs, Tab, Box, Stack, Stepper, Step, StepLabel, CircularProgress, Skeleton, useMediaQuery, useTheme } from "@mui/material";
+import { Grid, Typography, Paper, Button, Divider, TextField, Tabs, Tab, Box, Stack, Stepper, Step, StepLabel, CircularProgress, Skeleton, useMediaQuery, useTheme, StepConnector, styled } from "@mui/material";
 import { useRouter } from "next/navigation";
 import useAuthStore from "@/stores/useAuthStore";
 
@@ -56,6 +56,26 @@ const steps = ['Shipping Information', 'Confirm Order', 'Payment', 'Order Comple
 const CheckoutPage = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const CustomConnector = styled(StepConnector)(({ theme }) => ({
+    [`& .MuiStepConnector-line`]: {
+      borderColor: theme.palette.divider,
+      ...(isMobile
+        ? {
+            minHeight: 24,
+            borderLeftWidth: 2,
+            marginLeft: 20,
+            marginTop: "-30px",
+            borderTop: "none",
+            borderLeftStyle: "solid",
+          }
+        : {
+            borderTopWidth: 2,
+            borderLeft: "none",
+          }),
+    },
+  }));
+  
   const { token } = useAuthStore();
   const router = useRouter();
   const [activeStep, setActiveStep] = useState(0);
@@ -224,35 +244,83 @@ const CheckoutPage = () => {
         );
       case 1:
         return (
-          <Paper elevation={1} sx={{ p: 2 }}>
-            <Typography variant="h6" gutterBottom>
-              Order Summary
+          <Paper
+  elevation={3}
+  sx={{
+    p: 3,
+    borderRadius: 3,
+  }}
+>
+  <Typography
+    variant="h6"
+    fontWeight={600}
+    gutterBottom
+    sx={{ borderBottom: "2px solid #eee", pb: 1, mb: 2 }}
+  >
+    Order Summary
+  </Typography>
+
+  {cartLoading ? (
+    <Stack spacing={1.5} sx={{ width: "100%" }}>
+      <Skeleton variant="rounded" height={45} />
+      <Skeleton variant="rounded" height={45} />
+      <Divider sx={{ my: 2 }} />
+      <Skeleton variant="rounded" height={55} />
+    </Stack>
+  ) : cartError ? (
+    <Typography color="error" sx={{ textAlign: "center", py: 2 }}>
+      Error: {cartError.message}
+    </Typography>
+  ) : (
+    <>
+      {cartItems.map((item: any, index: number) => (
+        <Box
+          key={item.product.id}
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            py: 1,
+            borderBottom:
+              index !== cartItems.length - 1 ? "1px dashed #e0e0e0" : "none",
+          }}
+        >
+          <Box>
+            <Typography fontWeight={500}>{item.product.name}</Typography>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ mt: 0.2 }}
+            >
+              Qty: {item.quantity}
             </Typography>
-            {cartLoading ? (
-              <Stack spacing={1} sx={{ width: '100%' }}>
-                <Skeleton variant="rectangular" width="100%" height={40} />
-                <Skeleton variant="rectangular" width="100%" height={40} />
-                <Divider sx={{ my: 2 }} />
-                <Skeleton variant="rectangular" width="100%" height={50} />
-              </Stack>
-            ) : cartError ? (
-              <Typography color="error">Error: {cartError.message}</Typography>
-            ) : (
-              <>
-                {cartItems.map((item: any) => (
-                  <Box key={item.product.id} sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                    <Typography>{item.product.name} x {item.quantity}</Typography>
-                    <Typography>Kes{(item.product.price * item.quantity).toFixed(2)}</Typography>
-                  </Box>
-                ))}
-                <Divider sx={{ my: 2 }} />
-                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography variant="h6">Total</Typography>
-                  <Typography variant="h6">Kes{total.toFixed(2)}</Typography>
-                </Box>
-              </>
-            )}
-          </Paper>
+          </Box>
+          <Typography fontWeight={600}>
+            Kes {(item.product.price * item.quantity).toFixed(2)}
+          </Typography>
+        </Box>
+      ))}
+
+      <Divider sx={{ my: 2 }} />
+
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mt: 2,
+        }}
+      >
+        <Typography variant="h6" fontWeight={700}>
+          Total
+        </Typography>
+        <Typography variant="h6" fontWeight={700} color="primary">
+          Kes {total.toFixed(2)}
+        </Typography>
+      </Box>
+    </>
+  )}
+</Paper>
         );
       case 2:
         return (
@@ -334,9 +402,10 @@ const CheckoutPage = () => {
           <Typography variant="h4" fontWeight="bold" gutterBottom>
             Checkout
           </Typography>
-<Stepper
+ <Stepper
       activeStep={activeStep}
-      alternativeLabel={!isMobile} // desktop: labels below automatically
+      alternativeLabel={!isMobile}
+      connector={<CustomConnector />}
       sx={{
         pt: 3,
         pb: 5,
@@ -346,7 +415,7 @@ const CheckoutPage = () => {
           mb: isMobile ? 3 : 0,
         },
         ".MuiStepLabel-label": {
-          mt: isMobile ? 1 : 0, // label below number
+          mt: isMobile ? 1 : 0,
           textAlign: isMobile ? "center" : "inherit",
         },
         ".MuiStepLabel-iconContainer": {
