@@ -122,7 +122,7 @@ const TrackingPage = () => {
           <Typography variant="body2">
             <strong>Order ID:</strong> {order.id}
           </Typography>
-          <Typography variant="body2">
+          <Typography variant="body2" component="div">
             <strong>Status:</strong>{" "}
             <Chip
               label={order.status}

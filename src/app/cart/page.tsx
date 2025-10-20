@@ -118,7 +118,7 @@ const CartPage: React.FC = () => {
                 ) : (
                     <Grid container spacing={2}>
                         <Grid size={{ xs: 12, md: 8 }}>
-                            <OrderStatusStepper status="Order Placed" />
+                            <OrderStatusStepper status="pending" />
                             {loading ? (
                                 <Typography>Loading cart...</Typography>
                             ) : error ? (
