@@ -17,8 +17,7 @@ import useThemeStore from "@/stores/useThemeStore";
 import { styled } from '@mui/material';
 
 import { useMutation, useQuery } from "@apollo/client/react";
-import { UPDATE_USER_MUTATION, MY_MERCHANT_DETAILS, RIDER_DETAILS } from "@/graphql";
-import { FIND_ONE_USER_QUERY } from "@/graphql/user/queries";
+import { UPDATE_USER_MUTATION, MY_MERCHANT_DETAILS, RIDER_DETAILS, FIND_ONE_USER_QUERY } from "@/graphql";
 
 type UpdateUserMutationVariables = {
   updateUserInput: {
@@ -130,10 +129,7 @@ export default function ProfilePage() {
         },
     }));
 
-    const { data: userData, loading: userLoading, error: userError } = useQuery(FIND_ONE_USER_QUERY, {
-        variables: { email: userDetails?.email },
-        skip: !userDetails?.email,
-    });
+    
     console.log("userDetails", userDetails?.me);
     const { data: merchantData, loading: merchantLoading, error: merchantError } = useQuery(MY_MERCHANT_DETAILS, {
         // variables: { userId: userDetails?.id },
@@ -151,10 +147,10 @@ export default function ProfilePage() {
     });
 
     useEffect(() => {
-        if (userData && userData.user) {
-            setForm(userData.user);
+        if (userDetails && userDetails.me) {
+            setForm(userDetails.me);
         }
-    }, [userData]);
+    }, [userDetails]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -172,7 +168,7 @@ export default function ProfilePage() {
         updateUser({
             variables: {
                 updateUserInput: {
-                    id: userData.user.id,
+                    id: userDetails.me.id,
                     firstName: form?.firstName || "",
                     lastName: form?.lastName || "",
                     email: form?.email,
@@ -189,8 +185,7 @@ export default function ProfilePage() {
             });
     };
 
-    if (userLoading) return <p>Loading profile...</p>;
-    if (userError) return <p>Error loading profile: {userError.message}</p>;
+    
 
     return (
         <Paper sx={{ maxWidth: 1000, mx: 'auto', mt: 4, p: 3 }}>
