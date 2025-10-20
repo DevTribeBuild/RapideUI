@@ -7,7 +7,7 @@ import { CREATE_ORDER_MUTATION } from '@/graphql/order/mutations';
 import { CREATE_PAYMENT_MUTATION } from '@/graphql/payment/mutations';
 import { CLEAR_CART_MUTATION } from '@/graphql/cart/mutations';
 import toast from 'react-hot-toast';
-import { Grid, Typography, Paper, Button, Divider, TextField, Tabs, Tab, Box, Stack, Stepper, Step, StepLabel, CircularProgress, Skeleton } from "@mui/material";
+import { Grid, Typography, Paper, Button, Divider, TextField, Tabs, Tab, Box, Stack, Stepper, Step, StepLabel, CircularProgress, Skeleton, useMediaQuery, useTheme } from "@mui/material";
 import { useRouter } from "next/navigation";
 import useAuthStore from "@/stores/useAuthStore";
 
@@ -54,6 +54,8 @@ type CreatePaymentMutationVariables = {
 const steps = ['Shipping Information', 'Confirm Order', 'Payment', 'Order Complete'];
 
 const CheckoutPage = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { token } = useAuthStore();
   const router = useRouter();
   const [activeStep, setActiveStep] = useState(0);
@@ -332,13 +334,33 @@ const CheckoutPage = () => {
           <Typography variant="h4" fontWeight="bold" gutterBottom>
             Checkout
           </Typography>
-          <Stepper activeStep={activeStep} sx={{ pt: 3, pb: 5 }}>
-            {steps.map((label) => (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
+<Stepper
+      activeStep={activeStep}
+      alternativeLabel={!isMobile} // desktop: labels below automatically
+      sx={{
+        pt: 3,
+        pb: 5,
+        flexDirection: isMobile ? "column" : "row",
+        alignItems: isMobile ? "flex-start" : "center",
+        ".MuiStep-root": {
+          mb: isMobile ? 3 : 0,
+        },
+        ".MuiStepLabel-label": {
+          mt: isMobile ? 1 : 0, // label below number
+          textAlign: isMobile ? "center" : "inherit",
+        },
+        ".MuiStepLabel-iconContainer": {
+          justifyContent: "center",
+          display: "flex",
+        },
+      }}
+    >
+      {steps.map((label) => (
+        <Step key={label}>
+          <StepLabel>{label}</StepLabel>
+        </Step>
+      ))}
+    </Stepper>
           {activeStep === steps.length ? (
             <React.Fragment>
               <Typography variant="h5" gutterBottom>
