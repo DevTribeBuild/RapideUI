@@ -3,16 +3,16 @@ import React from 'react';
 import { Stepper, Step, StepLabel } from '@mui/material';
 
 type OrderStatus =
-  | 'pending'
-  | 'paid'
-  | 'processing'
-  | 'assigned'
-  | 'delivered'
-  | 'cancelled'
-  | 'confirmed'
-  | 'in_transit'
-  | 'rejected'
-  | 'awaiting_payment_confirmation';
+  | 'PENDING'
+  | 'PAID'
+  | 'PROCESSING'
+  | 'ASSIGNED'
+  | 'DELIVERED'
+  | 'CENCELLED'
+  | 'CONFIRMED'
+  | 'IN_TRANSIT'
+  | 'REJECTED'
+  | 'AWAITING_PAYMENT_CONFIRMATION';
 
 interface OrderStatusStepperProps {
   status: OrderStatus;
@@ -22,19 +22,19 @@ const steps = ['Order Placed', 'On the Way', 'Delivered'];
 
 const getActiveStep = (status: OrderStatus): number => {
   switch (status) {
-    case 'pending':
-    case 'paid':
-    case 'awaiting_payment_confirmation':
-    case 'confirmed':
-    case 'processing':
+    case 'PENDING':
+    case 'PAID':
+    case 'AWAITING_PAYMENT_CONFIRMATION':
+    case 'CONFIRMED':
+    case 'PROCESSING':
       return 0; // Order Placed
-    case 'assigned':
-    case 'in_transit':
+    case 'ASSIGNED':
+    case 'IN_TRANSIT':
       return 1; // On the Way
-    case 'delivered':
+    case 'DELIVERED':
       return 2; // Delivered
-    case 'cancelled':
-    case 'rejected':
+    case 'CENCELLED':
+    case 'REJECTED':
       return -1; // Indicates a state not on the stepper
     default:
       return 0;
