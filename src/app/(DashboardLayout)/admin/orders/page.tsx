@@ -38,6 +38,7 @@ import { useQuery, useMutation } from '@apollo/client';
 import { ALL_ORDERS_QUERY } from '../../../../graphql/order/queries';
 import { ASSIGN_NEAREST_RIDER_MUTATION, PAY_ORDER_MUTATION } from '../../../../graphql/order/mutations';
 import { toast } from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
   backgroundColor: '#212121',
@@ -55,6 +56,8 @@ export default function OrderManagement() {
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
   };
+
+  
 
   return (
     <Box sx={{ p: 4, minHeight: '100vh', fontFamily: 'Inter, sans-serif' }}>
@@ -136,6 +139,7 @@ function OrderCardSkeleton() {
 }
 
 function OrderCards({ status }: { status: string }) {
+  const router = useRouter();
   const [expandedOrder, setExpandedOrder] = useState<string | false>(false);
 
   const { data: ordersData, loading: ordersLoading, error: ordersError } = useQuery(ALL_ORDERS_QUERY, {
@@ -176,7 +180,7 @@ function OrderCards({ status }: { status: string }) {
 
   if (ordersLoading) return <OrderCardSkeleton />;
   if (ordersError) return <p>Error loading orders: {ordersError.message}</p>;
-
+  
   return (
     <Grid container spacing={3}>
       {ordersData.allOrders.map((order: any) => (
@@ -234,6 +238,21 @@ function OrderCards({ status }: { status: string }) {
               >
                 Pay for Order
               </Button>
+              <Button
+                variant="outlined"
+                onClick={() => router.push(`/cart/tracking/${order.id}`)}
+                size="small"
+                sx={{
+                  color: '#ffd700',
+                  borderColor: '#ffd700',
+                  '&:hover': {
+                    borderColor: '#ffd700',
+                    backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                  },
+                }}
+              >
+                Track Order
+              </Button>
             </CardActions>
             <br/>
             <Accordion
@@ -258,9 +277,9 @@ function OrderCards({ status }: { status: string }) {
                   <TableBody>
                     {order?.cart?.items?.map((item: any, idx: number) => (
                       <TableRow key={idx}>
-                        <TableCell>{item.product.name}</TableCell>
-                        <TableCell>{item.quantity}</TableCell>
-                        <TableCell>${item.product.price.toFixed(2)}</TableCell>
+                        <TableCell>{item?.product?.name}</TableCell>
+                        <TableCell>{item?.quantity}</TableCell>
+                        <TableCell>${item?.product?.price.toFixed(2)}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

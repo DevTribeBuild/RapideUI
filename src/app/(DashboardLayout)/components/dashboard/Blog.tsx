@@ -220,6 +220,9 @@ const Blog = () => {
 
                 <Stack direction="column" alignItems="center" mt={2} spacing={1}>
                   {token ? ( // Only show cart actions if logged in and cart has no error
+                    product.quantity === 0 ? (
+                      <Typography variant="body2" color="error">Out of Stock</Typography>
+                    ) :
                     !isInCart ? (
                       <>
                       <Button
@@ -227,7 +230,7 @@ const Blog = () => {
                         color="primary"
                         fullWidth
                         onClick={() => handleAddToCartClick(product)}
-                        disabled={loadingProductId === product.id}
+                        disabled={loadingProductId === product.id || product.quantity === 0}
                         sx={{ padding: "8px 16px", fontSize: "0.875rem" }}
                       >
                         {loadingProductId === product.id ? <CircularProgress size={24} color="inherit" /> : "Add To Cart"}
@@ -352,9 +355,9 @@ const Blog = () => {
                     setLoadingProductId(null);
                   }
                 }}
-                disabled={loadingProductId === selectedProduct.id}
+                disabled={loadingProductId === selectedProduct.id || selectedProduct.quantity === 0}
               >
-                {loadingProductId === selectedProduct.id ? "Adding..." : "Add to Cart"}
+                {loadingProductId === selectedProduct.id ? "Adding..." : (selectedProduct.quantity === 0 ? "Out of Stock" : "Add to Cart")}
               </Button>
             </DialogActions>
           </>

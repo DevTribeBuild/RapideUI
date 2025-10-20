@@ -11,24 +11,29 @@ import {
     Button,
     Paper,
     Grid,
+    Divider,
+    Fade,
+    IconButton,
 } from '@mui/material';
+import EditNoteIcon from '@mui/icons-material/EditNote';
+import CloseIcon from '@mui/icons-material/Close';
+import SaveIcon from '@mui/icons-material/Save';
 import useAppStore from "@/stores/useAuthStore";
 import useThemeStore from "@/stores/useThemeStore";
 import { styled } from '@mui/material';
 
 import { useMutation, useQuery } from "@apollo/client/react";
-import { UPDATE_USER_MUTATION, MY_MERCHANT_DETAILS, RIDER_DETAILS } from "@/graphql";
-import { FIND_ONE_USER_QUERY } from "@/graphql/user/queries";
+import { UPDATE_USER_MUTATION, MY_MERCHANT_DETAILS, RIDER_DETAILS, FIND_ONE_USER_QUERY } from "@/graphql";
 
 type UpdateUserMutationVariables = {
-  updateUserInput: {
-    id: string;
-    email?: string;
-    firstName?: string;
-    lastName?: string;
-    username?: string;
-    phone?: string;
-  };
+    updateUserInput: {
+        id: string;
+        email?: string;
+        firstName?: string;
+        lastName?: string;
+        username?: string;
+        phone?: string;
+    };
 };
 
 interface UserDetails {
@@ -64,7 +69,7 @@ function DetailsGrid({ details, loading, error }: { details: any, loading: boole
             {Object.entries(details).map(([key, value]) => {
                 if (key === '__typename' || key === 'user') return null;
                 return (
-                    <Grid size={{xs:12, md:6}} key={key}>
+                    <Grid size={{ xs: 12, md: 6 }} key={key}>
                         <TextField
                             label={key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}
                             value={value || ''}
@@ -130,10 +135,7 @@ export default function ProfilePage() {
         },
     }));
 
-    const { data: userData, loading: userLoading, error: userError } = useQuery(FIND_ONE_USER_QUERY, {
-        variables: { email: userDetails?.email },
-        skip: !userDetails?.email,
-    });
+
     console.log("userDetails", userDetails?.me);
     const { data: merchantData, loading: merchantLoading, error: merchantError } = useQuery(MY_MERCHANT_DETAILS, {
         // variables: { userId: userDetails?.id },
@@ -151,10 +153,10 @@ export default function ProfilePage() {
     });
 
     useEffect(() => {
-        if (userData && userData.user) {
-            setForm(userData.user);
+        if (userDetails && userDetails.me) {
+            setForm(userDetails.me);
         }
-    }, [userData]);
+    }, [userDetails]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -172,7 +174,7 @@ export default function ProfilePage() {
         updateUser({
             variables: {
                 updateUserInput: {
-                    id: userData.user.id,
+                    id: userDetails.me.id,
                     firstName: form?.firstName || "",
                     lastName: form?.lastName || "",
                     email: form?.email,
@@ -189,106 +191,235 @@ export default function ProfilePage() {
             });
     };
 
-    if (userLoading) return <p>Loading profile...</p>;
-    if (userError) return <p>Error loading profile: {userError.message}</p>;
+
 
     return (
-        <Paper sx={{ maxWidth: 1000, mx: 'auto', mt: 4, p: 3 }}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                <Typography variant="h5">Profile</Typography>
-                <FormControlLabel
-                    control={<Switch checked={editMode} onChange={handleEditMode} />}
-                    label="Update Profile"
-                />
-            </Box>
+        <Paper
+  sx={{
+    maxWidth: 900,
+    mx: "auto",
+    mt: 6,
+    p: 4,
+    borderRadius: 3,
+    boxShadow: "0 8px 24px rgba(0,0,0,0.05)",
+    bgcolor: "background.paper",
+    transition: "all 0.3s ease",
+  }}
+>
+  {/* Header */}
+  <Box
+    display="flex"
+    justifyContent="space-between"
+    alignItems="center"
+    mb={3}
+  >
+    <Typography variant="h5" fontWeight={700}>
+      Profile
+    </Typography>
 
-            <Tabs value={tab} onChange={handleTabChange} aria-label="profile tabs">
-                <Tab label="Basic Info" />
-                <Tab label="Contact" />
-                <Tab label="Settings" />
-                {userDetails?.me?.userType === 'MERCHANT' && <Tab label="Merchant Details" />}
-                {userDetails?.me?.userType === 'RIDER' && <Tab label="Rider Details" />}
-            </Tabs>
+    <Box>
+      {editMode ? (
+        <Box display="flex" gap={1}>
+          <IconButton
+            color="success"
+            onClick={handleSave}
+            sx={{
+              bgcolor: "success.light",
+              "&:hover": { bgcolor: "success.main", color: "white" },
+            }}
+          >
+            <SaveIcon fontSize="small" />
+          </IconButton>
+          <IconButton
+            color="error"
+            onClick={() => setEditMode(false)}
+            sx={{
+              bgcolor: "error.light",
+              "&:hover": { bgcolor: "error.main", color: "white" },
+            }}
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </Box>
+      ) : (
+        <IconButton
+          color="primary"
+          onClick={() => setEditMode(true)}
+          sx={{
+            color:"#000",
+            bgcolor: "primary.main",
+            "&:hover": { bgcolor: "primary.light" },
+          }}
+        >
+          <EditNoteIcon fontSize="small" />
+        </IconButton>
+      )}
+    </Box>
+  </Box>
 
-            <TabPanel value={tab} index={0}>
-                <TextField
-                    label="First Name"
-                    name="firstName"
-                    value={form?.firstName || ''}
-                    onChange={handleInputChange}
-                    fullWidth
-                    margin="normal"
-                    disabled={!editMode}
-                />
-                <TextField
-                    label="Last Name"
-                    name="lastName"
-                    value={form?.lastName || ''}
-                    onChange={handleInputChange}
-                    fullWidth
-                    margin="normal"
-                    disabled={!editMode}
-                />
-            </TabPanel>
+  <Divider sx={{ mb: 3 }} />
 
-            <TabPanel value={tab} index={1}>
-                <TextField
-                    label="Email"
-                    name="email"
-                    value={form?.email || ''}
-                    onChange={handleInputChange}
-                    fullWidth
-                    margin="normal"
-                    disabled={!editMode}
-                />
-                <TextField
-                    label="Phone"
-                    name="phone"
-                    value={form?.phone || ''}
-                    onChange={handleInputChange}
-                    fullWidth
-                    margin="normal"
-                    disabled={!editMode}
-                />
-            </TabPanel>
+  {/* Tabs */}
+  <Tabs
+    value={tab}
+    onChange={handleTabChange}
+    variant="scrollable"
+    scrollButtons="auto"
+    aria-label="profile tabs"
+    sx={{
+      borderBottom: 1,
+      borderColor: "divider",
+      mb: 3,
+      ".MuiTab-root": {
+        textTransform: "none",
+        fontWeight: 600,
+        minHeight: 48,
+      },
+    }}
+  >
+    <Tab label="Basic Info" />
+    <Tab label="Contact" />
+    <Tab label="Settings" />
+    {userDetails?.me?.userType === "MERCHANT" && <Tab label="Merchant Details" />}
+    {userDetails?.me?.userType === "RIDER" && <Tab label="Rider Details" />}
+  </Tabs>
 
-            <TabPanel value={tab} index={2}>
-                <TextField
-                    label="Username"
-                    name="username"
-                    value={form?.username || ''}
-                    onChange={handleInputChange}
-                    fullWidth
-                    margin="normal"
-                    disabled={!editMode}
-                />
-                <FormControlLabel
-                    control={<ThemeSwitch checked={theme === 'dark'} onChange={toggleTheme} />}
-                    label="Dark Mode"
-                />
-            </TabPanel>
+  {/* Tab Panels */}
+  <Fade in>
+    <Box>
+      {/* Basic Info */}
+      {tab === 0 && (
+        <Box>
+          <Typography
+            variant="subtitle1"
+            sx={{ mb: 2, fontWeight: 600, color: "text.secondary" }}
+          >
+            Personal Information
+          </Typography>
+          <TextField
+            label="First Name"
+            name="firstName"
+            value={form?.firstName || ""}
+            onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+            disabled={!editMode}
+          />
+          <TextField
+            label="Last Name"
+            name="lastName"
+            value={form?.lastName || ""}
+            onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+            disabled={!editMode}
+          />
+        </Box>
+      )}
 
-            {userDetails?.me?.userType === 'MERCHANT' && (
-                <TabPanel value={tab} index={3}>
-                    <DetailsGrid details={merchantData?.myMerchantDetails} loading={merchantLoading} error={merchantError} />
-                </TabPanel>
-            )}
+      {/* Contact */}
+      {tab === 1 && (
+        <Box>
+          <Typography
+            variant="subtitle1"
+            sx={{ mb: 2, fontWeight: 600, color: "text.secondary" }}
+          >
+            Contact Information
+          </Typography>
+          <TextField
+            label="Email"
+            name="email"
+            value={form?.email || ""}
+            onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+            disabled={!editMode}
+          />
+          <TextField
+            label="Phone"
+            name="phone"
+            value={form?.phone || ""}
+            onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+            disabled={!editMode}
+          />
+        </Box>
+      )}
 
-            {userDetails?.me?.userType === 'RIDER' && (
-                <TabPanel value={tab} index={3}>
-                    <DetailsGrid details={riderData?.riderDetails} loading={riderLoading} error={riderError} />
-                </TabPanel>
-            )}
+      {/* Settings */}
+      {tab === 2 && (
+        <Box>
+          <Typography
+            variant="subtitle1"
+            sx={{ mb: 2, fontWeight: 600, color: "text.secondary" }}
+          >
+            Account Settings
+          </Typography>
+          <TextField
+            label="Username"
+            name="username"
+            value={form?.username || ""}
+            onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+            disabled={!editMode}
+          />
+          <FormControlLabel
+            control={
+              <ThemeSwitch
+                checked={theme === "dark"}
+                onChange={toggleTheme}
+                disabled={!editMode}
+              />
+            }
+            label="Dark Mode"
+            sx={{ mt: 2 }}
+          />
+        </Box>
+      )}
 
-            {editMode && (
-                <Box mt={2} display="flex" justifyContent="flex-end">
-                    <Button variant="contained" color="primary" onClick={handleSave} disabled={loading}>
-                        {loading ? 'Saving...' : 'Save Changes'}
-                    </Button>
-                </Box>
-            )}
+      {/* Merchant / Rider Details */}
+      {userDetails?.me?.userType === "MERCHANT" && tab === 3 && (
+        <Box>
+          <Typography
+            variant="subtitle1"
+            sx={{ mb: 2, fontWeight: 600, color: "text.secondary" }}
+          >
+            Merchant Details
+          </Typography>
+          <DetailsGrid
+            details={merchantData?.myMerchantDetails}
+            loading={merchantLoading}
+            error={merchantError}
+          />
+        </Box>
+      )}
 
-            {error && <Typography color="error">Error: {error.message}</Typography>}
-        </Paper>
+      {userDetails?.me?.userType === "RIDER" && tab === 3 && (
+        <Box>
+          <Typography
+            variant="subtitle1"
+            sx={{ mb: 2, fontWeight: 600, color: "text.secondary" }}
+          >
+            Rider Details
+          </Typography>
+          <DetailsGrid
+            details={riderData?.riderDetails}
+            loading={riderLoading}
+            error={riderError}
+          />
+        </Box>
+      )}
+    </Box>
+  </Fade>
+
+  {/* Error */}
+  {error && (
+    <Typography mt={2} color="error" fontWeight={500}>
+      Error: {error.message}
+    </Typography>
+  )}
+</Paper>
     );
 }

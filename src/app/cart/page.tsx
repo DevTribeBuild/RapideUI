@@ -5,26 +5,7 @@ import { MY_CART_QUERY } from '@/graphql/cart/queries';
 import { UPDATE_CART_ITEM_MUTATION, REMOVE_FROM_CART_MUTATION, CLEAR_CART_MUTATION } from '@/graphql/cart/mutations';
 import toast from 'react-hot-toast';
 import { useRouter } from "next/navigation";
-import {
-    Container,
-    Typography,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    Grid,
-    IconButton,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Button,
-    Card,
-    Box,
-} from "@mui/material";
+import { Container, Typography, Paper, Grid, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button, Card, Box, Fab, Divider, Tooltip } from "@mui/material";
 import OrderStatusStepper from "@/app/(DashboardLayout)/components/shared/OrderStatusStepper";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -32,44 +13,45 @@ import PageContainer from "@/app/(DashboardLayout)/components/container/PageCont
 import Image from 'next/image';
 
 type CartItem = {
-  product: {
-    id: string;
-    name: string;
-    price: number;
-    imageUrl: string;
-  };
-  quantity: number;
+    product: {
+        id: string;
+        name: string;
+        price: number;
+        imageUrl: string;
+    };
+    quantity: number;
 };
 
 type MyCartQuery = {
-  myCart: {
-    items: CartItem[];
-  } | null;
+    myCart: {
+        items: CartItem[];
+    } | null;
 };
 
 type UpdateCartItemMutationVariables = {
-  input: {
-    productId: string;
-    quantity: number;
-  };
+    input: {
+        productId: string;
+        quantity: number;
+    };
 };
 
 type RemoveFromCartMutationVariables = {
-  productId: string;
+    productId: string;
 };
 
 import useAuthStore from "@/stores/useAuthStore";
+import { Remove, Add } from "@mui/icons-material";
 
 const CartPage: React.FC = () => {
     const { token } = useAuthStore();
     const router = useRouter();
-    const { data, loading, error, refetch } = useQuery<MyCartQuery>(MY_CART_QUERY, { 
-      skip: !token,
-      onError: (error) => {
-        if (error.message === 'Unauthorized') {
-          useAuthStore.getState().clearAuth();
+    const { data, loading, error, refetch } = useQuery<MyCartQuery>(MY_CART_QUERY, {
+        skip: !token,
+        onError: (error) => {
+            if (error.message === 'Unauthorized') {
+                useAuthStore.getState().clearAuth();
+            }
         }
-      }
     });
     const [updateCartItem] = useMutation<any, UpdateCartItemMutationVariables>(UPDATE_CART_ITEM_MUTATION);
     const [removeFromCart] = useMutation<any, RemoveFromCartMutationVariables>(REMOVE_FROM_CART_MUTATION);
@@ -130,111 +112,278 @@ const CartPage: React.FC = () => {
                 <Typography variant="h4" gutterBottom>
                     Your Cart
                 </Typography>
-                <br/>
+                <br />
                 {cartItems.length === 0 ? (
                     <Typography>Your cart is empty.</Typography>
                 ) : (
-                    <Grid container spacing={3}>
-                        <Grid size={{ xs: 12 }}>
-                            <OrderStatusStepper status="Order Placed" />
-                            <TableContainer component={Paper} sx={{ p:2}}>
-                                <Table>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>Product</TableCell>
-                                            <TableCell align="right">Price</TableCell>
-                                            <TableCell align="right">Quantity</TableCell>
-                                            <TableCell align="right">Subtotal</TableCell>
-                                            <TableCell align="center">Preview</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {loading ? (
-                                            <TableRow>
-                                                <TableCell colSpan={6} align="center">Loading cart...</TableCell>
-                                            </TableRow>
-                                        ) : error ? (
-                                            <TableRow>
-                                                <TableCell colSpan={6} align="center">Error loading cart: {error.message}</TableCell>
-                                            </TableRow>
-                                        ) : cartItems.length === 0 ? (
-                                            <TableRow>
-                                                <TableCell colSpan={6} align="center">Your cart is empty.</TableCell>
-                                            </TableRow>
-                                        ) : (
-                                            cartItems.map((item: any) => (
-                                                <TableRow key={item.product.id}>
-                                                    <TableCell>
-                                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                                            <Image
-                                                                src={item.product.imageUrl}
-                                                                alt={item.product.name}
-                                                                width={50}
-                                                                height={50}
-                                                                style={{ borderRadius: '4px', marginRight: '10px' }}
-                                                            />
-                                                            {item.product.name}
-                                                        </Box>
-                                                    </TableCell>
-                                                    <TableCell align="right">
-                                                        ${item.product.price.toFixed(2)}
-                                                    </TableCell>
-                                                    <TableCell align="right">
-                                                        <IconButton size="small" onClick={() => handleUpdateQuantity(item.product.id, item.quantity - 1)} disabled={item.quantity <= 1}>-</IconButton>
-                                                        {item.quantity}
-                                                        <IconButton size="small" onClick={() => handleUpdateQuantity(item.product.id, item.quantity + 1)}>+</IconButton>
-                                                    </TableCell>
-                                                    <TableCell align="right">
-                                                        ${(item.product.price * item.quantity).toFixed(2)}
-                                                    </TableCell>
-                                                    <TableCell align="center">
-                                                        <IconButton
-                                                            aria-label="remove"
-                                                            onClick={() => handleRemoveItem(item.product.id)}
-                                                        >
-                                                            <DeleteIcon />
-                                                        </IconButton>
-                                                        <IconButton
-                                                            aria-label="preview"
-                                                            onClick={() => setPreviewItem(item.product)}
-                                                        >
-                                                            <VisibilityIcon />
-                                                        </IconButton>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))
-                                        )}
-                                    </TableBody>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell colSpan={3} align="right">
-                                                <strong>Total:</strong>
-                                            </TableCell>
-                                            <TableCell align="right">
-                                                <strong>${total.toFixed(2)}</strong>
-                                            </TableCell>
-                                            <TableCell />
-                                        </TableRow>
-                                    </TableHead>
-                                </Table>
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-                                    <Button
-                                        variant="outlined"
-                                        color="secondary"
-                                        onClick={handleClearCart}
+                    <Grid container spacing={2}>
+                        <Grid size={{ xs: 12, md: 8 }}>
+                            <OrderStatusStepper status="pending" />
+                            {loading ? (
+                                <Typography>Loading cart...</Typography>
+                            ) : error ? (
+                                <Typography>Error loading cart: {error.message}</Typography>
+                            ) : cartItems.length === 0 ? (
+                                <Typography>Your cart is empty.</Typography>
+                            ) : (
+                                cartItems.map((item: any) => (
+                                    <Card
+                                        key={item.product.id}
+                                        sx={{
+                                            display: 'flex',
+                                            alignItems: 'flex-start',
+                                            justifyContent: 'space-between',
+                                            p: 2.5,
+                                            mb: 2,
+                                            borderRadius: 3,
+                                            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                                            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                                            '&:hover': {
+                                                transform: 'translateY(-2px)',
+                                                boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+                                            },
+                                        }}
                                     >
-                                        Clear Cart
-                                    </Button>
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        onClick={checkoutProceeed}
-                                    >
-                                        Proceed to Checkout
-                                    </Button>
-                                </Box>
-                            </TableContainer>
+                                        {/* Product Image */}
+                                        <Box sx={{ flexShrink: 0, mr: 2 }}>
+                                            <Image
+                                                src={item.product.imageUrl}
+                                                alt={item.product.name}
+                                                width={120}
+                                                height={120}
+                                                style={{
+                                                    borderRadius: '8px',
+                                                    objectFit: 'cover',
+                                                }}
+                                            />
+                                        </Box>
+
+                                        {/* Product Details */}
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                flexGrow: 1,
+                                                justifyContent: 'space-between',
+                                            }}
+                                        >
+                                            {/* Name and Price */}
+                                            <Box>
+                                                <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5 }}>
+                                                    {item.product.name}
+                                                </Typography>
+                                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                                                    Price:&nbsp;
+                                                    <Typography component="span" sx={{ fontWeight: 600 }}>
+                                                        KES {item.product.price.toFixed(2)}
+                                                    </Typography>
+                                                </Typography>
+                                            </Box>
+
+                                            <Divider sx={{ my: 1.5 }} />
+
+                                            {/* Quantity Controls */}
+                                            <Box
+                                                sx={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: 2,
+                                                }}
+                                            >
+                                                <IconButton
+                                                    onClick={() => handleUpdateQuantity(item.product.id, item.quantity - 1)}
+                                                    disabled={item.quantity <= 1}
+                                                    sx={{
+                                                        border: '2px solid',
+                                                        borderColor: 'primary.main',
+                                                        color: 'primary.main',
+                                                        transition: 'all 0.2s ease',
+                                                        '&:hover': {
+                                                        bgcolor: 'primary.main',
+                                                        color: 'white',
+                                                        },
+                                                        '&.Mui-disabled': {
+                                                        borderColor: 'grey.300',
+                                                        color: 'grey.400',
+                                                        },
+                                                    }}
+                                                    >
+                                                    <Remove fontSize="small" />
+                                                    </IconButton>
+
+                                                    <Typography
+                                                    variant="body1"
+                                                    sx={{
+                                                        minWidth: 28,
+                                                        textAlign: 'center',
+                                                        fontWeight: 600,
+                                                    }}
+                                                    >
+                                                    {item.quantity}
+                                                    </Typography>
+
+                                                    <IconButton
+                                                    onClick={() => handleUpdateQuantity(item.product.id, item.quantity + 1)}
+                                                    sx={{
+                                                        border: '2px solid',
+                                                        borderColor: 'primary.main',
+                                                        color: 'primary.main',
+                                                        transition: 'all 0.2s ease',
+                                                        '&:hover': {
+                                                        bgcolor: 'primary.main',
+                                                        color: 'white',
+                                                        },
+                                                    }}
+                                                    >
+                                                    <Add fontSize="small" />
+                                                    </IconButton>
+                                            </Box>
+
+                                            {/* Subtotal */}
+                                            <Typography
+                                                variant="body2"
+                                                sx={{
+                                                    mt: 2,
+                                                    fontWeight: 500,
+                                                    color: 'text.primary',
+                                                }}
+                                            >
+                                                Subtotal:&nbsp;
+                                                <Typography component="span" sx={{ fontWeight: 700 }}>
+                                                    KES {(item.product.price * item.quantity).toFixed(2)}
+                                                </Typography>
+                                            </Typography>
+                                        </Box>
+
+                                        {/* Action Buttons */}
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                ml: 1,
+                                            }}
+                                        >
+                                            <Tooltip title="Remove from Cart">
+                                                <IconButton
+                                                    color="error"
+                                                    onClick={() => handleRemoveItem(item.product.id)}
+                                                    sx={{ mb: 1 }}
+                                                >
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </Tooltip>
+
+                                            {/* <Tooltip title="Preview Item">
+                                                <IconButton
+                                                    color="primary"
+                                                    onClick={() => setPreviewItem(item.product)}
+                                                >
+                                                    <VisibilityIcon />
+                                                </IconButton>
+                                            </Tooltip> */}
+                                        </Box>
+                                    </Card>
+                                ))
+                            )}
                         </Grid>
+                        <Grid size={{ xs: 12, md: 4 }}>
+                            <Paper
+                                elevation={3}
+                                sx={{
+                                p: 3,
+                                borderRadius: 3,
+                                bgcolor: 'background.paper',
+                                boxShadow: '0 2px 10px rgba(0,0,0,0.08)',
+                                transition: 'all 0.3s ease',
+                                '&:hover': {
+                                    boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+                                },
+                                }}
+                            >
+                                {/* Header */}
+                                <Typography
+                                variant="h6"
+                                gutterBottom
+                                sx={{ fontWeight: 700, mb: 2, color: 'text.primary' }}
+                                >
+                                Order Summary
+                                </Typography>
+
+                                <Divider sx={{ mb: 2 }} />
+
+                                {/* Subtotal */}
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                                <Typography variant="body1" color="text.secondary">
+                                    Subtotal
+                                </Typography>
+                                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                    KES {total.toFixed(2)}
+                                </Typography>
+                                </Box>
+
+                                {/* Shipping */}
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                                <Typography variant="body1" color="text.secondary">
+                                    Shipping
+                                </Typography>
+                                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                    KES 0.00
+                                </Typography>
+                                </Box>
+
+                                <Divider sx={{ my: 2 }} />
+
+                                {/* Total */}
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                                <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                                    Total
+                                </Typography>
+                                <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                                    KES {total.toFixed(2)}
+                                </Typography>
+                                </Box>
+
+                                <Divider sx={{ mb: 2 }} />
+
+                                {/* Buttons */}
+                                <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
+                                <Button
+                                    variant="outlined"
+                                    color="error"
+                                    fullWidth
+                                    onClick={handleClearCart}
+                                    sx={{
+                                    textTransform: 'none',
+                                    borderRadius: 2,
+                                    fontWeight: 600,
+                                    py: 1,
+                                    '&:hover': { borderColor: 'error.dark', color: 'error.dark' },
+                                    }}
+                                >
+                                    Clear Cart
+                                </Button>
+
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    fullWidth
+                                    onClick={checkoutProceeed}
+                                    sx={{
+                                    textTransform: 'none',
+                                    borderRadius: 2,
+                                    fontWeight: 600,
+                                    py: 1,
+                                    boxShadow: 'none',
+                                    '&:hover': { boxShadow: 2 },
+                                    }}
+                                >
+                                    Checkout
+                                </Button>
+                                </Box>
+                            </Paper>
+                            </Grid>
                     </Grid>
                 )}
                 <Dialog
@@ -251,22 +400,22 @@ const CartPage: React.FC = () => {
                                     <Grid container spacing={2} alignItems="center">
                                         <Grid size={{ xs: 7 }}>
                                             <Typography variant="h5" gutterBottom>
-                                                {previewItem.name}
+                                                {previewItem.product.name}
                                             </Typography>
                                             <Typography variant="body1" sx={{ mb: 1 }}>
-                                                <strong>Price:</strong> ${previewItem.price.toFixed(2)}
+                                                <strong>Price:</strong> Kes {previewItem.product.price.toFixed(2)}
                                             </Typography>
                                             <Typography variant="body1" sx={{ mb: 1 }}>
                                                 <strong>Quantity:</strong> {previewItem.quantity}
                                             </Typography>
                                             <Typography variant="body1">
-                                                <strong>Subtotal:</strong> ${(previewItem.price * previewItem.quantity).toFixed(2)}
+                                                <strong>Subtotal:</strong> Kes {(previewItem.product.price * previewItem.quantity).toFixed(2)}
                                             </Typography>
                                         </Grid>
                                         <Grid size={{ xs: 5 }}>
                                             <Image
-                                                src={`https://via.placeholder.com/120x120?text=${encodeURIComponent(previewItem.name)}`}
-                                                alt={previewItem.name}
+                                                src={previewItem.product.imageUrl}
+                                                alt={previewItem.product.name}
                                                 width={120}
                                                 height={120}
                                                 style={{ width: '100%', borderRadius: 8, objectFit: 'cover' }}
