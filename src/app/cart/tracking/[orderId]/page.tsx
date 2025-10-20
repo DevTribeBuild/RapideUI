@@ -98,7 +98,6 @@ const TrackingPage = () => {
           </Box>
 
           {/* Stepper */}
-          {order.status}
           <OrderStatusStepper status={order.status} />
           <Divider sx={{ my: 3 }} />
 
