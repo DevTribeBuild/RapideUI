@@ -40,11 +40,31 @@ export const QuantityAdjuster: React.FC<QuantityAdjusterProps> = ({ initialQuant
 
   return (
     <Stack direction="row" alignItems="center" spacing={1}>
-      <IconButton size="small" onClick={handleDecrease} disabled={quantity === 1 || loading}>
+      <IconButton size="small" sx={{
+        border: '2px solid',
+        mr: 3,
+        borderColor: 'primary.main',
+        color: 'primary.main',
+        transition: 'all 0.2s ease',
+        '&:hover': {
+          bgcolor: 'primary.main',
+          color: '#000',
+        },
+      }} onClick={handleDecrease} disabled={quantity === 1 || loading}>
         <IconMinus size="18" />
       </IconButton>
       <Typography variant="h6">{loading ? <Skeleton variant="text" width={20} /> : quantity}</Typography>
-      <IconButton size="small" onClick={handleIncrease} disabled={loading}>
+      <IconButton size="small" sx={{
+        border: '2px solid',
+        borderColor: 'primary.main',
+        color: 'primary.main',
+        transition: 'all 0.2s ease',
+        ml: 3,
+        '&:hover': {
+          bgcolor: 'primary.main',
+          color: '#000',
+        },
+      }} onClick={handleIncrease} disabled={loading}>
         <IconPlus size="18" />
       </IconButton>
     </Stack>
