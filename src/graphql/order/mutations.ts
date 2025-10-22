@@ -276,3 +276,59 @@ export const CONFIRM_ORDER_BY_USER = gql`
     }
   }
 `;
+
+export const COMPLETE_ORDER_ADMIN = gql`
+  mutation CompleteOrderAdmin($orderId: String!) {
+    completeOrderAdmin(orderId: $orderId) {
+      id
+      status
+      total
+      notes
+      deliveryAddress
+      deliveryLat
+      deliveryLng
+      createdAt
+      updatedAt
+      assignedRiderId
+      assignedRider {
+        id
+        firstName
+        lastName
+        email
+        phone
+        username
+        userType
+        imageUrl
+        walletAddress
+        currencyId
+        createdAt
+        updatedAt
+      }
+      cart {
+        id
+        createdAt
+        updatedAt
+        total
+        items {
+          id
+          createdAt
+          updatedAt
+          quantity
+          product {
+            id
+            name
+            description
+            price
+            quantity
+            imageUrl
+            merchantId
+            currencyId
+            categoryId
+            createdAt
+            updatedAt
+          }
+        }
+      }
+    }
+  }
+`;
