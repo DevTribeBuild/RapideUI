@@ -196,3 +196,83 @@ export const CREATE_ORDER_MUTATION = gql`
      }
    }
  `;
+
+export const CONFIRM_ORDER_BY_USER = gql`
+  mutation ConfirmOrderByUser($orderId: String!) {
+    confirmOrderByUser(orderId: $orderId) {
+      id
+      status
+      total
+      notes
+      deliveryAddress
+      deliveryLat
+      deliveryLng
+      createdAt
+      updatedAt
+      assignedRiderId
+      assignedRider {
+        id
+        firstName
+        lastName
+        email
+        phone
+        username
+        userType
+        imageUrl
+        walletAddress
+        currencyId
+        createdAt
+        updatedAt
+      }
+      merchant {
+        id
+        firstName
+        lastName
+        email
+        phone
+        username
+        userType
+        imageUrl
+        walletAddress
+        currencyId
+        createdAt
+        updatedAt
+      }
+      cart {
+        id
+        createdAt
+        updatedAt
+        total
+        items {
+          id
+          createdAt
+          updatedAt
+          quantity
+          product {
+            id
+            name
+            description
+            price
+            quantity
+            imageUrl
+            merchantId
+            currencyId
+            categoryId
+            createdAt
+            updatedAt
+          }
+        }
+      }
+      payment {
+        id
+        orderId
+        amount
+        method
+        status
+        transactionHash
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`;

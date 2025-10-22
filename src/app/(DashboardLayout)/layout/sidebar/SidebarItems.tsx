@@ -148,13 +148,6 @@ const SidebarItems = () => {
       <MUI_Sidebar width={"100%"} showProfile={false} >
 
         <Box sx={{ p: 2, display: "flex", justifyContent: "center", alignItems: "center" }}>
-          {/* <Image
-            src={currentTheme === 'dark' ? "/images/logos/dark-logo.png" : "/images/logos/image.png"}
-            alt="logo"
-            style={{ objectFit: 'contain' }}
-            width={200}
-            height={70}
-          /> */}
           <Typography variant="h5" fontWeight="bold" color={theme.palette.primary.main}>
             Swifteroute
           </Typography>

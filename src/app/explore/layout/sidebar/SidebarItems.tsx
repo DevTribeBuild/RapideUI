@@ -2,7 +2,7 @@ import React, {useState,  useEffect} from "react";
 import { getMenuItems } from "./MenuItems";
 import useAppStore from "@/stores/useAuthStore"
 
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useTheme } from "@mui/material";
 import {
   Logo,
   Sidebar as MUI_Sidebar,
@@ -84,6 +84,7 @@ const renderMenuItems = (items: any, pathDirect: any) => {
 
 
 const SidebarItems = () => {
+  const muiTheme = useTheme();
   const pathname = usePathname();
   const pathDirect = pathname;
    const user = useAppStore((state) => state.user);
@@ -102,13 +103,9 @@ const SidebarItems = () => {
     < >
       <MUI_Sidebar width={"100%"} showProfile={false} themeColor={"#E9C33B"} themeSecondaryColor={'#49beff'} >
 
-        <Image
-          src="/images/logos/image.png"
-          alt="logo"
-          style={{ objectFit: 'contain' }}
-          width={200}
-          height={70}
-        />
+        <Typography variant="h6" fontWeight="bold" sx={{ flexGrow: 1, color: muiTheme.palette.text.primary }}>
+        Swifteroute
+      </Typography>
         {renderMenuItems(menuItems, pathDirect)}
         <Box px={2}>
           <Upgrade />

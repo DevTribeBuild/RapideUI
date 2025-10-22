@@ -14,9 +14,11 @@ import {
   Stack,
 } from "@mui/material";
 import { useParams } from "next/navigation";
-import { useQuery } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import OrderStatusStepper from "@/app/(DashboardLayout)/components/shared/OrderStatusStepper";
 import { GET_ORDER_QUERY } from "@/graphql/order/queries";
+import { CONFIRM_ORDER_BY_USER } from "@/graphql/order/mutations";
+import toast from 'react-hot-toast';
 
 const RiderMap = ({ lat, lng }: { lat: number; lng: number }) => (
   <Box sx={{ width: "100%", height: 300, mt: 2, borderRadius: 2, overflow: "hidden" }}>
@@ -36,9 +38,23 @@ const RiderMap = ({ lat, lng }: { lat: number; lng: number }) => (
 
 const TrackingPage = () => {
   const { orderId } = useParams();
-  const { data, loading, error } = useQuery(GET_ORDER_QUERY, {
+  const { data, loading, error, refetch } = useQuery(GET_ORDER_QUERY, {
     variables: { orderId },
   });
+  const [confirmOrder, { loading: confirming }] = useMutation(CONFIRM_ORDER_BY_USER);
+
+  const handleMarkAsComplete = async () => {
+    const toastId = toast.loading('Completing order...');
+    try {
+      await confirmOrder({
+        variables: { orderId },
+      });
+      toast.success('Order marked as complete!', { id: toastId });
+      refetch();
+    } catch (err:any) {
+      toast.error(err.message || 'Failed to complete order.', { id: toastId });
+    }
+  };
 
   if (loading) {
     return (
@@ -230,7 +246,8 @@ const TrackingPage = () => {
               <Box sx={{ textAlign: "center", mt: 4 }}>
                 <Button
                   variant="contained"
-                  href={`/cart/received/${order.id}`}
+                  onClick={handleMarkAsComplete}
+                  disabled={order.status === 'DELIVERED' || order.status === 'RECEIVED' || confirming}
                   disableElevation
                   color="primary"
                   size="large"
@@ -242,7 +259,7 @@ const TrackingPage = () => {
                     fontWeight: 600,
                   }}
                 >
-                  Mark as Received
+                  {confirming ? <CircularProgress size={24} /> : 'Mark as Complete'}
                 </Button>
               </Box>
             </>

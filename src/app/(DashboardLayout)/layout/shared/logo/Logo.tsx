@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { styled } from "@mui/material";
+import { styled, Typography, useTheme } from "@mui/material";
 import Image from "next/image";
 
 const LinkStyled = styled(Link)(() => ({
@@ -10,19 +10,14 @@ const LinkStyled = styled(Link)(() => ({
 }));
 
 const Logo = () => {
+  const muiTheme = useTheme();
   return (
     <LinkStyled href="/">
-      <Image
-        src="/images/logos/image.png"
-        alt="logo"
-        style={{ objectFit: 'contain' }}
-        width={200}
-        height={70}
-      />
-      {/* <Image src="/images/logos/image.png" alt="logo" style={{ objectFit: 'cover' }}   priority /> */}
+      <Typography variant="h6" fontWeight="bold" sx={{ flexGrow: 1, color: muiTheme.palette.text.primary }}>
+        Swifteroute
+      </Typography>
     </LinkStyled>
   );
 };
 
 export default Logo;
-  
