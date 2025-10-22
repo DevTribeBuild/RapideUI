@@ -53,6 +53,7 @@ import {
 } from "@/graphql";
 import { FIAT_DEPOSIT, CREATE_FIAT_WALLET } from "@/graphql";
 import useAuthStore from "@/stores/useAuthStore";
+import { toast } from "react-hot-toast";
 
 // Type definitions
 type FiatTransaction = {
@@ -161,6 +162,7 @@ const WalletPage = () => {
 
     const [createWalletDialogOpen, setCreateWalletDialogOpen] = useState(false);
     const [newWalletCurrency, setNewWalletCurrency] = useState('USD');
+    const [receiveDialogOpen, setReceiveDialogOpen] = useState(false);
 
     const [selectedTab, setSelectedTab] = useState('all'); // Initial state is 'all'
 
@@ -389,7 +391,7 @@ const WalletPage = () => {
                                     variant="contained"
                                     size="small"
                                     sx={{ mr: 1, mb: 1 }}
-                                    onClick={() => handleOpenModal("Deposit", "crypto")}
+                                    onClick={() => setReceiveDialogOpen(true)}
                                 >
                                     Receive
                                 </Button>
@@ -763,6 +765,31 @@ const WalletPage = () => {
                         disabled={!newWalletCurrency || creatingWallet}
                     >
                         {creatingWallet ? 'Creating...' : 'Create Wallet'}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Receive Dialog */}
+            <Dialog open={receiveDialogOpen} onClose={() => setReceiveDialogOpen(false)} maxWidth="xs" fullWidth>
+                <DialogTitle>Your Wallet Address</DialogTitle>
+                <DialogContent dividers>
+                    <Typography variant="body1" sx={{ mb: 2, wordBreak: 'break-all' }}>
+                        {userDetails?.me?.cryptoWallet?.accounts?.[0]?.address}
+                    </Typography>
+                    <Button
+                        variant="contained"
+                        fullWidth
+                        onClick={() => {
+                            navigator.clipboard.writeText(userDetails?.me?.cryptoWallet?.accounts?.[0]?.address || '');
+                            toast.success('Address copied to clipboard!');
+                        }}
+                    >
+                        Copy Address
+                    </Button>
+                </DialogContent>
+                <DialogActions sx={{ p: 2 }}>
+                    <Button onClick={() => setReceiveDialogOpen(false)} color="primary">
+                        Close
                     </Button>
                 </DialogActions>
             </Dialog>
