@@ -141,6 +141,7 @@ function OrderCardSkeleton() {
 function OrderCards({ status }: { status: string }) {
   const router = useRouter();
   const [expandedOrder, setExpandedOrder] = useState<string | false>(false);
+  const [assigningRiderId, setAssigningRiderId] = useState<string | null>(null);
 
   const { data: ordersData, loading: ordersLoading, error: ordersError } = useQuery(ALL_ORDERS_QUERY, {
     variables: { status: status === 'ALL' ? null : status.toUpperCase() },
@@ -150,9 +151,11 @@ function OrderCards({ status }: { status: string }) {
     refetchQueries: [{ query: ALL_ORDERS_QUERY, variables: { status: status === 'ALL' ? null : status.toUpperCase() } }],
     onCompleted: () => {
       toast.success('Rider assigned successfully');
+      setAssigningRiderId(null);
     },
     onError: (error) => {
       toast.error(`Failed to assign rider: ${error.message}`);
+      setAssigningRiderId(null);
     }
   });
 
@@ -181,6 +184,7 @@ function OrderCards({ status }: { status: string }) {
   };
 
   const handleAssignRider = async (orderId: string) => {
+    setAssigningRiderId(orderId);
     await assignNearestRider({ variables: { orderId } });
   };
 
@@ -234,7 +238,7 @@ function OrderCards({ status }: { status: string }) {
                   },
                 }}
               >
-                {assignRiderLoading ? <CircularProgress size={24} color="inherit" /> : 'Assign Rider'}
+                {assignRiderLoading && assigningRiderId === order.id ? <CircularProgress size={24} color="inherit" /> : 'Assign Rider'}
               </Button>
               <Button
                 variant="outlined"
