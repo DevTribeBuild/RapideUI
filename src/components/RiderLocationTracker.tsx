@@ -3,12 +3,12 @@
 
 import { useEffect, useRef } from 'react';
 import { useMutation } from '@apollo/client';
-import { UPDATE_RIDER_LOCATION_MUTATION } from '@/graphql/rider/mutations';
+import { UPDATE_RIDER_LOCATION } from '@/graphql/rider/mutations';
 import useAuthStore from '@/stores/useAuthStore';
 
 const RiderLocationTracker = () => {
   const { user } = useAuthStore();
-  const [updateRiderLocation, { data, loading, error }] = useMutation(UPDATE_RIDER_LOCATION_MUTATION);
+  const [updateRiderLocation, { data, loading, error }] = useMutation(UPDATE_RIDER_LOCATION);
   const lastLocation = useRef<{ latitude: number; longitude: number } | null>(null);
 
   useEffect(() => {

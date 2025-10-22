@@ -75,22 +75,31 @@ const CheckoutPage = () => {
           }),
     },
   }));
+
   
-  const { token } = useAuthStore();
+  const { token, user } = useAuthStore();
+  
   const router = useRouter();
   const [activeStep, setActiveStep] = useState(0);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [tab, setTab] = useState(0);
   const [phone, setPhone] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState(`${user?.firstName} ${user?.lastName}` || "");
+  const [email, setEmail] = useState(`${user?.email}` || "");
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [country, setCountry] = useState("");
   const [deliveryLat, setDeliveryLat] = useState<number | null>(null);
   const [deliveryLng, setDeliveryLng] = useState<number | null>(null);
-
+  
+  useEffect(() => {
+    if (user) {
+      setFullName(`${user.firstName} ${user.lastName}`);
+      setEmail(user.email);
+    }
+  }, [user]);
+  
   const { data: cartData, loading: cartLoading, error: cartError } = useQuery<MyCartQuery>(MY_CART_QUERY, {
     skip: !token,
     onError: (error) => {

@@ -36,7 +36,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { styled } from '@mui/system';
 import { useQuery, useMutation } from '@apollo/client';
 import { ALL_ORDERS_QUERY } from '../../../../graphql/order/queries';
-import { ASSIGN_NEAREST_RIDER_MUTATION, PAY_ORDER_MUTATION } from '../../../../graphql/order/mutations';
+import { ASSIGN_NEAREST_RIDER_MUTATION, PAY_ORDER_MUTATION, COMPLETE_ORDER_ADMIN } from '../../../../graphql/order/mutations';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 
@@ -166,6 +166,16 @@ function OrderCards({ status }: { status: string }) {
     }
   });
 
+  const [completeOrderAdmin, { loading: completeOrderLoading }] = useMutation(COMPLETE_ORDER_ADMIN, {
+    refetchQueries: [{ query: ALL_ORDERS_QUERY, variables: { status: status === 'ALL' ? null : status.toUpperCase() } }],
+    onCompleted: () => {
+      toast.success('Order completed successfully');
+    },
+    onError: (error) => {
+      toast.error(`Failed to complete order: ${error.message}`);
+    }
+  });
+
   const handleExpand = (orderId: string) => (_event: React.SyntheticEvent, isExpanded: boolean) => {
     setExpandedOrder(isExpanded ? orderId : false);
   };
@@ -176,6 +186,10 @@ function OrderCards({ status }: { status: string }) {
 
   const handlePayOrder = async (orderId: string, tokenSymbol: string) => {
     await payOrder({ variables: { orderId, tokenSymbol } });
+  };
+
+  const handleCompleteOrder = async (orderId: string) => {
+    await completeOrderAdmin({ variables: { orderId } });
   };
 
   if (ordersLoading) return <OrderCardSkeleton />;
@@ -252,6 +266,22 @@ function OrderCards({ status }: { status: string }) {
                 }}
               >
                 Track Order
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={() => handleCompleteOrder(order.id)}
+                size="small"
+                disabled={completeOrderLoading || order.status !== 'DELIVERED'}
+                sx={{
+                  color: '#ffd700',
+                  borderColor: '#ffd700',
+                  '&:hover': {
+                    borderColor: '#ffd700',
+                    backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                  },
+                }}
+              >
+                {completeOrderLoading ? <CircularProgress size={24} color="inherit" /> : 'Complete Order'}
               </Button>
             </CardActions>
             <br/>

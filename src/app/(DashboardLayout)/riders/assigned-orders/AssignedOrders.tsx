@@ -1,8 +1,9 @@
 
 "use client";
 import React, { useState } from 'react';
-import { useQuery } from '@apollo/client';
+import { useQuery, useMutation } from '@apollo/client';
 import { GET_RIDER_ORDERS_QUERY } from '@/graphql/rider/queries';
+import { CONFIRM_ORDER_BY_RIDER } from '@/graphql/rider/mutations';
 import {
   Box,
   Card,
@@ -20,6 +21,7 @@ import {
   Divider,
   Stack,
 } from '@mui/material';
+import toast from 'react-hot-toast';
 
 type Order = {
   id: string;
@@ -40,8 +42,9 @@ type Order = {
 };
 
 const AssignedOrders = () => {
-  const { data, loading, error } = useQuery(GET_RIDER_ORDERS_QUERY);
+  const { data, loading, error, refetch } = useQuery(GET_RIDER_ORDERS_QUERY);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [confirmOrder, { loading: confirming }] = useMutation(CONFIRM_ORDER_BY_RIDER);
 
   const handleOpen = (order) => {
     setSelectedOrder(order);
@@ -49,6 +52,22 @@ const AssignedOrders = () => {
 
   const handleClose = () => {
     setSelectedOrder(null);
+  };
+
+  const handleConfirmDelivery = async () => {
+    if (!selectedOrder) return;
+
+    const toastId = toast.loading('Confirming delivery...');
+    try {
+      await confirmOrder({
+        variables: { orderId: selectedOrder.id },
+      });
+      toast.success('Delivery confirmed successfully!', { id: toastId });
+      refetch();
+      handleClose();
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to confirm delivery.', { id: toastId });
+    }
   };
 
   if (loading) {
@@ -68,7 +87,7 @@ const AssignedOrders = () => {
       </Typography>
       <Grid container spacing={3} sx={{ m: 2 }}>
         {orders.map((order) => (
-          <Grid  size={{xs:12, sm:6, md:4}} key={order.id}>
+          <Grid size={{xs:12, sm:6, md:4}} key={order.id}>
             <Card>
               <CardContent>
                 <Typography variant="h6">Order #{order.id.substring(0, 8)}</Typography>
@@ -112,9 +131,9 @@ const AssignedOrders = () => {
                   <Chip
                     label={selectedOrder.status}
                     color={
-                      selectedOrder.status === "Delivered"
+                      selectedOrder.status === "DELIVERED"
                         ? "success"
-                        : selectedOrder.status === "Pending"
+                        : selectedOrder.status === "PENDING"
                         ? "warning"
                         : "info"
                     }
@@ -214,6 +233,15 @@ const AssignedOrders = () => {
               sx={{ textTransform: "none", borderRadius: 2 }}
             >
               Close
+            </Button>
+            <Button
+              onClick={handleConfirmDelivery}
+              variant="contained"
+              color="success"
+              disabled={selectedOrder.status === 'DELIVERED' || confirming}
+              sx={{ textTransform: 'none', borderRadius: 2 }}
+            >
+              {confirming ? <CircularProgress size={24} /> : 'Confirm Delivery'}
             </Button>
           </DialogActions>
         </>
