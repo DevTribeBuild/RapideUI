@@ -30,11 +30,7 @@ import {
     Tabs,
     Tab,
 } from "@mui/material";
-import { TabContext, TabPanel } from "@mui/lab";
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
-import CurrencyBitcoinIcon from "@mui/icons-material/CurrencyBitcoin";
-import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
-import EuroIcon from "@mui/icons-material/Euro";
+import { TabContext } from "@mui/lab";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import Tooltip from "@mui/material/Tooltip";
 import SendTokenDialog from "../components/dashboard/sendToken";
@@ -42,18 +38,20 @@ import SwapToken from "@/app/(DashboardLayout)/components/dashboard/SwapToken";
 
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer } from "recharts";
 import useAppStore from "@/stores/useAuthStore";
-import { gql } from "@apollo/client";
 import { useQuery, useMutation } from "@apollo/client/react";
 import {
     GET_MY_TRANSACTIONS_COMBINED, // Imported the new combined query
-    
     GET_CRYPTO_BALANCE,
     GET_TOTAL_CRYPTO_BALANCE,
     FIAT_WALLET_ACCOUNTS,
+    CURRENCIES_QUERY,
 } from "@/graphql";
 import { FIAT_DEPOSIT, CREATE_FIAT_WALLET } from "@/graphql";
 import useAuthStore from "@/stores/useAuthStore";
 import { toast } from "react-hot-toast";
+import { ArrowDownward, ArrowUpward } from "@mui/icons-material";
+import UnarchiveIcon from '@mui/icons-material/Unarchive';
+import ArchiveIcon from '@mui/icons-material/Archive';
 
 // Type definitions
 type FiatTransaction = {
@@ -198,6 +196,8 @@ const WalletPage = () => {
     } = useQuery<TotalCryptoBalanceQuery>(GET_TOTAL_CRYPTO_BALANCE, {
         variables: { isTest: false },
     });
+    const { data: currencies_data, loading: currencies_loading } = useQuery(CURRENCIES_QUERY);
+
 
     // GraphQL Mutation for Fiat Deposit
     const [depositFiat, { loading: depositingFiat, error: depositFiatError }] = useMutation<FiatDepositMutationResult, FiatDepositMutationVariables>(FIAT_DEPOSIT, {
@@ -330,7 +330,7 @@ const WalletPage = () => {
 
     return (
         <Box sx={{ p: { xs: 2, md: 4, mb: 2 } }}>
-            <Typography variant="h4" fontWeight="bold" gutterBottom>
+            <Typography variant="h4" fontWeight="bold" gutterBottom sx={{color:"#ffd700"}}>
                 My Wallet
             </Typography>
             <Grid container spacing={4}>
@@ -349,20 +349,59 @@ const WalletPage = () => {
                                 )}
                             </Box>
                             <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 1 }}>
-                                <Button
+                                <Box
+                                    display="flex"
+                                    flexDirection="column"
+                                    alignItems="center"
+                                    sx={{ mr: 3 }}
+                                >
+                                    <Button
                                     variant="contained"
                                     color="primary"
                                     onClick={() => handleOpenModal("Deposit", "fiat")}
-                                >
+                                    sx={{
+                                        borderRadius: '50%',
+                                        width: 50,
+                                        height: 50,
+                                        minWidth: 0,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                    }}
+                                    >
+                                    <ArchiveIcon />
+                                    </Button>
+                                    <Typography variant="caption" sx={{ mt: 0.5 }}>
                                     Deposit
-                                </Button>
-                                <Button
+                                    </Typography>
+                                </Box>
+
+                                {/* Withdraw */}
+                                <Box
+                                    display="flex"
+                                    flexDirection="column"
+                                    alignItems="center"
+                                >
+                                    <Button
                                     variant="outlined"
                                     color="primary"
                                     onClick={() => handleOpenModal("Withdraw", "fiat")}
-                                >
+                                    sx={{
+                                        borderRadius: '50%',
+                                        width: 50,
+                                        height: 50,
+                                        minWidth: 0,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                    }}
+                                    >
+                                    <UnarchiveIcon />
+                                    </Button>
+                                    <Typography variant="caption" sx={{ mt: 0.5 }}>
                                     Withdraw
-                                </Button>
+                                    </Typography>
+                                </Box>
                             </Box>
                         </CardContent>
                     </Card>
@@ -383,30 +422,52 @@ const WalletPage = () => {
 
                             </Box>
                             <br />
-                            <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 1 }}>
-                                <Button
+                            <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 3 }}>
+                                <Box display="flex" flexDirection="column" alignItems="center">
+                                    <Button
                                     variant="contained"
-                                    size="small"
-                                    sx={{ mr: 1, mb: 1 }}
                                     onClick={() => setReceiveDialogOpen(true)}
-                                >
+                                    sx={{
+                                        width: 40,
+                                        height: 40,
+                                        borderRadius: "50%", // 🔵 makes it round
+                                        minWidth: 0,
+                                        p: 0,
+                                    }}
+                                    >
+                                    <ArrowDownward />
+                                    </Button>
+                                    <Typography variant="body2" sx={{ mt: 1 }}>
                                     Receive
-                                </Button>
-                                <SwapToken />
-                                <Button
-                                    variant="outlined"
-                                    size="small"
-                                    sx={{ mb: 1 }}
+                                    </Typography>
+                                </Box>
+
+                                {/* Send */}
+                                <Box display="flex" flexDirection="column" alignItems="center">
+                                    <Button
+                                    variant="contained"
                                     onClick={() => setSendDialogOpen(true)}
-                                >
+                                    sx={{
+                                        width: 40,
+                                        height: 40,
+                                        borderRadius: "50%", // 🔵 makes it round
+                                        minWidth: 0,
+                                        p: 0,
+                                    }}
+                                    >
+                                    <ArrowUpward />
+                                    </Button>
+                                    <Typography variant="body2" sx={{ mt: 1 }}>
                                     Send
-                                </Button>
+                                    </Typography>
+                                </Box>
+                                <SwapToken />
                                 <SendTokenDialog
                                     open={sendDialogOpen}
                                     onClose={() => setSendDialogOpen(false)}
                                     assetOptions={assetOptions}
-                                    onSend={(data: any) => {
-                                        console.log("Send Data:", data);
+                                    onSend={() => {
+
                                     }}
                                 />
                             </Box>
@@ -417,7 +478,7 @@ const WalletPage = () => {
                 {/* Crypto Wallet Accounts */}
                 <Grid size={{ xs: 12 }}>
                     <Paper elevation={3} sx={{ p: 3, borderRadius: 2, minHeight: 250, overflow: "hidden" }}>
-                        <Typography variant="h6" fontWeight="bold" gutterBottom>
+                        <Typography variant="h6" fontWeight="bold" gutterBottom sx={{color:"#ffd700"}}>
                             Crypto Wallet Accounts
                         </Typography>
                         <Divider sx={{ mb: 2 }} />
@@ -484,7 +545,7 @@ const WalletPage = () => {
                 <Grid size={{ xs: 12 }}>
                     <Paper elevation={3} sx={{ p: 3, borderRadius: 2, minHeight: 250, overflow: "hidden" }}>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                            <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ mb: 0 }}>
+                            <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ mb: 0, color:"#ffd700"}}>
                                 Fiat Wallet Accounts
                             </Typography>
                             <Button
@@ -536,7 +597,7 @@ const WalletPage = () => {
                 {/* Asset Distribution Chart */}
                 <Grid size={{ xs: 12, md: 6 }}>
                     <Paper elevation={3} sx={{ p: 3, borderRadius: 2, height: 450 }}>
-                        <Typography variant="h6" fontWeight="bold" gutterBottom>
+                        <Typography variant="h6" fontWeight="bold" gutterBottom sx={{color:"#ffd700"}}>
                             Asset Distribution
                         </Typography>
                         {loading_crypto_balances ? (
@@ -585,7 +646,7 @@ const WalletPage = () => {
                 {/* Transaction History */}
                 <Grid size={{ xs: 12, md: 6 }}>
                     <Paper elevation={3} sx={{ p: 3, borderRadius: 2, height: 450 }}>
-                        <Typography variant="h6" fontWeight="bold" gutterBottom>
+                        <Typography variant="h6" fontWeight="bold" gutterBottom sx={{color:"#ffd700"}}>
                             Transaction History
                         </Typography>
                         <TabContext value={selectedTab}>
@@ -740,10 +801,15 @@ const WalletPage = () => {
                             label="Currency"
                             onChange={(e) => setNewWalletCurrency(e.target.value as string)}
                         >
-                            {/* You would dynamically fetch available currencies here */}
-                            <MenuItem value="USD">USD</MenuItem>
-                            <MenuItem value="KES">KES</MenuItem>
-                            <MenuItem value="EUR">EUR</MenuItem>
+                            {currencies_loading ? (
+                                <MenuItem disabled>Loading currencies...</MenuItem>
+                            ) : (
+                                currencies_data?.currencies?.map((currency: any) => (
+                                    <MenuItem key={currency.code} value={currency.code}>
+                                        {currency.symbol} &#40;{currency.name}&#41;
+                                    </MenuItem>
+                                ))
+                            )}
                         </Select>
                     </FormControl>
                     {createWalletError && (

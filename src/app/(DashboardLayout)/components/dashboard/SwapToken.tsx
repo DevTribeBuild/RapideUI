@@ -18,6 +18,7 @@ import {
   SelectChangeEvent, // Import for Select onChange event
 } from '@mui/material';
 import { styled } from '@mui/system';
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 
 // -----------------------------------------------------------------------------
 // Type Definitions
@@ -479,16 +480,32 @@ const App: React.FC = () => {
           textAlign: 'center',
         }}
       >
-        <Button
-          variant="outlined"
-          size="small"
-          sx={{
-              fontWeight: 'semibold',
-            }}
-            onClick={handleOpenSwapDialog}
-        >
-          Swap
-        </Button>
+        <Box
+  display="flex"
+  flexDirection="column"
+  alignItems="center"
+  sx={{ mr: 2 }}
+>
+  <Button
+    variant="contained"
+    size="small"
+    onClick={handleOpenSwapDialog}
+    sx={{
+      borderRadius: '50%',
+      width: 40,
+      height: 40,
+      minWidth: 0,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    }}
+  >
+    <SwapHorizIcon />
+  </Button>
+  <Typography variant="body2" sx={{mt:1}}>
+    Swap
+  </Typography>
+</Box>
       </Box>
 
       {/* Render the SwapTokenDialog component */}
