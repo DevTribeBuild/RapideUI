@@ -64,7 +64,7 @@ const Login2 = () => {
                       variant="h6"
                       fontWeight="500"
                     >
-                      New to RapideUI?
+                      New to Swifteroute ?
                     </Typography>
                     <Typography
                       component={Link}
