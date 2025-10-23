@@ -135,7 +135,6 @@ const SidebarItems = () => {
 
   useEffect(() => {
     try{
-      console.log("user", user?.userType || "");
       const items = getMenuItems(user);
       setMenuItems(items);
     } catch(error) {

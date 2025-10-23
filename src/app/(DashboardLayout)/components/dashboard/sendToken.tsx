@@ -74,7 +74,6 @@ const token = useAuthStore((state:any) => state.token);
           toast.error(res.data?.sendToken.message || "Failed to send token");
           return;
         }
-        console.log("Send token response:", res.data);
         toast.success(res.data?.sendToken.message || "Token sent successfully!");
       })
       .catch((err) => {

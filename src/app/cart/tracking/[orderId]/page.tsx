@@ -259,7 +259,7 @@ const TrackingPage = () => {
                     fontWeight: 600,
                   }}
                 >
-                  {confirming ? <CircularProgress size={24} /> : 'Mark as Complete'}
+                  {confirming ? <CircularProgress size={24} /> : 'Mark as Received'}
                 </Button>
               </Box>
             </>

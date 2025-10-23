@@ -91,7 +91,6 @@ const SidebarItems = () => {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   useEffect(() => {
     try{
-      console.log("user", user?.userType || "");
       const items = getMenuItems(user);
       setMenuItems(items);
     } catch(error) {

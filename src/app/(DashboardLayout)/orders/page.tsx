@@ -89,7 +89,6 @@ export default function OrderManagement() {
     setLoading(true);
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log(`Order ${selectedOrderId} updated to ${newStatus}`);
     // In a real application, you would update the 'orders' state here
     closeStatusDialog();
     setLoading(false);

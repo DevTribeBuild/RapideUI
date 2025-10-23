@@ -136,12 +136,10 @@ export default function ProfilePage() {
     }));
 
 
-    console.log("userDetails", userDetails?.me);
     const { data: merchantData, loading: merchantLoading, error: merchantError } = useQuery(MY_MERCHANT_DETAILS, {
         // variables: { userId: userDetails?.id },
         skip: userDetails?.me?.userType !== 'MERCHANT',
     });
-    console.log("merchantData", merchantData);
 
     const { data: riderData, loading: riderLoading, error: riderError } = useQuery(RIDER_DETAILS, {
         variables: { userId: userDetails?.me?.id },
