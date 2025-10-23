@@ -178,7 +178,7 @@ const UsersPage = () => {
   };
 
   const handleSave = () => {
-    if (!form.email || !form.firstName || !form.lastName) {
+    if (!form.firstName || !form.lastName) {
       alert("Please fill in all required fields.");
       return;
     }
@@ -186,8 +186,6 @@ const UsersPage = () => {
     updateUser({
       variables: {
         updateUserInput: {
-          // id: selectedUser.id,
-          // email: form.email,
           firstName: form.firstName,
           lastName: form.lastName,
           phone: form.phone,
@@ -455,13 +453,14 @@ const UsersPage = () => {
                     <TextField
                       label="Email"
                       name="email"
-                      value={editMode ? form.email || "" : selectedUser.email || ""}
-                      onChange={handleInputChange}
+                      value={selectedUser.email || ""}
+                      // onChange={handleInputChange}
                       fullWidth
                       margin="normal"
                       type="email"
-                      inputProps={{ readOnly: !editMode }}
-                      variant={editMode ? "outlined" : "filled"}
+                      inputProps={{ readOnly: true }}
+                      variant="filled"
+                      disabled
                     />
                   </Grid>
                   <Grid size={{ xs: 12 }}>
@@ -494,11 +493,11 @@ const UsersPage = () => {
                       variant={editMode ? "outlined" : "filled"}
                     />
                   </Grid>
-                  <Grid size={{ xs: 12 }}>
+                  {/* <Grid size={{ xs: 12 }}>
                     <Typography mt={2} variant="body1" color="text.secondary">
                       **Wallet Address:** {selectedUser.walletAddress || "N/A"}
                     </Typography>
-                  </Grid>
+                  </Grid> */}
                 </Grid>
               )}
             </Box>

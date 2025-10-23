@@ -27,8 +27,7 @@ import { UPDATE_USER_MUTATION, MY_MERCHANT_DETAILS, RIDER_DETAILS, FIND_ONE_USER
 
 type UpdateUserMutationVariables = {
     updateUserInput: {
-        id: string;
-        email?: string;
+        // email?: string;
         firstName?: string;
         lastName?: string;
         username?: string;
@@ -172,10 +171,9 @@ export default function ProfilePage() {
         updateUser({
             variables: {
                 updateUserInput: {
-                    id: userDetails.me.id,
                     firstName: form?.firstName || "",
                     lastName: form?.lastName || "",
-                    email: form?.email,
+                    // email: form?.email || "",
                     username: form?.username || "",
                     phone: form?.phone || "",
                 },
@@ -219,38 +217,43 @@ export default function ProfilePage() {
       {editMode ? (
         <Box display="flex" gap={1}>
           <IconButton
-            color="success"
             onClick={handleSave}
             sx={{
-              bgcolor: "success.light",
-              "&:hover": { bgcolor: "success.main", color: "white" },
+              bgcolor: "success.dark",
+              "&:hover": { bgcolor: "success.main", color: "#000" },
             }}
           >
             <SaveIcon fontSize="small" />
           </IconButton>
           <IconButton
-            color="error"
             onClick={() => setEditMode(false)}
             sx={{
-              bgcolor: "error.light",
-              "&:hover": { bgcolor: "error.main", color: "white" },
+              bgcolor: "error.dark",
+              "&:hover": { bgcolor: "error.main", color: "#000" },
             }}
           >
             <CloseIcon fontSize="small" />
           </IconButton>
         </Box>
       ) : (
-        <IconButton
-          color="primary"
+        <Box
+          sx={{ display: "flex", alignItems: "center", gap: 0.5, cursor: "pointer" }}
           onClick={() => setEditMode(true)}
-          sx={{
-            color:"#000",
-            bgcolor: "primary.main",
-            "&:hover": { bgcolor: "primary.light" },
-          }}
         >
-          <EditNoteIcon fontSize="small" />
-        </IconButton>
+            <Typography variant="h5" color="text.primary">
+              Edit Profile
+            </Typography>&nbsp; 
+          <IconButton
+            color="primary"
+            sx={{
+              color: "#000",
+              bgcolor: "primary.main",
+              "&:hover": { bgcolor: "primary.light" },
+            }}
+          >
+            <EditNoteIcon fontSize="small" />
+          </IconButton> 
+        </Box>
       )}
     </Box>
   </Box>
@@ -331,7 +334,7 @@ export default function ProfilePage() {
             onChange={handleInputChange}
             fullWidth
             margin="normal"
-            disabled={!editMode}
+            disabled
           />
           <TextField
             label="Phone"
