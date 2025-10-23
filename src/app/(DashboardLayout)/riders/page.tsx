@@ -17,6 +17,7 @@ import {
   Tabs,
   Tab,
   Chip,
+  CardActions,
 } from "@mui/material";
 import Link from "next/link";
 import { GET_ALL_RIDERS } from "@/graphql/queries";
@@ -60,18 +61,14 @@ const RidersPage = () => {
     refetchQueries: [{ query: GET_ALL_RIDERS }],
   });
 
-  const handleApprove = async () => {
-    if (selectedRider) {
-      await approveRider({ variables: { userId: selectedRider.userId } });
-      setSelectedRider(null);
-    }
+  const handleApprove = async (rider: Rider) => {
+    await approveRider({ variables: { userId: rider.userId } });
+    setSelectedRider(null);
   };
 
-  const handleReject = async () => {
-    if (selectedRider) {
-      await rejectRider({ variables: { userId: selectedRider.userId } });
-      setSelectedRider(null);
-    }
+  const handleReject = async (rider: Rider) => {
+    await rejectRider({ variables: { userId: rider.userId } });
+    setSelectedRider(null);
   };
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
@@ -103,16 +100,11 @@ const RidersPage = () => {
 
       <Grid container spacing={3}>
         {filteredRiders?.map((rider: any) => (
-          <Grid key={rider.id} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
+          <Grid key={rider.id} size={{ xs: 12, sm: 6, md: 4 }}>
             <Card
               sx={{
+                border: '1px solid #ffd700',
                 borderRadius: 2,
-                boxShadow: 3,
-                transition: "transform 0.2s, box-shadow 0.2s",
-                "&:hover": {
-                  transform: "translateY(-4px)",
-                  boxShadow: 6,
-                },
               }}
             >
               <CardActionArea onClick={() => { setSelectedRider(rider); setTab(0); }}>
@@ -127,12 +119,34 @@ const RidersPage = () => {
                       {rider.user.firstName && rider.user.lastName
                         ? `${rider.user.firstName} ${rider.user.lastName}`
                         : rider.user.email}
-                    </Typography>
-                    <Typography color="text.secondary">{rider.user.email}</Typography>
-                    <Chip label={rider.status} color={rider.status === 'APPROVED' ? 'success' : 'warning'} size="small" />
+                    </Typography><br/>
+                    <Typography color="text.secondary">{rider.user.email}</Typography><br/>
+                    <Chip label={rider.status} color={rider.status === 'APPROVED' ? 'success' : 'warning'} size="small" variant="outlined" />
                   </Box>
                 </CardContent>
               </CardActionArea>
+              <CardActions sx={{ justifyContent: 'space-between', gap: 1, pr: 2, pb: 2 }}>
+                <Button
+                  onClick={() => handleReject(rider)}
+                  color="error"
+                  variant="outlined"
+                  size="small"
+                  disabled={rider.status !== 'PENDING'}
+                  sx={{ flexGrow: 1 }}
+                >
+                  Reject
+                </Button>
+                <Button
+                  onClick={() => handleApprove(rider)}
+                  color="primary"
+                  variant="outlined"
+                  size="small"
+                  disabled={rider.status !== 'PENDING'}
+                  sx={{ flexGrow: 1 }}
+                >
+                  Approve
+                </Button>
+              </CardActions>
             </Card>
           </Grid>
         ))}
@@ -159,7 +173,7 @@ const RidersPage = () => {
                     ? `${selectedRider.user.firstName} ${selectedRider.user.lastName}`
                     : selectedRider.user.email}
                 </Typography>
-                <Chip label={selectedRider.status} color={selectedRider.status === 'APPROVED' ? 'success' : 'warning'} />
+                <Chip label={selectedRider.status} color={selectedRider.status === 'APPROVED' ? 'success' : 'warning'} variant="outlined" />
               </Box>
 
               <Tabs value={tab} onChange={handleTabChange} sx={{ mb: 2 }}>
@@ -299,10 +313,20 @@ const RidersPage = () => {
           <Button onClick={() => setSelectedRider(null)} color="primary">
             Close
           </Button>
-          <Button onClick={handleApprove} color="success">
+          <Button
+            onClick={() => selectedRider && handleApprove(selectedRider)}
+            color="success"
+            variant="outlined"
+            disabled={selectedRider?.status !== 'PENDING'}
+          >
             Approve
           </Button>
-          <Button onClick={handleReject} color="error">
+          <Button
+            onClick={() => selectedRider && handleReject(selectedRider)}
+            color="error"
+            variant="outlined"
+            disabled={selectedRider?.status !== 'PENDING'}
+          >
             Reject
           </Button>
         </DialogActions>
