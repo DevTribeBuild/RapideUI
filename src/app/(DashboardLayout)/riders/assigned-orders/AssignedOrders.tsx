@@ -90,9 +90,9 @@ const AssignedOrders = () => {
           <Grid size={{xs:12, sm:6, md:4}} key={order.id}>
             <Card>
               <CardContent>
-                <Typography variant="h6">Order #{order.id.substring(0, 8)}</Typography>
+                <Typography variant="h6" sx={{color: '#ffd700',}}>Order #{order.id.substring(0, 8)}</Typography>
                 <Typography color="textSecondary">Status: {order.status}</Typography>
-                <Typography>Total: Kes {order.total}</Typography>
+                <Typography><span style={{color: '#ffd700'}}>Total:</span> Kes {order.total}</Typography>
                 <Button onClick={() => handleOpen(order)} size="small" sx={{ mt: 2 }}>
                   View Details
                 </Button>
@@ -116,7 +116,7 @@ const AssignedOrders = () => {
     >
       {selectedOrder && (
         <>
-          <DialogTitle sx={{ fontWeight: 600, borderBottom: "1px solid #eee" }}>
+          <DialogTitle sx={{ fontWeight: 600,color: '#ffd700', borderBottom: "1px solid #eee" }}>
             🧾 Order Details
           </DialogTitle>
 
@@ -124,7 +124,7 @@ const AssignedOrders = () => {
             <Stack spacing={2}>
               {/* Header Section */}
               <Box>
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#ffd700', }}>
                   Order #{selectedOrder.id}
                 </Typography>
                 <Stack direction="row" spacing={1} alignItems="center" mt={1}>
@@ -155,7 +155,7 @@ const AssignedOrders = () => {
 
               {/* Delivery Info */}
               <Stack spacing={1}>
-                <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#ffd700', }}>
                   Delivery Information
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
@@ -178,7 +178,7 @@ const AssignedOrders = () => {
 
               {/* Items Section */}
               <Stack spacing={1}>
-                <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#ffd700', }}>
                   Items
                 </Typography>
 
@@ -187,10 +187,11 @@ const AssignedOrders = () => {
                     border: "1px solid #eee",
                     borderRadius: 2,
                     p: 2,
-                    backgroundColor: "#fafafa",
+                    // backgroundColor: "#fafafa",
                   }}
                 >
-                  {selectedOrder?.cart?.items?.map((item) => (
+                  {selectedOrder?.cart?.items?.map((item) => {
+                    return (
                     <Box
                       key={item.id}
                       sx={{
@@ -219,7 +220,8 @@ const AssignedOrders = () => {
                         KES {(item.product.price * item.quantity).toLocaleString()}
                       </Typography>
                     </Box>
-                  ))}
+                  )}
+                  )}
                 </Box>
               </Stack>
             </Stack>

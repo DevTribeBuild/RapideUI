@@ -132,7 +132,7 @@ const CheckoutPage = () => {
         (position) => {
           setDeliveryLat(position.coords.latitude);
           setDeliveryLng(position.coords.longitude);
-          toast.success("Location fetched successfully!");
+          toast.success("Location added!");
         },
         (error) => {
           toast.error(`Error getting location: ${error.message}`);

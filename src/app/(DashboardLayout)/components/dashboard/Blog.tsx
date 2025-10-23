@@ -85,8 +85,6 @@ const Blog = () => {
 
   const { data: productsData, loading: productsLoading, error: productsError } = useQuery<AllProductsQuery>(ALL_PRODUCTS_QUERY);
   const { data: categoriesData, loading: categoriesLoading, error: categoriesError } = useQuery<AllCategoriesQuery>(ALL_CATEGORIES_QUERY); // New query for categories
-  console.log("Products Data:", productsData);
-  console.log("Categories Data:", categoriesData);
   const [cartErrorState, setCartErrorState] = useState<ApolloError | undefined>(undefined);
   const { data: cartData, loading: cartLoading, error: cartError } = useQuery<MyCartQuery>(MY_CART_QUERY, {
     skip: !token || (cartErrorState && cartErrorState.message === 'Unauthorized'),
@@ -138,7 +136,6 @@ const Blog = () => {
   };
 
   const handleAddToCartClick = async (product: Product) => {
-    console.log(product, "Adding to cart...")
     setLoadingProductId(product.id);
     try {
       await addToCart({ variables: { input: { productId: product.id, quantity: 1 } } });
@@ -235,7 +232,7 @@ const Blog = () => {
           variant="scrollable"
           scrollButtons="auto"
           aria-label="category tabs"
-          sx={{ mb: 3 }}
+          sx={{ mb: 3, maxWidth:'90vw' }}
         >
           <Tab label="All" value={null} />
           {categories.map((category) => (

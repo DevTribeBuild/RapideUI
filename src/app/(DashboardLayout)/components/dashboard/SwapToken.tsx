@@ -450,7 +450,6 @@ const App: React.FC = () => {
 
   // Handler for when the swap is confirmed within the dialog
   const handleSwap = (inputToken: Asset | null, outputToken: Asset | null, inputAmount: string, outputAmount: string) => {
-    console.log('Swap initiated:', { inputToken, outputToken, inputAmount, outputAmount });
     // Store details for the confirmation message
     setLastSwapDetails({ inputToken, outputToken, inputAmount, outputAmount });
     setShowConfirmationMessage(true); // Show the custom confirmation message

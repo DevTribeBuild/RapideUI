@@ -247,14 +247,12 @@ const WalletPage = () => {
                     },
                 });
                 if (response && response.data && response.data.depositFiat) {
-                  console.log("Fiat Deposit Successful:", response.data.depositFiat);
                   handleCloseModal();
                 }
             } catch (error) {
                 console.error("Fiat Deposit Error:", error);
             }
         } else {
-            console.log(`Submitting ${modalType} of ${amount} ${selectedAsset.currency}`);
             handleCloseModal();
         }
     };
@@ -269,7 +267,6 @@ const WalletPage = () => {
                 },
             });
             if (response && response.data && response.data.createMyFiatWallet) {
-              console.log("Create Fiat Wallet Successful:", response.data.createMyFiatWallet);
               setCreateWalletDialogOpen(false);
               setNewWalletCurrency('USD');
             }
