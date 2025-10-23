@@ -18,3 +18,4 @@ This is a Next.js project built with React, Material-UI, Apollo Client, and Zust
 ## Gemini Rules
 
 *   Do not run `npm run build` or `npm run dev`.
+*   When using the Grid component, use the size prop with an object for breakpoints, e.g., size={{ xs: 12, md: 6 }}, instead of individual props like xs={12} md={6}.
