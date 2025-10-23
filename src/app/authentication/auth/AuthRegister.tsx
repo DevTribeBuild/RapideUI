@@ -3,12 +3,12 @@ import { Box, Typography, Button, MenuItem, Skeleton, TextField } from '@mui/mat
 import Link from 'next/link';
 import { Stack } from '@mui/system';
 import { useMutation, useQuery } from '@apollo/client/react';
-import { REGISTER_MUTATION, VERIFY_OTP_MUTATION } from '@/graphql';
+import { REGISTER_MUTATION, VERIFY_OTP_MUTATION, CURRENCIES_QUERY } from '@/graphql';
 import { useRouter } from 'next/navigation';
 import useAuthStore, { User } from '@/stores/useAuthStore';
 import { handleLoginHelper } from '@/helpers/authHelper';
 import toast from 'react-hot-toast';
-import { GET_FIAT_CURRENCIES } from '@/graphql';
+
 
 interface registerType {
         title?: string;
@@ -62,10 +62,10 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
         const [verifyOtp, { loading: otpLoading }] = useMutation<VerifyOtpMutationResult, VerifyOtpMutationVariables>(VERIFY_OTP_MUTATION);
         const router = useRouter();
         const {
-                data: fiat_currencies_data,
-                loading: loading_fiat_currencies,
-                error: error_fiat_currencies,
-        } = useQuery<FiatCurrenciesQuery>(GET_FIAT_CURRENCIES);
+                data: currencies_data,
+                loading: currencies_loading,
+                error: currencies_error,
+        } = useQuery<FiatCurrenciesQuery>(CURRENCIES_QUERY);
 
         const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
                 e.preventDefault();
@@ -128,7 +128,7 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
                         {step === 'register' && (
                                 <Box component="form" onSubmit={handleRegister}>
                                         <Stack spacing={2} mb={3}>
-                                                {loading_fiat_currencies ? (
+                                                {currencies_loading ? (
                                                         <Skeleton variant="rectangular" height={56} width="100%" sx={{ borderRadius: 1 }} />
                                                 ) : (
                                                         <TextField
@@ -141,10 +141,10 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
                                                                 onChange={(e) => setCurrencyCode(e.target.value)}
                                                                 required
                                                         >
-                                                                {fiat_currencies_data && fiat_currencies_data.currencies && fiat_currencies_data.currencies.length > 0 ? (
-                                                                        fiat_currencies_data.currencies.map((currency: any) => (
+                                                                {currencies_data && currencies_data.currencies && currencies_data.currencies.length > 0 ? (
+                                                                        currencies_data.currencies.map((currency: any) => (
                                                                                 <MenuItem key={currency.code} value={currency.code}>
-                                                                                        {currency.name} ({currency.code})
+                                                                                        {currency.symbol} &#40;{currency.name}&#41;
                                                                                 </MenuItem>
                                                                         ))
                                                                 ) : (
