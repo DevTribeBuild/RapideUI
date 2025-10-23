@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import {
     Box,
     Tabs,
@@ -14,6 +14,7 @@ import {
     Divider,
     Fade,
     IconButton,
+    CircularProgress,
 } from '@mui/material';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import CloseIcon from '@mui/icons-material/Close';
@@ -21,6 +22,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import useAppStore from "@/stores/useAuthStore";
 import useThemeStore from "@/stores/useThemeStore";
 import { styled } from '@mui/material';
+import toast from 'react-hot-toast';
 
 import { useMutation, useQuery } from "@apollo/client/react";
 import { UPDATE_USER_MUTATION, MY_MERCHANT_DETAILS, RIDER_DETAILS, FIND_ONE_USER_QUERY } from "@/graphql";
@@ -85,11 +87,22 @@ function DetailsGrid({ details, loading, error }: { details: any, loading: boole
 
 export default function ProfilePage() {
     const userDetails: any = useAppStore((state) => state.userDetails);
+    const setUserDetails = useAppStore((state) => state.setUserDetails);
     const userType = userDetails?.userType;
     const [tab, setTab] = useState(0);
     const [editMode, setEditMode] = useState(false);
     const [form, setForm] = useState<UserDetails>({});
     const { theme, toggleTheme } = useThemeStore();
+
+    useEffect(() => {
+        setForm({
+            firstName: userDetails?.me?.firstName,
+            lastName: userDetails?.me?.lastName,
+            email: userDetails?.me?.email,
+            phone: userDetails?.me?.phone,
+            username: userDetails?.me?.username,
+        });
+    }, [userDetails]);
 
     const ThemeSwitch = styled(Switch)(({ theme }) => ({
         width: 62,
@@ -145,15 +158,17 @@ export default function ProfilePage() {
         skip: userDetails?.me?.userType !== 'RIDER' || !userDetails?.me?.id,
     });
 
-    const [updateUser, { loading, error }] = useMutation<any, UpdateUserMutationVariables>(UPDATE_USER_MUTATION, {
-        refetchQueries: [{ query: FIND_ONE_USER_QUERY, variables: { email: userDetails?.email } }]
-    });
-
     useEffect(() => {
         if (userDetails && userDetails.me) {
             setForm(userDetails.me);
         }
     }, [userDetails]);
+
+    const [updateUser, { loading, error }] = useMutation<any, UpdateUserMutationVariables>(UPDATE_USER_MUTATION, {
+        refetchQueries: [{ query: FIND_ONE_USER_QUERY, variables: { email: userDetails?.email } }]
+    });
+
+    
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -168,23 +183,31 @@ export default function ProfilePage() {
     };
 
     const handleSave = () => {
-        updateUser({
+        const promise = updateUser({
             variables: {
                 updateUserInput: {
                     firstName: form?.firstName || "",
                     lastName: form?.lastName || "",
-                    // email: form?.email || "",
                     username: form?.username || "",
                     phone: form?.phone || "",
                 },
             },
-        })
-            .then(() => {
-                setEditMode(false);
-            })
-            .catch((err) => {
-                console.error("Error updating profile:", err);
-            });
+        });
+
+        toast.promise(promise, {
+            loading: 'Updating profile...',
+            success: 'Profile updated successfully!',
+            error: 'Error updating profile. Please try again.',
+        });
+
+        promise.then((result) => {
+            setEditMode(false);
+            if (result.data && result.data.updateUser) {
+                setUserDetails({ ...userDetails, me: result.data.updateUser });
+            }
+        }).catch((err) => {
+            console.error("Error updating profile:", err);
+        });
     };
 
 
@@ -218,12 +241,13 @@ export default function ProfilePage() {
         <Box display="flex" gap={1}>
           <IconButton
             onClick={handleSave}
+            disabled={loading}
             sx={{
               bgcolor: "success.dark",
               "&:hover": { bgcolor: "success.main", color: "#000" },
             }}
           >
-            <SaveIcon fontSize="small" />
+            {loading ? <CircularProgress size={24} color="inherit" /> : <SaveIcon fontSize="small" />}
           </IconButton>
           <IconButton
             onClick={() => setEditMode(false)}
