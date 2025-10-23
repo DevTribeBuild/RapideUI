@@ -15,17 +15,34 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { Box, Stack } from "@mui/material";
-import { IconBasket, IconX, IconCheck } from "@tabler/icons-react";
+import { IconBasket, IconX, IconCheck, IconChevronDown, IconFilter } from "@tabler/icons-react"; // Added IconFilter
 import { QuantityAdjuster } from "./QuantityAdjuster";
 import BlankCard from "@/app/(DashboardLayout)/components/shared/BlankCard";
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@apollo/client/react";
 import { ALL_PRODUCTS_QUERY } from "@/graphql/product/queries";
+import { ALL_CATEGORIES_QUERY } from "@/graphql/category/queries"; // New import
 import { MY_CART_QUERY } from "@/graphql/cart/queries";
 import { ADD_TO_CART_MUTATION, UPDATE_CART_ITEM_MUTATION } from "@/graphql/cart/mutations";
 import toast from 'react-hot-toast';
+import { Tabs, Tab, Accordion, AccordionSummary, AccordionDetails, useMediaQuery, useTheme } from "@mui/material"; // New import
 
+
+type Category = {
+  createdAt: string;
+  id: string;
+  name: string;
+  parentId: string | null;
+  subcategories: {
+    name: string;
+  }[];
+  updatedAt: string;
+};
+
+type AllCategoriesQuery = {
+  allCategories: Category[];
+};
 
 type Product = {
   id: string;
@@ -61,9 +78,15 @@ import { ApolloError } from "@apollo/client";
 const Blog = () => {
   const { token } = useAuthStore();
   const router = useRouter();
+  const theme = useTheme(); // Initialize useTheme
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Detect mobile screen size
   const [openPreviewDialog, setOpenPreviewDialog] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null); // New state for selected category
 
   const { data: productsData, loading: productsLoading, error: productsError } = useQuery<AllProductsQuery>(ALL_PRODUCTS_QUERY);
+  const { data: categoriesData, loading: categoriesLoading, error: categoriesError } = useQuery<AllCategoriesQuery>(ALL_CATEGORIES_QUERY); // New query for categories
+  console.log("Products Data:", productsData);
+  console.log("Categories Data:", categoriesData);
   const [cartErrorState, setCartErrorState] = useState<ApolloError | undefined>(undefined);
   const { data: cartData, loading: cartLoading, error: cartError } = useQuery<MyCartQuery>(MY_CART_QUERY, {
     skip: !token || (cartErrorState && cartErrorState.message === 'Unauthorized'),
@@ -141,7 +164,11 @@ const Blog = () => {
     }
   };
 
-  if (productsLoading) return (
+  const handleCategoryChange = (event: React.SyntheticEvent, newValue: string | null) => {
+    setSelectedCategoryId(newValue);
+  };
+
+  if (productsLoading || categoriesLoading) return (
     <Grid container spacing={3}>
       {[...Array(8)].map((_, index) => (
         <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={index}>
@@ -153,9 +180,16 @@ const Blog = () => {
     </Grid>
   );
   if (productsError) return <p>Error: {productsError.message}</p>;
+  if (categoriesError) return <p>Error: {categoriesError.message}</p>;
 
   // Render products even if cart data is loading or has an error
-  const productsToDisplay = productsData?.allProducts || [];
+  const allProducts = productsData?.allProducts || [];
+  const categories = categoriesData?.allCategories || [];
+
+  const productsToDisplay = selectedCategoryId
+    ? allProducts.filter(product => product.categoryId === selectedCategoryId)
+    : allProducts;
+
   const cartItemsMap = new Map();
   if (cartData && cartData.myCart && cartData.myCart.items) {
     cartData.myCart.items.forEach(item => {
@@ -163,7 +197,53 @@ const Blog = () => {
     });
   }
   return (
-    <Grid container spacing={3}>
+    <Box>
+      {isMobile ? (
+        <Accordion elevation={0} sx={{ mb: 3 }}>
+          <AccordionSummary expandIcon={<IconChevronDown color="#ffd700"/>}>
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <IconFilter color="#ffd700"/> {/* Yellow filter icon */}
+              <Typography variant="subtitle1" color="#ffd700">Filter by Category</Typography>
+            </Stack>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Stack direction="column" spacing={1}>
+              <Button
+                variant={selectedCategoryId === null ? "contained" : "text"}
+                onClick={() => setSelectedCategoryId(null)}
+                fullWidth
+              >
+                All
+              </Button>
+              {categories.map((category) => (
+                <Button
+                  key={category.id}
+                  variant={selectedCategoryId === category.id ? "contained" : "text"}
+                  onClick={() => setSelectedCategoryId(category.id)}
+                  fullWidth
+                >
+                  {category.name}
+                </Button>
+              ))}
+            </Stack>
+          </AccordionDetails>
+        </Accordion>
+      ) : (
+        <Tabs
+          value={selectedCategoryId}
+          onChange={handleCategoryChange}
+          variant="scrollable"
+          scrollButtons="auto"
+          aria-label="category tabs"
+          sx={{ mb: 3 }}
+        >
+          <Tab label="All" value={null} />
+          {categories.map((category) => (
+            <Tab key={category.id} label={category.name} value={category.id} />
+          ))}
+        </Tabs>
+      )}
+      <Grid container spacing={3}>
       {productsToDisplay.map((product) => {
         const productId = product.id;
         const cartItem = cartItemsMap.get(productId);
@@ -364,6 +444,7 @@ const Blog = () => {
         )}
       </Dialog>
     </Grid>
+    </Box>
   );
 }
 export default Blog;

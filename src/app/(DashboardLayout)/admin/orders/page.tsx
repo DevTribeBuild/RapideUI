@@ -57,7 +57,7 @@ export default function OrderManagement() {
     setTabValue(newValue);
   };
 
-  
+
 
   return (
     <Box sx={{ p: 4, minHeight: '100vh', fontFamily: 'Inter, sans-serif' }}>
@@ -198,7 +198,7 @@ function OrderCards({ status }: { status: string }) {
 
   if (ordersLoading) return <OrderCardSkeleton />;
   if (ordersError) return <p>Error loading orders: {ordersError.message}</p>;
-  
+
   return (
     <Grid container spacing={3}>
       {ordersData.allOrders.map((order: any) => (
@@ -223,72 +223,98 @@ function OrderCards({ status }: { status: string }) {
               </Box>
               <Typography variant="body2" color="text.secondary">Assigned Rider: {order.assignedRiderId ? order.assignedRiderId.substring(0, 8) : 'Unassigned'}</Typography>
             </CardContent>
-            <CardActions sx={{ justifyContent: 'space-between', px: 2 }}>
-              <Button
-                variant="outlined"
-                onClick={() => handleAssignRider(order.id)}
-                size="small"
-                disabled={assignRiderLoading || order.assignedRiderId}
-                sx={{
-                  color: '#ffd700',
-                  borderColor: '#ffd700',
-                  '&:hover': {
-                    borderColor: '#ffd700',
-                    backgroundColor: 'rgba(255, 215, 0, 0.1)',
-                  },
-                }}
-              >
-                {assignRiderLoading && assigningRiderId === order.id ? <CircularProgress size={24} color="inherit" /> : 'Assign Rider'}
-              </Button>
-              <Button
-                variant="outlined"
-                onClick={() => handlePayOrder(order.id, 'BNB')}
-                size="small"
-                disabled={order.status !== 'PENDING'}
-                sx={{
-                  color: '#ffd700',
-                  borderColor: '#ffd700',
-                  '&:hover': {
-                    borderColor: '#ffd700',
-                    backgroundColor: 'rgba(255, 215, 0, 0.1)',
-                  },
-                }}
-              >
-                Pay for Order
-              </Button>
-              <Button
-                variant="outlined"
-                onClick={() => router.push(`/cart/tracking/${order.id}`)}
-                size="small"
-                sx={{
-                  color: '#ffd700',
-                  borderColor: '#ffd700',
-                  '&:hover': {
-                    borderColor: '#ffd700',
-                    backgroundColor: 'rgba(255, 215, 0, 0.1)',
-                  },
-                }}
-              >
-                Track Order
-              </Button>
-              <Button
-                variant="outlined"
-                onClick={() => handleCompleteOrder(order.id)}
-                size="small"
-                disabled={completeOrderLoading || order.status !== 'DELIVERED'}
-                sx={{
-                  color: '#ffd700',
-                  borderColor: '#ffd700',
-                  '&:hover': {
-                    borderColor: '#ffd700',
-                    backgroundColor: 'rgba(255, 215, 0, 0.1)',
-                  },
-                }}
-              >
-                {completeOrderLoading ? <CircularProgress size={24} color="inherit" /> : 'Complete Order'}
-              </Button>
+            <CardActions sx={{ px: 2 }}>
+              <Grid container spacing={1}>
+                <Grid size={{ xs: 6 }}>
+                  <Button
+                    variant="outlined"
+                    onClick={() => handleAssignRider(order.id)}
+                    size="small"
+                    fullWidth
+                    disabled={assignRiderLoading || order.assignedRiderId}
+                    sx={{
+                      color: '#ffd700',
+                      borderColor: '#ffd700',
+                      '&:hover': {
+                        borderColor: '#ffd700',
+                        backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                      },
+                    }}
+                  >
+                    {assignRiderLoading && assigningRiderId === order.id ? (
+                      <CircularProgress size={24} color="inherit" />
+                    ) : (
+                      'Assign Rider'
+                    )}
+                  </Button>
+                </Grid>
+
+                <Grid size={{ xs: 6 }}>
+                  <Button
+                    variant="outlined"
+                    onClick={() => handlePayOrder(order.id, 'BNB')}
+                    size="small"
+                    fullWidth
+                    disabled={order.status !== 'PENDING'}
+                    sx={{
+                      color: '#ffd700',
+                      borderColor: '#ffd700',
+                      '&:hover': {
+                        borderColor: '#ffd700',
+                        backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                      },
+                    }}
+                  >
+                    Pay for Order
+                  </Button>
+                </Grid>
+
+                <Grid size={{ xs: 6 }}>
+                  <Button
+                    variant="outlined"
+                    onClick={() => router.push(`/cart/tracking/${order.id}`)}
+                    size="small"
+                    fullWidth
+                    sx={{
+                      color: '#ffd700',
+                      borderColor: '#ffd700',
+                      '&:hover': {
+                        borderColor: '#ffd700',
+                        backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                      },
+                    }}
+                  >
+                    Track Order
+                  </Button>
+                </Grid>
+
+                <Grid size={{ xs: 6 }}>
+                  <Button
+                    variant="outlined"
+                    onClick={() => handleCompleteOrder(order.id)}
+                    size="small"
+                    fullWidth
+                    disabled={completeOrderLoading || order.status !== 'DELIVERED'}
+                    sx={{
+                      color: '#ffd700',
+                      borderColor: '#ffd700',
+                      '&:hover': {
+                        borderColor: '#ffd700',
+                        backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                      },
+                    }}
+                  >
+                    {completeOrderLoading ? (
+                      <CircularProgress size={24} color="inherit" />
+                    ) : (
+                      'Complete Order'
+                    )}
+                  </Button>
+                </Grid>
+              </Grid>
             </CardActions>
-            <br/>
+
+            <br />
             <Accordion
               expanded={expandedOrder === order.id}
               onChange={handleExpand(order.id)}

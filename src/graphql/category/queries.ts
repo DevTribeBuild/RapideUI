@@ -38,20 +38,23 @@ export const CATEGORY_QUERY = gql`
  `;
 
 export const ALL_CATEGORIES_QUERY = gql`
-   query AllCategories {
-     allCategories {
-       id
-       name
-       parentId
-       createdAt
-       updatedAt
-       subcategories {
-         id
-         name
-         parentId
-         createdAt
-         updatedAt
-       }
-     }
-   }
- `;
+query AllCategories {
+  allCategories {
+    createdAt
+    id
+    name
+    parentId
+    subcategories {
+      createdAt
+      id
+      name
+      parentId
+      subcategories {
+        name
+      }
+      updatedAt
+    }
+    updatedAt
+  }
+}`;
+

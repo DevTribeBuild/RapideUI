@@ -105,6 +105,30 @@ const getInitialsAndColor = (user) => {
   return { initials, color };
 };
 
+const getUserTypeChipProps = (userType: string) => {
+  let color: "primary" | "secondary" |"warning" | "info" | "success" | "default" = "default";
+  let sx = {};
+
+  switch (userType) {
+    case "ADMIN":
+      color = "primary";
+      break;
+    case "MERCHANT":
+      color = "warning";
+      break;
+    case "RIDER":
+      color = "info";
+      break;
+    case "USER":
+      color = "warning";
+      break;
+    default:
+      color = "default";
+      break;
+  }
+  return { color, sx };
+};
+
 
 const UsersPage = () => {
   const { data, loading, error, refetch } = useQuery<GetAllUsersQuery>(GET_ALL_USERS, {
@@ -269,14 +293,8 @@ const UsersPage = () => {
               <Grid size={{ xs: 12, md: 6, lg: 4 }} key={user.id}>
                 <Card
                   sx={{
+                    border: '1px solid #ffd700',
                     borderRadius: 2,
-                    boxShadow: 3,
-                    transition: "transform 0.2s, box-shadow 0.2s",
-                    "&:hover": {
-                      transform: "translateY(-4px)",
-                      boxShadow: 6,
-                      cursor: "pointer",
-                    },
                     height: "100%",
                     display: "flex",
                     flexDirection: "column",
@@ -305,19 +323,18 @@ const UsersPage = () => {
                         </Typography>
                         <Typography color="text.secondary" variant="body2" noWrap>{user.email}</Typography>
                         <br />
-                        {user.userType && (
-                          <Chip
-                            label={user.userType}
-                            size="small"
-                            variant="outlined"
-                            sx={{
-                              mt: 0.5,
-                              borderColor: (theme) => theme.palette.grey[400],
-                              color: (theme) => theme.palette.grey[700],
-                              backgroundColor: (theme) => theme.palette.grey[100],
-                            }}
-                          />
-                        )}
+                        {user.userType && (() => {
+                          const { color, sx } = getUserTypeChipProps(user.userType);
+                          return (
+                            <Chip
+                              label={user.userType}
+                              size="small"
+                              variant="outlined"
+                              color={color}
+                              sx={{ mt: 0.5, ...sx }}
+                            />
+                          );
+                        })()}
                       </Box>
                     </CardContent>
                   </CardActionArea>
@@ -377,19 +394,17 @@ const UsersPage = () => {
                 })()}
 
                 <Typography variant="h5" fontWeight="bold">{selectedUser.name || `${selectedUser.firstName || ''} ${selectedUser.lastName || ''}`.trim()}</Typography>
-                {selectedUser.userType && (
-                  <Chip
-                    label={selectedUser.userType}
-                    variant="outlined"
-                    sx={{
-                      mt: 1,
-                      fontSize: "0.9rem",
-                      padding: "4px 8px",
-                      borderColor: (theme) => theme.palette.grey[400],
-                      color: (theme) => theme.palette.grey[700],
-                    }}
-                  />
-                )}
+                {selectedUser.userType && (() => {
+                  const { color, sx } = getUserTypeChipProps(selectedUser.userType);
+                  return (
+                    <Chip
+                      label={selectedUser.userType}
+                      variant="outlined"
+                      color={color}
+                      sx={{ mt: 1, fontSize: "0.9rem", padding: "4px 8px", ...sx }}
+                    />
+                  );
+                })()}
                 <Typography color="text.secondary" variant="body1" mt={0.5}>{selectedUser.email}</Typography>
               </Box>
 
