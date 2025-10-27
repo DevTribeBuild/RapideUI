@@ -181,3 +181,21 @@ export const CONFIRM_WITHDRAW_FIAT_MUTATION = gql`
      }
    }
  `;
+
+export const FIAT_TRANSFER = gql`
+  mutation FiatTransfer($input: FiatTransferInput!) {
+    fiatTransfer(input: $input) {
+      message
+      status
+      transaction {
+        id
+        amount
+        status
+        createdAt
+        Currency {
+          code
+        }
+      }
+    }
+  }
+`;

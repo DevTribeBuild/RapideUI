@@ -112,3 +112,17 @@ export const GET_RIDER_ORDERS_QUERY = gql`
     }
   }
 `;
+
+export const RIDER_LOCATION_UPDATED_SUBSCRIPTION = gql`
+  subscription RiderLocationUpdated($orderId: String!) {
+    riderLocationUpdated(orderId: $orderId) {
+      createdAt
+      id
+      latitude
+      longitude
+      orderId
+      riderId
+      updatedAt
+    }
+  }
+`;

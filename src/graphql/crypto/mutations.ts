@@ -81,3 +81,37 @@ export const SWAP_TOKEN_MUTATION = gql`
      }
    }
  `;
+
+export const BUY_CRYPTO_WITH_FIAT = gql`
+  mutation BuyCryptoWithFiat($input: BuyCryptoWithFiatInput!) {
+    buyCryptoWithFiat(input: $input) {
+      message
+      status
+      transaction {
+        id
+        status
+        type
+        value
+        toSymbol
+        createdAt
+      }
+    }
+  }
+`;
+
+export const SELL_CRYPTO_TO_FIAT = gql`
+  mutation SellCryptoToFiat($input: SellCryptoToFiatInput!) {
+    sellCryptoToFiat(input: $input) {
+      message
+      status
+      transaction {
+        id
+        status
+        type
+        value
+        toSymbol
+        createdAt
+      }
+    }
+  }
+`;
