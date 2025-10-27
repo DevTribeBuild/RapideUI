@@ -59,6 +59,7 @@ type CreateProductMutationVariables = {
     price: number;
     imageUrl: string;
     categoryId: string;
+    quantity: number;
     // currencyId: string;
     // merchantId: string;
   };
@@ -158,6 +159,7 @@ const ProductManagementApp: React.FC = () => {
           description: productToSave.description,
           imageUrl: productToSave.imageUrl,
           name: productToSave.name,
+          quantity: Number(productToSave.quantity),
           price: Number(productToSave.price),
           // merchantId: merchantId, // Add merchantId here
         };

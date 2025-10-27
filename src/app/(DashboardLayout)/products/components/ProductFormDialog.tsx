@@ -170,7 +170,7 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({ open, onCl
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}>
-        <Typography variant="h6" component="div" sx={{ fontWeight: 'bold', color: '#1F2937' }}>
+        <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
           {product ? 'Edit Product' : 'Create New Product'}
         </Typography>
         <IconButton onClick={onClose} size="small">
@@ -224,7 +224,7 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({ open, onCl
               '& .MuiInputLabel-root.Mui-focused': { color: '#F59E0B' },
             }}
           />
-          {product ? <></> :           <TextField
+           <TextField
             label="Stock Quantity"
             name="quantity"
             type="number"
@@ -238,7 +238,7 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({ open, onCl
               '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#D97706' },
               '& .MuiInputLabel-root.Mui-focused': { color: '#F59E0B' },
             }}
-          /> }
+          /> 
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
             <TextField
               label="Image URL"
@@ -246,9 +246,10 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({ open, onCl
               value={formData.imageUrl}
               fullWidth
               required
-              InputProps={{
-                readOnly: true,
-              }}
+              onChange={handleChange}
+              // InputProps={{
+              //   readOnly: true,
+              // }}
               sx={{
                 '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#F59E0B' },
                 '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#D97706' },
