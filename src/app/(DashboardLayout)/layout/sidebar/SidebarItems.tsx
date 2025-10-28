@@ -1,4 +1,4 @@
-import React, {useState,  useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { getMenuItems } from "./MenuItems";
 import useAppStore from "@/stores/useAuthStore"
 
@@ -21,15 +21,15 @@ import { ForwardRefExoticComponent, RefAttributes } from "react";
 import useThemeStore from "@/stores/useThemeStore";
 
 type MenuItemType =
-    {
-      id?: string;
-      navlabel?: boolean;
-      subheader?: string;
-      title?: string;
-      icon?: ForwardRefExoticComponent<IconProps & RefAttributes<any>>;
-      href?: string;
-      userType?: string[];
-    };
+  {
+    id?: string;
+    navlabel?: boolean;
+    subheader?: string;
+    title?: string;
+    icon?: ForwardRefExoticComponent<IconProps & RefAttributes<any>>;
+    href?: string;
+    userType?: string[];
+  };
 
 
 
@@ -39,7 +39,7 @@ const renderMenuItems = (items: any, pathDirect: any, theme: any, currentTheme: 
 
     const Icon = item.icon ? item.icon : IconPoint;
 
-    const itemIcon = <Icon stroke={1.5} size="1.3rem" style={{color:currentTheme === 'dark' ? '#FFD700' : '#000000'}}/>;
+    const itemIcon = <Icon stroke={1.5} size="1.3rem" style={{ color: currentTheme === 'dark' ? '#FFD700' : '#000000' }} />;
 
     // const textColor = currentTheme === 'dark' ? '#FFD700' : '#000000';
     const textColor = '#ffd700';
@@ -48,7 +48,7 @@ const renderMenuItems = (items: any, pathDirect: any, theme: any, currentTheme: 
     if (item.subheader) {
       // Display Subheader
       return (
-        <Box key={item.subheader}>
+        <Box key={item.subheader} sx={{ border:"1p solid red"}}>
           {/* <Menu
             subHeading={item.subheader}
             key={item.subheader}
@@ -75,14 +75,40 @@ const renderMenuItems = (items: any, pathDirect: any, theme: any, currentTheme: 
     //If the item has children (submenu)
     if (item.children) {
       return (
+        <Box sx={{border:"1px solid red"}} key={item.id}>
         <Submenu
           key={item.id}
           title={item.title}
-          icon={itemIcon}
-          borderRadius='7px'
+          icon={React.cloneElement(itemIcon, {
+            sx: {
+              color: pathDirect === item?.href ? "#000" : textColor,
+              fontSize: 22,
+            },
+          })}
+          borderRadius="7px"
+          sx={{
+            px: 2.5,
+            py: 1.2,
+            borderRadius: "7px",
+            backgroundColor: pathDirect === item?.href ? "#FFD700" : "transparent",
+            color: pathDirect === item?.href ? "#000" : textColor,
+            transition: "all 0.25s ease-in-out",
+            "&:hover": {
+              backgroundColor: pathDirect === item?.href ? "#FFD700" : "rgba(0, 0, 0, 0.05)",
+              color: "#000",
+              "& svg": {
+                color: "#000",
+              },
+            },
+            "& .MuiTypography-root": {
+              fontWeight: 600,
+              color: pathDirect === item?.href ? "#000" : textColor,
+            },
+          }}
         >
           {renderMenuItems(item.children, pathDirect, theme, currentTheme)}
         </Submenu>
+        </Box>
       );
     }
 
@@ -92,34 +118,43 @@ const renderMenuItems = (items: any, pathDirect: any, theme: any, currentTheme: 
       <MenuItem
         key={item.id}
         isSelected={pathDirect === item?.href}
-        borderRadius='8px'
-        icon={
-          React.cloneElement(itemIcon, {
-            sx: {
-              color: pathDirect === item?.href ? selectedColor : textColor,
-              fontSize: 24, // optional
-            },
-          })
-        }
+        borderRadius="8px"
+        icon={React.cloneElement(itemIcon, {
+          sx: {
+            color: pathDirect === item?.href ? "#000" : textColor,
+            fontSize: 24,
+          },
+        })}
         link={item.href}
         component={Link}
-        sx={{ 
+        sx={{
           px: 3,
-          color: pathDirect === item?.href ? selectedColor : textColor,
-          backgroundColor: pathDirect === item?.href ? (currentTheme === 'dark' ? 'rgba(255, 215, 0, 0.1)' : 'rgba(0, 0, 0, 0.05)') : 'transparent',
-        }} // Add padding directly to MenuItem
+          py: 1.2,
+          border: "1px solid red",
+          borderRadius: "8px",
+          color: pathDirect === item?.href ? "#000" : textColor,
+          backgroundColor: pathDirect === item?.href ? "#FFD700 !improtant" : "transparent",
+          transition: "all 0.25s ease-in-out",
+          "&:hover": {
+            backgroundColor: pathDirect === item?.href ? "#FFD700" : "rgba(0, 0, 0, 0.05)",
+            color: "#000",
+            "& svg": {
+              color: "#000",
+            },
+          },
+        }}
       >
         <Typography
-
           variant="body1"
           sx={{
-            fontWeight: 500,
-            color: pathDirect === item?.href ? selectedColor : textColor,
+            fontWeight: 600,
+            color: pathDirect === item?.href ? "#000" : textColor,
           }}
         >
           {item.title}
         </Typography>
-      </MenuItem >
+      </MenuItem>
+
     );
   });
 };
@@ -134,10 +169,10 @@ const SidebarItems = () => {
   const { theme: currentTheme } = useThemeStore();
 
   useEffect(() => {
-    try{
+    try {
       const items = getMenuItems(user);
       setMenuItems(items);
-    } catch(error) {
+    } catch (error) {
       console.error("Error fetching menu items", error);
     }
   }, [user]);

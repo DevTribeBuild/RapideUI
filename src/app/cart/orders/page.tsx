@@ -84,7 +84,7 @@ const Orders = () => {
 
     return (
         <PageContainer title="My Orders" description="View your past orders">
-  <Container maxWidth="lg" sx={{ mt: 6, mb: 6 }}>
+  <Box sx={{ mt: 6, mb: 6 }}>
     {/* Page Header */}
     <Box
       sx={{
@@ -229,7 +229,7 @@ const Orders = () => {
         ))}
       </Grid>
     )}
-  </Container>
+  </Box>
 </PageContainer>
 
     );
