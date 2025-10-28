@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Grid,
     Card,
@@ -29,13 +29,16 @@ import {
     InputAdornment,
     Tabs,
     Tab,
+    useTheme,
 } from "@mui/material";
 import { TabContext } from "@mui/lab";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import Tooltip from "@mui/material/Tooltip";
 import SendTokenDialog from "../components/dashboard/sendToken";
 import SwapToken from "@/app/(DashboardLayout)/components/dashboard/SwapToken";
-
+import BuySellCryptoDialog from "@/app/(DashboardLayout)/components/dashboard/BuySellCryptoDialog";
+import SendFiatDialog from "@/app/(DashboardLayout)/components/dashboard/SendFiatDialog";
+import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer } from "recharts";
 import useAppStore from "@/stores/useAuthStore";
 import { useQuery, useMutation } from "@apollo/client/react";
@@ -49,9 +52,10 @@ import {
 import { FIAT_DEPOSIT, CREATE_FIAT_WALLET } from "@/graphql";
 import useAuthStore from "@/stores/useAuthStore";
 import { toast } from "react-hot-toast";
-import { ArrowDownward, ArrowUpward } from "@mui/icons-material";
+import { AccountBalanceWalletOutlined, ArrowDownward, ArrowUpward } from "@mui/icons-material";
 import UnarchiveIcon from '@mui/icons-material/Unarchive';
 import ArchiveIcon from '@mui/icons-material/Archive';
+import PaidIcon from '@mui/icons-material/Paid';
 
 // Type definitions
 type FiatTransaction = {
@@ -143,24 +147,21 @@ const wallet = {
 
 const COLORS = ["#1976d2", "#43a047", "#fbc02d", "#ff7043"];
 
-const assetOptions: any = [
-    ...wallet.fiat.map((f) => ({ type: "fiat", currency: f.currency })),
-    ...wallet.crypto.map((c) => ({ type: "crypto", currency: c.currency })),
-];
-
-const WalletPage = () => {
+    const WalletPage = () => {
+    const theme = useTheme();
     let isTest: boolean = false;
     const [sendDialogOpen, setSendDialogOpen] = useState(false);
     const token = useAuthStore((state) => state.token);
     const userDetails: any = useAppStore((state) => state.userDetails);
     const [modalOpen, setModalOpen] = useState(false);
     const [modalType, setModalType] = useState<"Deposit" | "Withdraw">("Deposit");
-    const [selectedAsset, setSelectedAsset] = useState(assetOptions[0]);
     const [amount, setAmount] = useState("");
 
     const [createWalletDialogOpen, setCreateWalletDialogOpen] = useState(false);
     const [newWalletCurrency, setNewWalletCurrency] = useState('USD');
     const [receiveDialogOpen, setReceiveDialogOpen] = useState(false);
+    const [buySellDialogOpen, setBuySellDialogOpen] = useState(false);
+    const [sendFiatDialogOpen, setSendFiatDialogOpen] = useState(false);
 
     const [selectedTab, setSelectedTab] = useState('all'); // Initial state is 'all'
 
@@ -187,7 +188,21 @@ const WalletPage = () => {
         variables: { isTest },
     });
 
-    
+    const assetOptions: any[] = [
+        ...(data_fiat_accounts?.fiatWallets.map((f) => ({ type: "fiat", currency: f.Currency.code, icon: '💵' })) || []),
+        ...(data_crypto_balances?.balances.map((c) => ({ type: "crypto", currency: c.symbol, icon: '🪙' })) || []),
+    ];
+
+                const [selectedAsset, setSelectedAsset] = useState<any>(null);
+
+    useEffect(() => {
+        if (assetOptions.length > 0) {
+            setSelectedAsset(assetOptions[0]);
+            console.log(selectedAsset, "selectedAsset");
+        }
+    }, []);
+
+
 
     const {
         data: crypto_balance,
@@ -235,19 +250,19 @@ const WalletPage = () => {
     const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => setAmount(e.target.value);
 
     const handleSubmit = async () => {
-        if (modalType === "Deposit" && selectedAsset.type === "fiat") {
+        if (modalType === "Deposit" && selectedAsset?.type === "fiat") {
             try {
                 const response = await depositFiat({
                     variables: {
                         input: {
                             amount: parseFloat(amount),
-                            currencyCode: selectedAsset.currency,
+                            currencyCode: selectedAsset?.currency,
                             paymentMethod: "Mpesa",
                         },
                     },
                 });
                 if (response && response.data && response.data.depositFiat) {
-                  handleCloseModal();
+                    handleCloseModal();
                 }
             } catch (error) {
                 console.error("Fiat Deposit Error:", error);
@@ -267,8 +282,8 @@ const WalletPage = () => {
                 },
             });
             if (response && response.data && response.data.createMyFiatWallet) {
-              setCreateWalletDialogOpen(false);
-              setNewWalletCurrency('USD');
+                setCreateWalletDialogOpen(false);
+                setNewWalletCurrency('USD');
             }
         } catch (error) {
             console.error("Create Fiat Wallet Error:", error);
@@ -330,76 +345,161 @@ const WalletPage = () => {
 
     return (
         <Box sx={{ p: { xs: 2, md: 4, mb: 2 } }}>
-            <Typography variant="h4" fontWeight="bold" gutterBottom sx={{color:"#ffd700"}}>
+            <Typography variant="h4" fontWeight="bold" gutterBottom sx={{ color: "#ffd700" }}>
                 My Wallet
             </Typography>
             <Grid container spacing={4}>
                 {/* Fiat Wallet Card */}
                 <Grid size={{ xs: 12, md: 6 }}>
                     <Card elevation={3} sx={{ borderRadius: 2 }}>
-                        <CardContent sx={{ display: "flex", alignItems: "center", p: 3 }}>
-                            <Box sx={{ flexGrow: 1 }}>
+                        <CardContent
+                            sx={{
+                                display: "flex",
+                                flexWrap: "wrap",
+                                flexDirection: {xs:"column", md:"row"},
+                                gap: 2,
+                                p: { xs: 2, md: 3 },
+                            }}
+                        >
+                            <Box sx={{ width:{ md:"45%", xs:"100%"}}}>
                                 {loading_fiat_accounts ? (
-                                    <Skeleton width="60%" height={30} sx={{ mt: 0.5 }} />
+                                    <Skeleton height={30} sx={{ mt: 0.5 }} />
                                 ) : (
-                                    <Typography variant="h5" fontWeight="bold">
-                                        {data_fiat_accounts?.fiatWallets?.reduce((sum: number, wallet: any) => sum + (wallet.balance || 0), 0).toFixed(2)}{" "}
-                                        {userDetails?.fiatWallet?.Currency?.symbol || 'KES'}
-                                    </Typography>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            // justifyContent: "center",
+                                            p: 2,
+                                            borderRadius: 3,
+                                            background: `linear-gradient(135deg, ${theme.palette.primary.main}15, ${theme.palette.primary.main}05)`,
+                                            boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+                                        }}
+                                    >
+                                        <AccountBalanceWalletOutlined
+                                            sx={{
+                                                mr: 1.5,
+                                                fontSize: window.innerWidth < 600 ? 28 : 34,
+                                                color: theme.palette.primary.main,
+                                            }}
+                                        />
+
+                                        <Box textAlign="left">
+                                            <Typography
+                                                variant="body2"
+                                                sx={{
+                                                    color: theme.palette.text.secondary,
+                                                    fontWeight: 500,
+                                                    mb: 0.5,
+                                                }}
+                                            >
+                                                Total Balance
+                                            </Typography>
+
+                                            <Typography
+                                                variant={window.innerWidth < 600 ? "h5" : "h4"}
+                                                sx={{
+                                                    fontWeight: 700,
+                                                    color: theme.palette.text.primary,
+                                                    letterSpacing: 0.5,
+                                                }}
+                                            >
+                                                {data_fiat_accounts?.fiatWallets?.reduce((sum: number, wallet: any) => sum + (wallet.balance || 0), 0).toFixed(2)}{" "}
+                                                <Typography
+                                                    component="span"
+                                                    sx={{
+                                                        fontSize: window.innerWidth < 600 ? "1rem" : "1.25rem",
+                                                        color: theme.palette.text.secondary,
+                                                        ml: 0.5,
+                                                    }}
+                                                >
+                                                    {userDetails?.fiatWallet?.Currency?.symbol || "KES"}
+                                                </Typography>
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+
                                 )}
                             </Box>
-                            <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 1 }}>
-                                <Box
-                                    display="flex"
-                                    flexDirection="column"
-                                    alignItems="center"
-                                    sx={{ mr: 3 }}
-                                >
+
+                            {/* Action Buttons */}
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: { xs: "left", sm: "flex-start", md:"right" },
+                                    flexWrap: "wrap",
+                                    gap: { xs: 4, sm: 3 },
+                                    width:{md:"50%", xs:"100%"},
+                                    justifyItems:"right",
+                                    alignItems:"center"
+                                }}
+                            >
+                                {/* Send */}
+                                <Box display="flex" flexDirection="column" alignItems="center">
                                     <Button
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={() => handleOpenModal("Deposit", "fiat")}
-                                    sx={{
-                                        borderRadius: '50%',
-                                        width: 50,
-                                        height: 50,
-                                        minWidth: 0,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                    }}
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={() => setSendFiatDialogOpen(true)}
+                                        sx={{
+                                            borderRadius: "50%",
+                                            width: 45,
+                                            height: 45,
+                                            minWidth: 0,
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                        }}
                                     >
-                                    <ArchiveIcon />
+                                        <ArrowUpward />
                                     </Button>
                                     <Typography variant="caption" sx={{ mt: 0.5 }}>
-                                    Deposit
+                                        Send
+                                    </Typography>
+                                </Box>
+
+                                {/* Deposit */}
+                                <Box display="flex" flexDirection="column" alignItems="center">
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={() => handleOpenModal("Deposit", "fiat")}
+                                        sx={{
+                                            borderRadius: "50%",
+                                            width: 45,
+                                            height: 45,
+                                            minWidth: 0,
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                        }}
+                                    >
+                                        <ArchiveIcon />
+                                    </Button>
+                                    <Typography variant="caption" sx={{ mt: 0.5 }}>
+                                        Deposit
                                     </Typography>
                                 </Box>
 
                                 {/* Withdraw */}
-                                <Box
-                                    display="flex"
-                                    flexDirection="column"
-                                    alignItems="center"
-                                >
+                                <Box display="flex" flexDirection="column" alignItems="center">
                                     <Button
-                                    variant="outlined"
-                                    color="primary"
-                                    onClick={() => handleOpenModal("Withdraw", "fiat")}
-                                    sx={{
-                                        borderRadius: '50%',
-                                        width: 50,
-                                        height: 50,
-                                        minWidth: 0,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                    }}
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={() => handleOpenModal("Withdraw", "fiat")}
+                                        sx={{
+                                            borderRadius: "50%",
+                                            width: 45,
+                                            height: 45,
+                                            minWidth: 0,
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                        }}
                                     >
-                                    <UnarchiveIcon />
+                                        <UnarchiveIcon />
                                     </Button>
                                     <Typography variant="caption" sx={{ mt: 0.5 }}>
-                                    Withdraw
+                                        Withdraw
                                     </Typography>
                                 </Box>
                             </Box>
@@ -410,80 +510,185 @@ const WalletPage = () => {
                 {/* Crypto Wallet Card */}
                 <Grid size={{ xs: 12, md: 6 }}>
                     <Card elevation={3} sx={{ borderRadius: 2 }}>
-                        <CardContent sx={{ display: "flex", alignItems: "center", p: 3 }}>
-                            <Box sx={{ width: "100%" }}>
+                        <CardContent
+                            sx={{
+                                display: "flex",
+                                flexWrap: "wrap",
+                                flexDirection: {xs:"row", md:"row"},
+                                gap: 2,
+                                p: { xs: 2, md: 3 },
+                            }}
+                        >
+                            <Box sx={{ width:{md:"48%", xs:"100%"}}}>
                                 {loading_crypto_balance ? (
                                     <Skeleton width="60%" height={30} sx={{ mt: 0.5 }} />
                                 ) : (
-                                    <Typography variant="h5" fontWeight="bold">
-                                        {crypto_balance?.totalBalances}{" "} USDT
-                                    </Typography>
-                                )}
+                                    <>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            // justifyContent: "center",
+                                            p: 2,
+                                            borderRadius: 3,
+                                            background: `linear-gradient(135deg, ${theme.palette.primary.main}15, ${theme.palette.primary.main}05)`,
+                                            boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+                                        }}
+                                    >
+                                        <PaidIcon
+                                            sx={{
+                                                mr: 1.5,
+                                                fontSize: window.innerWidth < 600 ? 28 : 34,
+                                                color: theme.palette.primary.main,
+                                            }}
+                                        />
 
+                                        <Box textAlign="left">
+                                            <Typography
+                                                variant="body2"
+                                                sx={{
+                                                    color: theme.palette.text.secondary,
+                                                    fontWeight: 500,
+                                                    mb: 0.5,
+                                                }}
+                                            >
+                                                Total Balance
+                                            </Typography>
+
+                                            <Typography
+                                                variant={window.innerWidth < 600 ? "h5" : "h4"}
+                                                sx={{
+                                                    fontWeight: 700,
+                                                    color: theme.palette.text.primary,
+                                                    letterSpacing: 0.5,
+                                                }}
+                                            >
+                                                {crypto_balance?.totalBalances}
+                                                <Typography
+                                                    component="span"
+                                                    sx={{
+                                                        fontSize: window.innerWidth < 600 ? "1rem" : "1.25rem",
+                                                        color: theme.palette.text.secondary,
+                                                        ml: 0.5,
+                                                    }}
+                                                >
+                                                    USDT
+                                                </Typography>
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                    </>
+                                )}
                             </Box>
-                            <br />
-                            <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 3 }}>
+
+                            {/* Actions */}
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: { xs: "left", sm: "flex-start", md:"right" },
+                                    flexWrap: "wrap",
+                                    gap: { xs: 4, sm: 3 },
+                                    width:{md:"48%", xs:"100%"},
+                                    justifyItems:"right",
+                                    alignItems:"center"
+                                }}
+                            >
+                                {/* Receive */}
                                 <Box display="flex" flexDirection="column" alignItems="center">
                                     <Button
-                                    variant="contained"
-                                    onClick={() => setReceiveDialogOpen(true)}
-                                    sx={{
-                                        width: 40,
-                                        height: 40,
-                                        borderRadius: "50%", // 🔵 makes it round
-                                        minWidth: 0,
-                                        p: 0,
-                                    }}
+                                        variant="contained"
+                                        onClick={() => setReceiveDialogOpen(true)}
+                                        sx={{
+                                            width: 45,
+                                            height: 45,
+                                            borderRadius: "50%",
+                                            minWidth: 0,
+                                            p: 0,
+                                        }}
                                     >
-                                    <ArrowDownward />
+                                        <ArrowDownward />
                                     </Button>
-                                    <Typography variant="body2" sx={{ mt: 1 }}>
-                                    Receive
+                                    <Typography variant="caption" sx={{ mt: 0.5 }}>
+                                        Receive
                                     </Typography>
                                 </Box>
 
                                 {/* Send */}
                                 <Box display="flex" flexDirection="column" alignItems="center">
                                     <Button
-                                    variant="contained"
-                                    onClick={() => setSendDialogOpen(true)}
-                                    sx={{
-                                        width: 40,
-                                        height: 40,
-                                        borderRadius: "50%", // 🔵 makes it round
-                                        minWidth: 0,
-                                        p: 0,
-                                    }}
+                                        variant="contained"
+                                        onClick={() => setSendDialogOpen(true)}
+                                        sx={{
+                                            width: 45,
+                                            height: 45,
+                                            borderRadius: "50%",
+                                            minWidth: 0,
+                                            p: 0,
+                                        }}
                                     >
-                                    <ArrowUpward />
+                                        <ArrowUpward />
                                     </Button>
-                                    <Typography variant="body2" sx={{ mt: 1 }}>
-                                    Send
+                                    <Typography variant="caption" sx={{ mt: 0.5 }}>
+                                        Send
                                     </Typography>
                                 </Box>
-                                <SwapToken />
-                                <SendTokenDialog
-                                    open={sendDialogOpen}
-                                    onClose={() => setSendDialogOpen(false)}
-                                    assetOptions={assetOptions}
-                                    onSend={() => {
 
-                                    }}
-                                />
+                                {/* Buy/Sell */}
+                                <Box display="flex" flexDirection="column" alignItems="center">
+                                    <Button
+                                        variant="contained"
+                                        onClick={() => setBuySellDialogOpen(true)}
+                                        sx={{
+                                            width: 45,
+                                            height: 45,
+                                            borderRadius: "50%",
+                                            minWidth: 0,
+                                            p: 0,
+                                        }}
+                                    >
+                                        <PublishedWithChangesIcon />
+                                    </Button>
+                                    <Typography variant="caption" sx={{ mt: 0.5 }}>
+                                        Buy/Sell
+                                    </Typography>
+                                </Box>
+                                                                <SwapToken assetOptions={assetOptions} />
                             </Box>
+
+                            {/* Dialogs */}
+                            <SendTokenDialog
+                                open={sendDialogOpen}
+                                onClose={() => setSendDialogOpen(false)}
+                                assetOptions={assetOptions}
+                                onSend={() => { }}
+                            />
+                            <BuySellCryptoDialog
+                                open={buySellDialogOpen}
+                                onClose={() => setBuySellDialogOpen(false)}
+                                cryptoBalances={data_crypto_balances?.balances || []}
+                                fiatWallets={data_fiat_accounts?.fiatWallets || []}
+                            />
+                            <SendFiatDialog
+                                open={sendFiatDialogOpen}
+                                onClose={() => setSendFiatDialogOpen(false)}
+                                fiatWallets={data_fiat_accounts?.fiatWallets || []}
+                            />
                         </CardContent>
                     </Card>
                 </Grid>
 
+
                 {/* Crypto Wallet Accounts */}
-                <Grid size={{ xs: 12 }}>
+                <Grid size={{ xs: 12, md: 6 }}>
                     <Paper elevation={3} sx={{ p: 3, borderRadius: 2, minHeight: 250, overflow: "hidden" }}>
-                        <Typography variant="h6" fontWeight="bold" gutterBottom sx={{color:"#ffd700"}}>
+                        <Box sx={{ mb:4}}>
+                        <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ color: "#ffd700" }}>
                             Crypto Wallet Accounts
                         </Typography>
-                        <Divider sx={{ mb: 2 }} />
+                        </Box>
+                        <Divider/>
                         {false ? (
-                            <Grid container spacing={2}>
+                            <Grid container spacing={2} sx={{ mt:2}}>
                                 {Array.from({ length: 2 }).map((_, index) => (
                                     <Grid size={{ xs: 12, md: 6 }} key={index}>
                                         <Skeleton variant="rectangular" height={100} sx={{ borderRadius: 2 }} />
@@ -491,7 +696,7 @@ const WalletPage = () => {
                                 ))}
                             </Grid>
                         ) : true ? (
-                            <Grid container spacing={2}>
+                            <Grid container spacing={2} sx={{ mt:2}}>
                                 {loading_crypto_balances
                                     ? Array.from({ length: 3 }).map((_, idx) => (
                                         <Grid size={{ xs: 12, md: 6 }} key={idx}>
@@ -542,26 +747,25 @@ const WalletPage = () => {
                 </Grid>
 
                 {/* Fiat Wallet Accounts */}
-                <Grid size={{ xs: 12 }}>
+                <Grid size={{ xs: 12, md:6 }}>
                     <Paper elevation={3} sx={{ p: 3, borderRadius: 2, minHeight: 250, overflow: "hidden" }}>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                            <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ mb: 0, color:"#ffd700"}}>
-                                Fiat Wallet Accounts
+                            <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ mb: 0, color: "#ffd700" }}>
+                                Fiat Wallets
                             </Typography>
                             <Button
                                 variant="contained"
                                 size="small"
                                 onClick={() => setCreateWalletDialogOpen(true)}
                             >
-                                Create New Wallet
+                                Create Wallet
                             </Button>
                         </Box>
                         <Divider sx={{ mb: 2 }} />
-
                         {loading_fiat_accounts ? (
                             <Grid container spacing={2}>
                                 {Array.from({ length: 2 }).map((_, index) => (
-                                    <Grid size={{ xs: 12, md: 6 }} key={index}>
+                                    <Grid size={{ xs: 6, md: 6 }} key={index}>
                                         <Card variant="outlined" sx={{ borderRadius: 2, p: 2 }}>
                                             <Skeleton variant="text" width="70%" height={24} />
                                             <Skeleton variant="text" width="50%" height={20} sx={{ mt: 1 }} />
@@ -572,11 +776,11 @@ const WalletPage = () => {
                         ) : data_fiat_accounts && data_fiat_accounts.fiatWallets && data_fiat_accounts.fiatWallets.length > 0 ? (
                             <Grid container spacing={2}>
                                 {data_fiat_accounts?.fiatWallets?.map((account: any) => (
-                                    <Grid size={{ xs: 12, md: 6 }} key={account.id}>
+                                    <Grid size={{ xs: 6, md: 6 }} key={account.id}>
                                         <Card variant="outlined" sx={{ borderRadius: 2, boxShadow: 0 }}>
                                             <CardContent sx={{ p: 2 }}>
                                                 <Typography variant="body1" fontWeight={500} sx={{ wordBreak: "break-all", mb: 1 }}>
-                                                    {account.Currency.code} Account
+                                                    {account.Currency.code}
                                                 </Typography>
                                                 <Typography variant="caption" color="text.secondary">
                                                     Balance: {account.balance}
@@ -597,7 +801,7 @@ const WalletPage = () => {
                 {/* Asset Distribution Chart */}
                 <Grid size={{ xs: 12, md: 6 }}>
                     <Paper elevation={3} sx={{ p: 3, borderRadius: 2, height: 450 }}>
-                        <Typography variant="h6" fontWeight="bold" gutterBottom sx={{color:"#ffd700"}}>
+                        <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ color: "#ffd700" }}>
                             Asset Distribution
                         </Typography>
                         {loading_crypto_balances ? (
@@ -646,7 +850,7 @@ const WalletPage = () => {
                 {/* Transaction History */}
                 <Grid size={{ xs: 12, md: 6 }}>
                     <Paper elevation={3} sx={{ p: 3, borderRadius: 2, height: 450 }}>
-                        <Typography variant="h6" fontWeight="bold" gutterBottom sx={{color:"#ffd700"}}>
+                        <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ color: "#ffd700" }}>
                             Transaction History
                         </Typography>
                         <TabContext value={selectedTab}>
@@ -736,19 +940,19 @@ const WalletPage = () => {
             {/* Deposit/Withdraw Modal */}
             <Dialog open={modalOpen} onClose={handleCloseModal} maxWidth="sm" fullWidth>
                 <DialogTitle sx={{ pb: 1 }}>
-                    {modalType} {selectedAsset.type === "fiat" ? "Fiat" : "Crypto"} Asset
+                    {modalType} {selectedAsset?.type === "fiat" ? "Fiat" : "Crypto"} Asset
                 </DialogTitle>
                 <DialogContent dividers>
                     <FormControl fullWidth sx={{ mb: 3 }}>
                         <InputLabel id="asset-select-label">Asset</InputLabel>
                         <Select
                             labelId="asset-select-label"
-                            value={`${selectedAsset.type}:${selectedAsset.currency}`}
+                            value={`${selectedAsset?.type}:${selectedAsset?.currency}`}
                             label="Asset"
                             onChange={handleAssetChange}
                         >
                             {assetOptions
-                                .filter((a: any) => a.type === selectedAsset.type)
+                                .filter((a: any) => a.type === selectedAsset?.type)
                                 .map((a: any) => (
                                     <MenuItem key={a.currency} value={`${a.type}:${a.currency}`}>
                                         {a.currency}
@@ -765,7 +969,7 @@ const WalletPage = () => {
                         inputProps={{ min: 0, step: "any" }}
                         InputProps={{
                             endAdornment: (
-                                <InputAdornment position="end">{selectedAsset.currency}</InputAdornment>
+                                <InputAdornment position="end">{selectedAsset?.currency}</InputAdornment>
                             ),
                         }}
                     />

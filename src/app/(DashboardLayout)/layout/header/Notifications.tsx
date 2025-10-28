@@ -1,17 +1,19 @@
 
 import React, { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
-import { MARK_NOTIFICATION_AS_READ } from '@/graphql/notifications/mutations';
-import { IconButton, Badge, Menu, MenuItem, Typography, CircularProgress, Box } from '@mui/material';
-import { IconBellRinging } from '@tabler/icons-react';
+import { MARK_NOTIFICATION_AS_READ, MARK_ALL_NOTIFICATIONS_AS_READ } from '@/graphql/notifications/mutations';
+import { IconButton, Badge, Menu, MenuItem, Typography, CircularProgress, Box, Divider, Avatar, Button } from '@mui/material';
+import { IconBellRinging, IconCircleCheck } from '@tabler/icons-react';
 import { GET_MY_NOTIFICATIONS } from '@/graphql/notifications/queries';
 import useAuthStore from '@/stores/useAuthStore';
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 
 const Notifications = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { user } = useAuthStore();
 
   const [markAsRead] = useMutation(MARK_NOTIFICATION_AS_READ);
+  const [markAllAsRead] = useMutation(MARK_ALL_NOTIFICATIONS_AS_READ);
 
   const handleNotificationClick = (notificationId: string) => {
     markAsRead({
@@ -33,7 +35,7 @@ const Notifications = () => {
     });
   };
 
-  const { data, loading, error } = useQuery(GET_MY_NOTIFICATIONS, {
+  const { data, loading, error, refetch } = useQuery(GET_MY_NOTIFICATIONS, {
     variables: {
       filter: {
         limit: 10,
@@ -42,6 +44,15 @@ const Notifications = () => {
     },
     skip: !user,
   });
+
+  const handleMarkAllAsRead = async () => {
+    try {
+      await markAllAsRead();
+      refetch(); // Refetch notifications to update UI
+    } catch (err) {
+      console.error('Error marking all notifications as read:', err);
+    }
+  };
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -72,14 +83,25 @@ const Notifications = () => {
         keepMounted
         open={Boolean(anchorEl)}
         onClose={() => setAnchorEl(null)}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+        transformOrigin={{ horizontal: 'left', vertical: 'top' }}
         sx={{
           '& .MuiMenu-paper': {
             width: '360px',
+            borderRadius: 2,
+            boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
           },
         }}
       >
+        <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Typography variant="h6" fontWeight="bold">Notifications</Typography>
+          {notifications.length > 0 && (
+            <Button size="small" onClick={handleMarkAllAsRead} disabled={loading}>
+              Mark All As Read
+            </Button>
+          )}
+        </Box>
+        <Divider />
         {loading && (
           <Box display="flex" justifyContent="center" my={2}>
             <CircularProgress />
@@ -91,24 +113,53 @@ const Notifications = () => {
           </Typography>
         )}
         {!loading && !error && notifications.length === 0 && (
-          <Typography variant="body2" sx={{ p: 2 }}>
-            No new notifications.
-          </Typography>
+          <Box sx={{ p: 2, textAlign: 'center', color: 'text.secondary' }}>
+            <IconCircleCheck size={48} style={{ marginBottom: '8px' }} />
+            <Typography variant="body2">
+              No new notifications. You're all caught up!
+            </Typography>
+          </Box>
         )}
+        <Box sx={{ maxHeight: '400px', overflowY: 'auto' }}>
         {notifications.map((notification: any) => (
           <MenuItem
             key={notification.id}
             onClick={() => handleNotificationClick(notification.id)}
             sx={{
-              backgroundColor: notification.readAt ? '#f5f5f5' : 'inherit',
+              backgroundColor: notification.readAt ? '#fbf82e' : '#474948ff',
+              borderBottom: '1px solid #eee',
+              '&:last-of-type': { borderBottom: 'none' },
+              py: 1.5,
+              px: 2,
             }}
           >
-            <Box>
-              <Typography variant="subtitle1">{notification.title}</Typography>
-              <Typography variant="body2">{notification.message}</Typography>
+            <Avatar sx={{ bgcolor: '#ffd700', mr: 2 }}>
+              <NotificationsNoneIcon />
+            </Avatar>
+            <Box sx={{ flexGrow: 1, overflow: 'hidden' }}>
+              <Typography
+                variant="subtitle1"
+                fontWeight={notification.readAt ? 'normal' : 'bold'}
+                noWrap
+                sx={{ textOverflow: 'ellipsis' }}
+              >
+                {notification.title}
+              </Typography>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                noWrap
+                sx={{ textOverflow: 'ellipsis' }}
+              >
+                {notification.message}
+              </Typography>
+              <Typography variant="caption" color="text.disabled">
+                {new Date(notification.createdAt).toLocaleString()}
+              </Typography>
             </Box>
           </MenuItem>
         ))}
+        </Box>
       </Menu>
     </>
   );

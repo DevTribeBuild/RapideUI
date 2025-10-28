@@ -1,5 +1,6 @@
 'use client';
 import React from "react";
+import DeliveryTracker from "@/components/DeliveryTracker";
 import {
   Grid,
   Typography,
@@ -20,21 +21,7 @@ import { GET_ORDER_QUERY } from "@/graphql/order/queries";
 import { CONFIRM_ORDER_BY_USER } from "@/graphql/order/mutations";
 import toast from 'react-hot-toast';
 
-const RiderMap = ({ lat, lng }: { lat: number; lng: number }) => (
-  <Box sx={{ width: "100%", height: 300, mt: 2, borderRadius: 2, overflow: "hidden" }}>
-    <iframe
-      width="100%"
-      height="100%"
-      frameBorder="0"
-      style={{ border: 0 }}
-      src={`https://www.google.com/maps?q=${lat},${lng}&z=15&output=embed`}
-      allowFullScreen
-      aria-hidden="false"
-      tabIndex={0}
-      title="Rider Location"
-    />
-  </Box>
-);
+
 
 const TrackingPage = () => {
   const { orderId } = useParams();
@@ -240,7 +227,7 @@ const TrackingPage = () => {
                   boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
                 }}
               >
-                <RiderMap lat={order.deliveryLat} lng={order.deliveryLng} />
+                <DeliveryTracker orderId={orderId as string} />
               </Box>
 
               <Box sx={{ textAlign: "center", mt: 4 }}>

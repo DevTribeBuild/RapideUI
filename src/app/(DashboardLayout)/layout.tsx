@@ -3,6 +3,8 @@ import { styled, Container, Box, useTheme } from "@mui/material";
 import React, { useState } from "react";
 import Header from "@/app/(DashboardLayout)/layout/header/Header";
 import Sidebar from "@/app/(DashboardLayout)/layout/sidebar/Sidebar";
+import BottomAppBar from "@/app/(DashboardLayout)/layout/footer/BottomAppBar";
+import useAuthStore from "@/stores/useAuthStore";
 
 
 const MainWrapper = styled("div")(() => ({
@@ -34,43 +36,30 @@ export default function RootLayout({
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const theme = useTheme();
+  const { user } = useAuthStore();
+  console.log("User in Layout:", user);
 
   return (
     <MainWrapper className="mainwrapper">
-      {/* ------------------------------------------- */}
-      {/* Sidebar */}
-      {/* ------------------------------------------- */}
-      <Sidebar
-        isSidebarOpen={isSidebarOpen}
-        isMobileSidebarOpen={isMobileSidebarOpen}
-        onSidebarClose={() => setMobileSidebarOpen(false)}
-      />
-      {/* ------------------------------------------- */}
-      {/* Main Wrapper */}
-      {/* ------------------------------------------- */}
-      <PageWrapper className="page-wrapper">
-        {/* ------------------------------------------- */}
-        {/* Header */}
-        {/* ------------------------------------------- */}
+      {user?.userType !== 'USER' && (
+        <Sidebar
+          isSidebarOpen={isSidebarOpen}
+          isMobileSidebarOpen={isMobileSidebarOpen}
+          onSidebarClose={() => setMobileSidebarOpen(false)}
+        />
+      )}
+      <PageWrapper className="page-wrapper" sx={{ paddingBottom: user?.userType === 'USER' ? '60px' : '0' }}>
         <Header toggleMobileSidebar={() => setMobileSidebarOpen(true)} />
-        {/* ------------------------------------------- */}
-        {/* PageContent */}
-        {/* ------------------------------------------- */}
         <Box
           sx={{
             paddingTop: "20px",
           }}
         >
-          {/* ------------------------------------------- */}
-          {/* Page Route */}
-          {/* ------------------------------------------- */}
           <Box sx={{ minHeight: "calc(100vh - 170px)" }}>
           {children}
           </Box>
-          {/* ------------------------------------------- */}
-          {/* End Page */}
-          {/* ------------------------------------------- */}
         </Box>
+        {user?.userType === 'USER' && <BottomAppBar />}
       </PageWrapper>
     </MainWrapper>
   );

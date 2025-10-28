@@ -43,7 +43,20 @@ type SendTokenMutationVariables = {
   };
 };
 
-const SendTokenDialog = ({
+interface Asset {
+  currency: string;
+  type: string;
+  icon: string;
+}
+
+interface SendTokenDialogProps {
+  open: boolean;
+  onClose: () => void;
+  assetOptions: Asset[];
+  onSend: () => void;
+}
+
+const SendTokenDialog: React.FC<SendTokenDialogProps> = ({
   open,
   onClose,
   assetOptions = [],

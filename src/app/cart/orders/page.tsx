@@ -84,7 +84,7 @@ const Orders = () => {
 
     return (
         <PageContainer title="My Orders" description="View your past orders">
-  <Container maxWidth="lg" sx={{ mt: 6, mb: 6 }}>
+  <Box sx={{ mt: 6, mb: 6 }}>
     {/* Page Header */}
     <Box
       sx={{
@@ -126,7 +126,7 @@ const Orders = () => {
         </Typography>
       </Box>
     ) : (
-      <Grid spacing={3}>
+      <Grid container spacing={2}>
         {orders.map((order) => (
           <Grid size={{xs:12, sm:6, md:4}} key={order.id} sx={{ mb: 3 }}>
             <Card
@@ -157,7 +157,7 @@ const Orders = () => {
                 <Typography
                   variant="subtitle1"
                   fontWeight={600}
-                  color="text.primary"
+                  sx={{ color:"#ffd700" }}
                 >
                   Order #{order.id}
                 </Typography>
@@ -229,7 +229,7 @@ const Orders = () => {
         ))}
       </Grid>
     )}
-  </Container>
+  </Box>
 </PageContainer>
 
     );

@@ -61,3 +61,16 @@ export const FIND_ALL_USERS_QUERY = gql`
      }
    }
  `;
+
+export const SEARCH_USERS = gql`
+  query SearchUsers($query: String!) {
+    searchUsers(query: $query) {
+      id
+      firstName
+      lastName
+      username
+      phone
+      email
+    }
+  }
+`;

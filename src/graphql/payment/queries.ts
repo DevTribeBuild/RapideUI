@@ -29,15 +29,16 @@ export const GET_PAYMENT_QUERY = gql`
  `;
  
  export const ADMIN_PAYMENTS_QUERY = gql`
-   query AdminPayments($userId: String, $method: String) {
-     adminPayments(userId: $userId, method: $method) {
-       id
-       orderId
-       amount
-       method
-       status
-       createdAt
-       updatedAt
-     }
-   }
- `;
+  query AdminPayments($method: String, $userId: String) {
+    adminPayments(method: $method, userId: $userId) {
+      amount
+      createdAt
+      id
+      method
+      orderId
+      status
+      transactionHash
+      updatedAt
+    }
+  }
+`;
