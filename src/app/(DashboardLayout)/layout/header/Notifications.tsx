@@ -6,6 +6,7 @@ import { IconButton, Badge, Menu, MenuItem, Typography, CircularProgress, Box, D
 import { IconBellRinging, IconCircleCheck } from '@tabler/icons-react';
 import { GET_MY_NOTIFICATIONS } from '@/graphql/notifications/queries';
 import useAuthStore from '@/stores/useAuthStore';
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 
 const Notifications = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -125,15 +126,15 @@ const Notifications = () => {
             key={notification.id}
             onClick={() => handleNotificationClick(notification.id)}
             sx={{
-              // backgroundColor: notification.readAt ? '#f5f5f5' : '#e3f2fd',
+              backgroundColor: notification.readAt ? '#fbf82e' : '#474948ff',
               borderBottom: '1px solid #eee',
               '&:last-of-type': { borderBottom: 'none' },
               py: 1.5,
               px: 2,
             }}
           >
-            <Avatar sx={{ bgcolor: 'primary.light', mr: 2 }}>
-              <IconBellRinging size={20} />
+            <Avatar sx={{ bgcolor: '#ffd700', mr: 2 }}>
+              <NotificationsNoneIcon />
             </Avatar>
             <Box sx={{ flexGrow: 1, overflow: 'hidden' }}>
               <Typography

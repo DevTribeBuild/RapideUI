@@ -67,10 +67,10 @@ interface SwapTokenDialogProps {
 // -----------------------------------------------------------------------------
 
 const YellowButton = styled(Button)(({ theme }) => ({
-  backgroundColor: '#F59E0B', // Tailwind yellow-500
-  color: '#ffffff',
+  backgroundColor: '#ffd700', // Tailwind yellow-500
+  color: '#000',
   '&:hover': {
-    backgroundColor: '#D97706', // Tailwind yellow-600
+    backgroundColor: '#ffd700', // Tailwind yellow-600
   },
   '&.Mui-disabled': {
     backgroundColor: '#FCD34D', // Lighter yellow for disabled
@@ -98,7 +98,7 @@ const SwapConfirmationMessage: React.FC<SwapConfirmationMessageProps> = ({ open,
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
       <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}>
-        <Typography variant="h6" component="div" sx={{ fontWeight: 'bold', color: '#1F2937' }}>
+        <Typography variant="h6" component="div" sx={{ fontWeight: 'bold', color: '#ffd700' }}>
           Swap Confirmed!
         </Typography>
         <Button onClick={onClose} sx={{ minWidth: 0, padding: '4px' }}>
@@ -108,11 +108,11 @@ const SwapConfirmationMessage: React.FC<SwapConfirmationMessageProps> = ({ open,
         </Button>
       </DialogTitle>
       <DialogContent dividers sx={{ p: 3 }}>
-        <Typography variant="body1" sx={{ mb: 2, color: '#4B5563' }}>
+        <Typography variant="body1" sx={{ mb: 2, color: '#fff' }}>
           Your swap has been initiated successfully.
         </Typography>
         {swapDetails && (
-          <Box sx={{ fontSize: '0.875rem', color: '#4B5563' }}>
+          <Box sx={{ fontSize: '0.875rem', color: '#fff' }}>
             <Typography variant="body2" sx={{ mb: 1 }}>
               <Typography component="span" sx={{ fontWeight: 'medium' }}>From:</Typography>{' '}
               {swapDetails.inputAmount} {swapDetails.inputToken?.currency}
@@ -123,7 +123,7 @@ const SwapConfirmationMessage: React.FC<SwapConfirmationMessageProps> = ({ open,
             </Typography>
           </Box>
         )}
-        <Typography variant="body2" sx={{ mt: 4, color: '#6B7280' }}>
+        <Typography variant="body2" sx={{ mt: 4, color: '#ffd700' }}>
           Please check your wallet for transaction status.
         </Typography>
       </DialogContent>
@@ -219,10 +219,10 @@ const SwapTokenDialog: React.FC<SwapTokenDialogProps> = ({ open, onClose, assetO
               }}
               sx={{
                 '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                  borderColor: '#F59E0B', // yellow-500
+                  borderColor: '#ffd700', // yellow-500
                 },
                 '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: '#D97706', // yellow-600
+                  borderColor: '#ffd700', // yellow-600
                 },
               }}
             >
@@ -327,7 +327,7 @@ const SwapTokenDialog: React.FC<SwapTokenDialogProps> = ({ open, onClose, assetO
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
       <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}>
-        <Typography variant="h6" component="div" sx={{ fontWeight: 'bold', color: '#1F2937' }}>
+        <Typography variant="h6" component="div" sx={{ fontWeight: 'bold', color: '#ffd700' }}>
           Swap Tokens
         </Typography>
         <Button onClick={handleClose} sx={{ minWidth: 0, padding: '4px' }}>
@@ -344,12 +344,12 @@ const SwapTokenDialog: React.FC<SwapTokenDialogProps> = ({ open, onClose, assetO
               <StepLabel
                 StepIconProps={{
                   sx: {
-                    color: activeStep >= index ? '#F59E0B' : '#D1D5DB', // yellow-500 / gray-300
+                    color: activeStep >= index ? '#ffd700' : '#D1D5DB', // yellow-500 / gray-300
                     '&.Mui-active': {
-                      color: '#D97706', // yellow-600 for active
+                      color: '#ffd700', // yellow-600 for active
                     },
                     '&.Mui-completed': {
-                      color: '#F59E0B', // yellow-500 for completed
+                      color: '#ffd700', // yellow-500 for completed
                     },
                   },
                 }}
@@ -359,7 +359,7 @@ const SwapTokenDialog: React.FC<SwapTokenDialogProps> = ({ open, onClose, assetO
                     mt: 1,
                     fontSize: '0.875rem',
                     textAlign: 'center',
-                    color: activeStep >= index ? '#B45309' : '#6B7280', // yellow-700 / gray-500
+                    color: activeStep >= index ? '#ffd700' : '#6B7280', // yellow-700 / gray-500
                     fontWeight: activeStep >= index ? 'medium' : 'normal',
                   }}
                 >
@@ -423,21 +423,17 @@ const SwapTokenDialog: React.FC<SwapTokenDialogProps> = ({ open, onClose, assetO
 };
 
 // -----------------------------------------------------------------------------
-// Main App Component
+// Main SwapToken Component
 // -----------------------------------------------------------------------------
 
-const App: React.FC = () => {
+interface SwapTokenProps {
+  assetOptions: Asset[];
+}
+
+const SwapToken: React.FC<SwapTokenProps> = ({ assetOptions }) => {
   const [isSwapDialogOpen, setIsSwapDialogOpen] = useState<boolean>(false);
   const [showConfirmationMessage, setShowConfirmationMessage] = useState<boolean>(false);
   const [lastSwapDetails, setLastSwapDetails] = useState<SwapDetails | null>(null);
-
-  // Dummy asset options for demonstration
-  const assetOptions: Asset[] = [
-    { currency: 'ETH', type: 'ERC20', icon: 'Ξ' },
-    { currency: 'USDT', type: 'ERC20', icon: '$' },
-    { currency: 'DAI', type: 'ERC20', icon: 'Ð' },
-    { currency: 'BNB', type: 'BEP20', icon: 'BNB' },
-  ];
 
   // Handler to open the swap dialog
   const handleOpenSwapDialog = () => {
@@ -469,8 +465,6 @@ const App: React.FC = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        mr: 1,
-        mb: 1,
         fontFamily: 'Inter, sans-serif',
       }}
     >
@@ -526,4 +520,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default SwapToken;

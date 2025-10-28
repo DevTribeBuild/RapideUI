@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Grid,
     Card,
@@ -147,12 +147,7 @@ const wallet = {
 
 const COLORS = ["#1976d2", "#43a047", "#fbc02d", "#ff7043"];
 
-const assetOptions: any = [
-    ...wallet.fiat.map((f) => ({ type: "fiat", currency: f.currency })),
-    ...wallet.crypto.map((c) => ({ type: "crypto", currency: c.currency })),
-];
-
-const WalletPage = () => {
+    const WalletPage = () => {
     const theme = useTheme();
     let isTest: boolean = false;
     const [sendDialogOpen, setSendDialogOpen] = useState(false);
@@ -160,7 +155,6 @@ const WalletPage = () => {
     const userDetails: any = useAppStore((state) => state.userDetails);
     const [modalOpen, setModalOpen] = useState(false);
     const [modalType, setModalType] = useState<"Deposit" | "Withdraw">("Deposit");
-    const [selectedAsset, setSelectedAsset] = useState(assetOptions[0]);
     const [amount, setAmount] = useState("");
 
     const [createWalletDialogOpen, setCreateWalletDialogOpen] = useState(false);
@@ -193,6 +187,20 @@ const WalletPage = () => {
     const { data: data_fiat_accounts, loading: loading_fiat_accounts, refetch: refetchFiatAccounts } = useQuery<FiatWalletQuery>(FIAT_WALLET_ACCOUNTS, {
         variables: { isTest },
     });
+
+    const assetOptions: any[] = [
+        ...(data_fiat_accounts?.fiatWallets.map((f) => ({ type: "fiat", currency: f.Currency.code, icon: '💵' })) || []),
+        ...(data_crypto_balances?.balances.map((c) => ({ type: "crypto", currency: c.symbol, icon: '🪙' })) || []),
+    ];
+
+                const [selectedAsset, setSelectedAsset] = useState<any>(null);
+
+    useEffect(() => {
+        if (assetOptions.length > 0) {
+            setSelectedAsset(assetOptions[0]);
+            console.log(selectedAsset, "selectedAsset");
+        }
+    }, []);
 
 
 
@@ -242,13 +250,13 @@ const WalletPage = () => {
     const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => setAmount(e.target.value);
 
     const handleSubmit = async () => {
-        if (modalType === "Deposit" && selectedAsset.type === "fiat") {
+        if (modalType === "Deposit" && selectedAsset?.type === "fiat") {
             try {
                 const response = await depositFiat({
                     variables: {
                         input: {
                             amount: parseFloat(amount),
-                            currencyCode: selectedAsset.currency,
+                            currencyCode: selectedAsset?.currency,
                             paymentMethod: "Mpesa",
                         },
                     },
@@ -644,7 +652,7 @@ const WalletPage = () => {
                                         Buy/Sell
                                     </Typography>
                                 </Box>
-                                <SwapToken />
+                                                                <SwapToken assetOptions={assetOptions} />
                             </Box>
 
                             {/* Dialogs */}
@@ -675,7 +683,7 @@ const WalletPage = () => {
                     <Paper elevation={3} sx={{ p: 3, borderRadius: 2, minHeight: 250, overflow: "hidden" }}>
                         <Box sx={{ mb:4}}>
                         <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ color: "#ffd700" }}>
-                            Crypto Wallet Accounts **
+                            Crypto Wallet Accounts
                         </Typography>
                         </Box>
                         <Divider/>
@@ -932,19 +940,19 @@ const WalletPage = () => {
             {/* Deposit/Withdraw Modal */}
             <Dialog open={modalOpen} onClose={handleCloseModal} maxWidth="sm" fullWidth>
                 <DialogTitle sx={{ pb: 1 }}>
-                    {modalType} {selectedAsset.type === "fiat" ? "Fiat" : "Crypto"} Asset
+                    {modalType} {selectedAsset?.type === "fiat" ? "Fiat" : "Crypto"} Asset
                 </DialogTitle>
                 <DialogContent dividers>
                     <FormControl fullWidth sx={{ mb: 3 }}>
                         <InputLabel id="asset-select-label">Asset</InputLabel>
                         <Select
                             labelId="asset-select-label"
-                            value={`${selectedAsset.type}:${selectedAsset.currency}`}
+                            value={`${selectedAsset?.type}:${selectedAsset?.currency}`}
                             label="Asset"
                             onChange={handleAssetChange}
                         >
                             {assetOptions
-                                .filter((a: any) => a.type === selectedAsset.type)
+                                .filter((a: any) => a.type === selectedAsset?.type)
                                 .map((a: any) => (
                                     <MenuItem key={a.currency} value={`${a.type}:${a.currency}`}>
                                         {a.currency}
@@ -961,7 +969,7 @@ const WalletPage = () => {
                         inputProps={{ min: 0, step: "any" }}
                         InputProps={{
                             endAdornment: (
-                                <InputAdornment position="end">{selectedAsset.currency}</InputAdornment>
+                                <InputAdornment position="end">{selectedAsset?.currency}</InputAdornment>
                             ),
                         }}
                     />
