@@ -113,8 +113,8 @@ const CartMenu = () => {
             </Typography>
           </Box>
         )}
-        {cartItems.map((item: any) => (
-          <React.Fragment key={`${item?.id}-${item?.product?.id}`}>
+        {cartItems.map((item: any, index: number) => (
+          <Box key={`${item?.id}-${item?.product?.id}`}>
             <MenuItem sx={{ py: 1.5, px: 2, display: 'flex', alignItems: 'center' }}>
               <Avatar src={item?.product?.imageUrl} alt={item?.product?.name} sx={{ mr: 2 }} />
               <Box sx={{ flexGrow: 1, overflow: 'hidden' }}>
@@ -139,8 +139,8 @@ const CartMenu = () => {
                 </IconButton>
               </Box>
             </MenuItem>
-            <Divider />
-          </React.Fragment>
+            {index < cartItems.length - 1 && <Divider />}
+          </Box>
         ))}
         {cartItems.length > 0 && (
           <Box sx={{ p: 2 }}>

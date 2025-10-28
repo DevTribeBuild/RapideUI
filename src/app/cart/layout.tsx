@@ -3,6 +3,8 @@ import { styled, Container, Box } from "@mui/material";
 import React, { useState } from "react";
 import Header from "@/app/(DashboardLayout)/layout/header/Header";
 import Sidebar from "@/app/(DashboardLayout)/layout/sidebar/Sidebar";
+import BottomAppBar from "@/app/(DashboardLayout)/layout/footer/BottomAppBar";
+import useAuthStore from "@/stores/useAuthStore";
 
 
 const MainWrapper = styled("div")(() => ({
@@ -33,16 +35,19 @@ export default function RootLayout({
 }) {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const { user } = useAuthStore();
   return (
     <MainWrapper className="mainwrapper">
       {/* ------------------------------------------- */}
       {/* Sidebar */}
       {/* ------------------------------------------- */}
-      <Sidebar
-        isSidebarOpen={isSidebarOpen}
-        isMobileSidebarOpen={isMobileSidebarOpen}
-        onSidebarClose={() => setMobileSidebarOpen(false)}
-      />
+      {user?.userType !== 'USER' && (
+        <Sidebar
+          isSidebarOpen={isSidebarOpen}
+          isMobileSidebarOpen={isMobileSidebarOpen}
+          onSidebarClose={() => setMobileSidebarOpen(false)}
+        />
+      )}
       {/* ------------------------------------------- */}
       {/* Main Wrapper */}
       {/* ------------------------------------------- */}
@@ -68,6 +73,7 @@ export default function RootLayout({
           {/* End Page */}
           {/* ------------------------------------------- */}
         </Container>
+        {user?.userType === 'USER' && <BottomAppBar />}
       </PageWrapper>
     </MainWrapper>
   );

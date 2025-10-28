@@ -108,7 +108,7 @@ const CartPage: React.FC = () => {
 
     return (
         <PageContainer title="Dashboard" description="this is Dashboard">
-            <Container maxWidth="lg" sx={{ mt: 4 }} style={{ width: '100%' }}>
+            <Box sx={{ mt: 4 }} style={{ width: '100%' }}>
                 <Typography variant="h4" gutterBottom>
                     Your Cart
                 </Typography>
@@ -131,9 +131,10 @@ const CartPage: React.FC = () => {
                                         key={item.product.id}
                                         sx={{
                                             display: 'flex',
+                                            flexWrap: 'wrap',
                                             alignItems: 'flex-start',
                                             justifyContent: 'space-between',
-                                            p: 2.5,
+                                            p: 2,
                                             mb: 2,
                                             borderRadius: 3,
                                             boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
@@ -432,7 +433,7 @@ const CartPage: React.FC = () => {
                         </Card>
                     </Paper>
                 </Dialog>
-            </Container>
+            </Box>
         </PageContainer>
     );
 };

@@ -347,12 +347,13 @@ const WalletPage = () => {
                         <CardContent
                             sx={{
                                 display: "flex",
-                                flexDirection: {xs:"row", md:"row"},
+                                flexWrap: "wrap",
+                                flexDirection: {xs:"column", md:"row"},
                                 gap: 2,
                                 p: { xs: 2, md: 3 },
                             }}
                         >
-                            <Box sx={{ width:"50%"}}>
+                            <Box sx={{ width:{ md:"45%", xs:"100%"}}}>
                                 {loading_fiat_accounts ? (
                                     <Skeleton height={30} sx={{ mt: 0.5 }} />
                                 ) : (
@@ -420,7 +421,7 @@ const WalletPage = () => {
                                     justifyContent: { xs: "left", sm: "flex-start", md:"right" },
                                     flexWrap: "wrap",
                                     gap: { xs: 4, sm: 3 },
-                                    width:"50%",
+                                    width:{md:"50%", xs:"100%"},
                                     justifyItems:"right",
                                     alignItems:"center"
                                 }}
@@ -504,12 +505,13 @@ const WalletPage = () => {
                         <CardContent
                             sx={{
                                 display: "flex",
+                                flexWrap: "wrap",
                                 flexDirection: {xs:"row", md:"row"},
                                 gap: 2,
                                 p: { xs: 2, md: 3 },
                             }}
                         >
-                            <Box sx={{ width:"50%"}}>
+                            <Box sx={{ width:{md:"48%", xs:"100%"}}}>
                                 {loading_crypto_balance ? (
                                     <Skeleton width="60%" height={30} sx={{ mt: 0.5 }} />
                                 ) : (
@@ -578,7 +580,7 @@ const WalletPage = () => {
                                     justifyContent: { xs: "left", sm: "flex-start", md:"right" },
                                     flexWrap: "wrap",
                                     gap: { xs: 4, sm: 3 },
-                                    width:"50%",
+                                    width:{md:"48%", xs:"100%"},
                                     justifyItems:"right",
                                     alignItems:"center"
                                 }}
@@ -669,14 +671,16 @@ const WalletPage = () => {
 
 
                 {/* Crypto Wallet Accounts */}
-                <Grid size={{ xs: 12 }}>
+                <Grid size={{ xs: 12, md: 6 }}>
                     <Paper elevation={3} sx={{ p: 3, borderRadius: 2, minHeight: 250, overflow: "hidden" }}>
+                        <Box sx={{ mb:4}}>
                         <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ color: "#ffd700" }}>
-                            Crypto Wallet Accounts
+                            Crypto Wallet Accounts **
                         </Typography>
-                        <Divider sx={{ mb: 2 }} />
+                        </Box>
+                        <Divider/>
                         {false ? (
-                            <Grid container spacing={2}>
+                            <Grid container spacing={2} sx={{ mt:2}}>
                                 {Array.from({ length: 2 }).map((_, index) => (
                                     <Grid size={{ xs: 12, md: 6 }} key={index}>
                                         <Skeleton variant="rectangular" height={100} sx={{ borderRadius: 2 }} />
@@ -684,7 +688,7 @@ const WalletPage = () => {
                                 ))}
                             </Grid>
                         ) : true ? (
-                            <Grid container spacing={2}>
+                            <Grid container spacing={2} sx={{ mt:2}}>
                                 {loading_crypto_balances
                                     ? Array.from({ length: 3 }).map((_, idx) => (
                                         <Grid size={{ xs: 12, md: 6 }} key={idx}>
@@ -735,26 +739,25 @@ const WalletPage = () => {
                 </Grid>
 
                 {/* Fiat Wallet Accounts */}
-                <Grid size={{ xs: 12 }}>
+                <Grid size={{ xs: 12, md:6 }}>
                     <Paper elevation={3} sx={{ p: 3, borderRadius: 2, minHeight: 250, overflow: "hidden" }}>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                             <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ mb: 0, color: "#ffd700" }}>
-                                Fiat Wallet Accounts
+                                Fiat Wallets
                             </Typography>
                             <Button
                                 variant="contained"
                                 size="small"
                                 onClick={() => setCreateWalletDialogOpen(true)}
                             >
-                                Create New Wallet
+                                Create Wallet
                             </Button>
                         </Box>
                         <Divider sx={{ mb: 2 }} />
-
                         {loading_fiat_accounts ? (
                             <Grid container spacing={2}>
                                 {Array.from({ length: 2 }).map((_, index) => (
-                                    <Grid size={{ xs: 12, md: 6 }} key={index}>
+                                    <Grid size={{ xs: 6, md: 6 }} key={index}>
                                         <Card variant="outlined" sx={{ borderRadius: 2, p: 2 }}>
                                             <Skeleton variant="text" width="70%" height={24} />
                                             <Skeleton variant="text" width="50%" height={20} sx={{ mt: 1 }} />
@@ -765,11 +768,11 @@ const WalletPage = () => {
                         ) : data_fiat_accounts && data_fiat_accounts.fiatWallets && data_fiat_accounts.fiatWallets.length > 0 ? (
                             <Grid container spacing={2}>
                                 {data_fiat_accounts?.fiatWallets?.map((account: any) => (
-                                    <Grid size={{ xs: 12, md: 6 }} key={account.id}>
+                                    <Grid size={{ xs: 6, md: 6 }} key={account.id}>
                                         <Card variant="outlined" sx={{ borderRadius: 2, boxShadow: 0 }}>
                                             <CardContent sx={{ p: 2 }}>
                                                 <Typography variant="body1" fontWeight={500} sx={{ wordBreak: "break-all", mb: 1 }}>
-                                                    {account.Currency.code} Account
+                                                    {account.Currency.code}
                                                 </Typography>
                                                 <Typography variant="caption" color="text.secondary">
                                                     Balance: {account.balance}
