@@ -6,11 +6,12 @@ import { Card, CardContent, CircularProgress, Typography, Grid, Box, Chip, Divid
 import { PaymentOutlined } from '@mui/icons-material';
 
 const PaymentsPage = () => {
+    const theme = useTheme();
     const { data, loading, error } = useQuery(ADMIN_PAYMENTS_QUERY, {
         variables: {
             method: null,
-            userId: null
-        }
+            userId: null,
+        },
     });
 
     if (loading) {
@@ -22,8 +23,6 @@ const PaymentsPage = () => {
     }
 
     const payments = data?.adminPayments || [];
-
-    const theme = useTheme();
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {

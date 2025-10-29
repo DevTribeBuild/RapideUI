@@ -116,7 +116,7 @@ const Notifications = () => {
           <Box sx={{ p: 2, textAlign: 'center', color: 'text.secondary' }}>
             <IconCircleCheck size={48} style={{ marginBottom: '8px' }} />
             <Typography variant="body2">
-              No new notifications. You're all caught up!
+              No new notifications. You&apos;re all caught up!
             </Typography>
           </Box>
         )}
