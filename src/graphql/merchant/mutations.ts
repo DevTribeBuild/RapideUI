@@ -163,12 +163,45 @@ export const DELETE_MERCHANT_MUTATION = gql`
   }
 `;
 
-export const VERIFY_MERCHANT_MUTATION = gql`
-  mutation VerifyMerchant($id: ID!, $status: String!) {
-    verifyMerchant(id: $id, status: $status) {
-      id
+export const REVIEW_MERCHANT_DETAILS_MUTATION = gql`
+  mutation ReviewMerchantDetails($input: ReviewMerchantDetailsInput!, $userId: String!) {
+    reviewMerchantDetails(input: $input, userId: $userId) {
+      bankAccountNumber
+      bankConfirmation
+      bankName
       businessName
+      certificateOfIncorp
+      cr12Form
+      createdAt
+      foodHandlerCert
+      healthCert
+      id
+      kraPinCert
+      menuFile
+      menuImages
+      mpesaPaybill
+      mpesaTill
+      ownerKraPinCert
       status
-    }
-  }
-`;
+      tradingLicense
+      updatedAt
+      userId
+      verifiedAt
+      }
+      }
+      `;
+      
+      // user {
+      //   createdAt
+      //   currencyId
+      //   email
+      //   firstName
+      //   id
+      //   imageUrl
+      //   lastName
+      //   phone
+      //   updatedAt
+      //   userType
+      //   username
+      //   walletAddress
+      // }

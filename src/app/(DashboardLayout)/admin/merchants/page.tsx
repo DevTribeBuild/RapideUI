@@ -27,7 +27,7 @@ import {
   CREATE_MERCHANT_MUTATION,
   UPDATE_MERCHANT_MUTATION,
   DELETE_MERCHANT_MUTATION,
-  VERIFY_MERCHANT_MUTATION,
+  REVIEW_MERCHANT_DETAILS_MUTATION, // Changed to REVIEW_MERCHANT_DETAILS_MUTATION
 } from '@/graphql/merchant/mutations';
 
 interface Merchant {
@@ -78,9 +78,12 @@ type DeleteMerchantMutationVariables = {
   id: string;
 };
 
-type VerifyMerchantMutationVariables = {
-  id: string;
-  status: string; // Now explicitly APPROVED or REJECTED
+type ReviewMerchantDetailsMutationVariables = {
+  input: {
+    comment: string | null;
+    status: string;
+  };
+  userId: string;
 };
 
 const MerchantManagementPage: React.FC = () => {
@@ -116,7 +119,7 @@ const MerchantManagementPage: React.FC = () => {
   const [deleteMerchant, { loading: deletingMerchant }] = useMutation<any, DeleteMerchantMutationVariables>(DELETE_MERCHANT_MUTATION, {
     refetchQueries: [{ query: MERCHANTS_BY_STATUS_QUERY, variables: { status: selectedTab } }],
   });
-  const [verifyMerchant, { loading: verifyingMerchant }] = useMutation<any, VerifyMerchantMutationVariables>(VERIFY_MERCHANT_MUTATION, {
+  const [reviewMerchantDetails, { loading: reviewingMerchant }] = useMutation<any, ReviewMerchantDetailsMutationVariables>(REVIEW_MERCHANT_DETAILS_MUTATION, {
     refetchQueries: [{ query: MERCHANTS_BY_STATUS_QUERY, variables: { status: selectedTab } }],
   });
 
@@ -195,10 +198,13 @@ const MerchantManagementPage: React.FC = () => {
 
   const handleApproveMerchant = async (merchant: Merchant) => {
     try {
-      await verifyMerchant({
+      await reviewMerchantDetails({
         variables: {
-          id: merchant.id,
-          status: 'APPROVED',
+          input: {
+            status: 'APPROVED',
+            comment: null, // No comment for now
+          },
+          userId: merchant.userId,
         },
       });
       toast.success(`Merchant ${merchant.businessName} approved successfully!`);
@@ -210,10 +216,13 @@ const MerchantManagementPage: React.FC = () => {
 
   const handleRejectMerchant = async (merchant: Merchant) => {
     try {
-      await verifyMerchant({
+      await reviewMerchantDetails({
         variables: {
-          id: merchant.id,
-          status: 'REJECTED',
+          input: {
+            status: 'REJECTED',
+            comment: null, // No comment for now
+          },
+          userId: merchant.userId,
         },
       });
       toast.success(`Merchant ${merchant.businessName} rejected successfully!`);
