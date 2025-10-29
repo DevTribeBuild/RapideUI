@@ -200,7 +200,7 @@ const COLORS = ["#1976d2", "#43a047", "#fbc02d", "#ff7043"];
             setSelectedAsset(assetOptions[0]);
             console.log(selectedAsset, "selectedAsset");
         }
-    }, []);
+    }, [assetOptions, setSelectedAsset]);
 
 
 
