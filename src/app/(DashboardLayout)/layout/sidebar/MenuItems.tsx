@@ -65,6 +65,13 @@ export const getMenuItems = (user: { userType?: string } | null) => {
     },
     {
       id: uniqueId(),
+      title: "Merchants",
+      icon: IconUsersGroup, // Reusing IconUsersGroup
+      href: "/admin/merchants",
+      userType: ["ADMIN"],
+    },
+    {
+      id: uniqueId(),
       title: "Riders",
       icon: IconMotorbike,
       href: "/riders",

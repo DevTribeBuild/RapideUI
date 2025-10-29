@@ -127,3 +127,48 @@ export const UPDATE_MERCHANT_DETAILS = gql`
     }
   }
 `;
+
+export const CREATE_MERCHANT_MUTATION = gql`
+  mutation CreateMerchant($input: CreateMerchantInput!) {
+    createMerchant(input: $input) {
+      id
+      businessName
+      user {
+        email
+      }
+      status
+    }
+  }
+`;
+
+export const UPDATE_MERCHANT_MUTATION = gql`
+  mutation UpdateMerchant($input: UpdateMerchantInput!) {
+    updateMerchant(input: $input) {
+      id
+      businessName
+      user {
+        email
+      }
+      status
+    }
+  }
+`;
+
+export const DELETE_MERCHANT_MUTATION = gql`
+  mutation DeleteMerchant($id: ID!) {
+    deleteMerchant(id: $id) {
+      message
+      success
+    }
+  }
+`;
+
+export const VERIFY_MERCHANT_MUTATION = gql`
+  mutation VerifyMerchant($id: ID!, $status: String!) {
+    verifyMerchant(id: $id, status: $status) {
+      id
+      businessName
+      status
+    }
+  }
+`;
