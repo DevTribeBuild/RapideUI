@@ -27,6 +27,9 @@ import toast from 'react-hot-toast';
 import { useMutation, useQuery } from "@apollo/client/react";
 import { UPDATE_USER_MUTATION, MY_MERCHANT_DETAILS, RIDER_DETAILS, FIND_ONE_USER_QUERY } from "@/graphql";
 
+import FileUploadInput from "@/components/FileUploadInput";
+import Image from "next/image";
+
 type UpdateUserMutationVariables = {
     updateUserInput: {
         // email?: string;
@@ -34,6 +37,7 @@ type UpdateUserMutationVariables = {
         lastName?: string;
         username?: string;
         phone?: string;
+        imageUrl?: string;
     };
 };
 
@@ -102,6 +106,7 @@ export default function ProfilePage() {
             phone: userDetails?.me?.phone,
             username: userDetails?.me?.username,
         });
+        setProfileImageUrl(userDetails?.me?.imageUrl || null);
     }, [userDetails]);
 
     const ThemeSwitch = styled(Switch)(({ theme }) => ({
@@ -168,6 +173,8 @@ export default function ProfilePage() {
         refetchQueries: [{ query: FIND_ONE_USER_QUERY, variables: { email: userDetails?.email } }]
     });
 
+    const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
+
     
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -190,6 +197,7 @@ export default function ProfilePage() {
                     lastName: form?.lastName || "",
                     username: form?.username || "",
                     phone: form?.phone || "",
+                    imageUrl: profileImageUrl || userDetails?.me?.imageUrl || "",
                 },
             },
         });
@@ -339,6 +347,21 @@ export default function ProfilePage() {
             margin="normal"
             disabled={!editMode}
           />
+          <Box sx={{ mt: 3, mb: 2 }}>
+            <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 600, color: "text.secondary" }}>
+              Profile Picture
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Image
+                src={profileImageUrl || userDetails?.me?.imageUrl || '/images/profile/user-1.jpg'}
+                alt="Profile Picture"
+                width={100}
+                height={100}
+                style={{ borderRadius: '50%', objectFit: 'cover' }}
+              />
+              <FileUploadInput label="Profile Picture" onUploadSuccess={setProfileImageUrl} disabled={!editMode} currentFileUrl={profileImageUrl || userDetails?.me?.imageUrl} />
+            </Box>
+          </Box>
         </Box>
       )}
 

@@ -127,3 +127,81 @@ export const UPDATE_MERCHANT_DETAILS = gql`
     }
   }
 `;
+
+export const CREATE_MERCHANT_MUTATION = gql`
+  mutation CreateMerchant($input: CreateMerchantInput!) {
+    createMerchant(input: $input) {
+      id
+      businessName
+      user {
+        email
+      }
+      status
+    }
+  }
+`;
+
+export const UPDATE_MERCHANT_MUTATION = gql`
+  mutation UpdateMerchant($input: UpdateMerchantInput!) {
+    updateMerchant(input: $input) {
+      id
+      businessName
+      user {
+        email
+      }
+      status
+    }
+  }
+`;
+
+export const DELETE_MERCHANT_MUTATION = gql`
+  mutation DeleteMerchant($id: ID!) {
+    deleteMerchant(id: $id) {
+      message
+      success
+    }
+  }
+`;
+
+export const REVIEW_MERCHANT_DETAILS_MUTATION = gql`
+  mutation ReviewMerchantDetails($input: ReviewMerchantDetailsInput!, $userId: String!) {
+    reviewMerchantDetails(input: $input, userId: $userId) {
+      bankAccountNumber
+      bankConfirmation
+      bankName
+      businessName
+      certificateOfIncorp
+      cr12Form
+      createdAt
+      foodHandlerCert
+      healthCert
+      id
+      kraPinCert
+      menuFile
+      menuImages
+      mpesaPaybill
+      mpesaTill
+      ownerKraPinCert
+      status
+      tradingLicense
+      updatedAt
+      userId
+      verifiedAt
+      }
+      }
+      `;
+      
+      // user {
+      //   createdAt
+      //   currencyId
+      //   email
+      //   firstName
+      //   id
+      //   imageUrl
+      //   lastName
+      //   phone
+      //   updatedAt
+      //   userType
+      //   username
+      //   walletAddress
+      // }

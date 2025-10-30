@@ -270,7 +270,7 @@ const ProductManagementApp: React.FC = () => {
         }}
       >
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Typography variant="h5" component="h1" sx={{ fontWeight: 'bold', color: theme.palette.text.primary }}>
+          <Typography variant="h5" component="h1" sx={{ fontWeight: 'bold', color: theme.palette.text.primary, fontSize:{md:"1rem", xs:"0.8rem"} }}>
             Product Management
           </Typography>
           <Button
@@ -279,10 +279,10 @@ const ProductManagementApp: React.FC = () => {
             onClick={handleOpenCreateForm}
             color="primary"
           >
-            Add New Product
+            Product
           </Button>
         </Box>
-        <TableContainer component={Paper} sx={{ borderRadius: '8px', boxShadow: 'none', border: `1px solid ${theme.palette.divider}` }}>
+        <TableContainer component={Paper} sx={{ borderRadius: '8px', boxShadow: 'none', border: `1px solid ${theme.palette.divider}`, overflowX: 'auto', maxWidth:"75vw" }}>
           <Table sx={{ minWidth: 650 }} aria-label="product table">
             <TableHead sx={{ bgcolor: theme.palette.background.paper }}>
               <TableRow>
