@@ -338,7 +338,7 @@ const MerchantManagementPage: React.FC = () => {
         }}
       >
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Typography variant="h5" component="h1" sx={{ fontWeight: 'bold', color: theme.palette.text.primary }}>
+          <Typography variant="h5" component="h1" sx={{ fontWeight: 'bold', color: theme.palette.text.primary, fontSize:{md:"1rem", xs:"0.8rem"} }}>
             Merchant Management
           </Typography>
           <Button
@@ -346,8 +346,9 @@ const MerchantManagementPage: React.FC = () => {
             startIcon={<AddIcon />}
             onClick={handleOpenCreateForm}
             color="primary"
+            sx={{ fontSize:{md:"0.875rem", xs:"0.7rem"} }}
           >
-            Add New Merchant
+            Merchant
           </Button>
         </Box>
 
