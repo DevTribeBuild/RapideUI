@@ -75,7 +75,7 @@ const renderMenuItems = (items: any, pathDirect: any, theme: any, currentTheme: 
     //If the item has children (submenu)
     if (item.children) {
       return (
-        <Box sx={{border:"1px solid red"}} key={item.id}>
+        <Box key={item.id}>
         <Submenu
           key={item.id}
           title={item.title}
@@ -130,7 +130,6 @@ const renderMenuItems = (items: any, pathDirect: any, theme: any, currentTheme: 
         sx={{
           px: 3,
           py: 1.2,
-          border: "1px solid red",
           borderRadius: "8px",
           color: pathDirect === item?.href ? "#000" : textColor,
           backgroundColor: pathDirect === item?.href ? "#FFD700 !improtant" : "transparent",
