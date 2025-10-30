@@ -188,10 +188,10 @@ const COLORS = ["#1976d2", "#43a047", "#fbc02d", "#ff7043"];
         variables: { isTest },
     });
 
-    const assetOptions: any[] = [
+    const assetOptions: any[] = React.useMemo(() => [
         ...(data_fiat_accounts?.fiatWallets.map((f) => ({ type: "fiat", currency: f.Currency.code, icon: '💵' })) || []),
         ...(data_crypto_balances?.balances.map((c) => ({ type: "crypto", currency: c.symbol, icon: '🪙' })) || []),
-    ];
+    ], [data_fiat_accounts, data_crypto_balances]);
 
                 const [selectedAsset, setSelectedAsset] = useState<any>(null);
 
@@ -200,7 +200,7 @@ const COLORS = ["#1976d2", "#43a047", "#fbc02d", "#ff7043"];
             setSelectedAsset(assetOptions[0]);
             console.log(selectedAsset, "selectedAsset");
         }
-    }, [assetOptions, setSelectedAsset]);
+    }, [assetOptions, setSelectedAsset, selectedAsset]);
 
 
 

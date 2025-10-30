@@ -3,8 +3,6 @@
 import React, { useState, useEffect, forwardRef } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Slide } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
-import ConfettiWrapper from '@/components/ConfettiWrapper'; // Import ConfettiWrapper
-
 const Transition = forwardRef(function Transition(
   props: TransitionProps & { children: React.ReactElement<any, any> },
   ref: React.Ref<unknown>,
@@ -16,7 +14,6 @@ const InstallPwaDialog = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [showConfetti, setShowConfetti] = useState(false); // State for confetti
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -32,13 +29,6 @@ const InstallPwaDialog = () => {
       window.removeEventListener('beforeinstallprompt', handler);
     };
   }, []);
-
-  useEffect(() => {
-    if (dialogOpen && showInstallPrompt) {
-      setShowConfetti(true);
-      setTimeout(() => setShowConfetti(false), 4000); // confetti lasts 4s
-    }
-  }, [dialogOpen, showInstallPrompt]);
 
   const handleInstallClick = () => {
     if (deferredPrompt) {
@@ -62,7 +52,6 @@ const InstallPwaDialog = () => {
 
   return (
     <>
-      <ConfettiWrapper active={showConfetti} />
 
       <Dialog
         open={dialogOpen && showInstallPrompt}
