@@ -294,7 +294,7 @@ function OrderCards({ status }: { status: string }) {
                     onClick={() => handleCompleteOrder(order.id)}
                     size="small"
                     fullWidth
-                    disabled={completeOrderLoading || order.status !== 'DELIVERED'}
+                    disabled={completeOrderLoading || order.status === 'DELIVERED'}
                     sx={{
                       color: '#ffd700',
                       borderColor: '#ffd700',

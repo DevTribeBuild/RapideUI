@@ -36,6 +36,16 @@ export default function RootLayout({
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const { user } = useAuthStore();
+  const [mounted, setMounted] = useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null; // Or a loading spinner
+  }
+
   return (
     <MainWrapper className="mainwrapper">
       {/* ------------------------------------------- */}
@@ -59,10 +69,11 @@ export default function RootLayout({
         {/* ------------------------------------------- */}
         {/* PageContent */}
         {/* ------------------------------------------- */}
-        <Container
+        <Box
           sx={{
             paddingTop: "20px",
-            maxWidth: "1200px",
+            width: "100%",
+            p:2,
           }}
         >
           {/* ------------------------------------------- */}
@@ -72,7 +83,7 @@ export default function RootLayout({
           {/* ------------------------------------------- */}
           {/* End Page */}
           {/* ------------------------------------------- */}
-        </Container>
+        </Box>
         {user?.userType === 'USER' && <BottomAppBar />}
       </PageWrapper>
     </MainWrapper>
