@@ -71,7 +71,7 @@ const InstallPwaDialog = () => {
       >
         <DialogTitle>
           <Typography sx={{ color: '#ffd700', fontWeight: 'bold' }}>
-            Install RapideUI !
+            Install Swifteroute !
           </Typography>
         </DialogTitle>
         <DialogContent>
