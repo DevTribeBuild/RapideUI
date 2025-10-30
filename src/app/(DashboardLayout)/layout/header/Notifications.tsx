@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
-import { MARK_NOTIFICATION_AS_READ, MARK_ALL_NOTIFICATIONS_AS_READ } from '@/graphql/notifications/mutations';
-import { IconButton, Badge, Menu, MenuItem, Typography, CircularProgress, Box, Divider, Avatar, Button } from '@mui/material';
+import { MARK_NOTIFICATION_AS_READ } from '@/graphql/notifications/mutations';
+import { IconButton, Badge, Menu, MenuItem, Typography, CircularProgress, Box, Divider, Avatar, Button, Checkbox } from '@mui/material';
 import { IconBellRinging, IconCircleCheck } from '@tabler/icons-react';
 import { GET_MY_NOTIFICATIONS } from '@/graphql/notifications/queries';
 import useAuthStore from '@/stores/useAuthStore';
@@ -13,7 +13,6 @@ const Notifications = () => {
   const { user } = useAuthStore();
 
   const [markAsRead] = useMutation(MARK_NOTIFICATION_AS_READ);
-  const [markAllAsRead] = useMutation(MARK_ALL_NOTIFICATIONS_AS_READ);
 
   const handleNotificationClick = (notificationId: string) => {
     markAsRead({
@@ -45,14 +44,7 @@ const Notifications = () => {
     skip: !user,
   });
 
-  const handleMarkAllAsRead = async () => {
-    try {
-      await markAllAsRead();
-      refetch(); // Refetch notifications to update UI
-    } catch (err) {
-      console.error('Error marking all notifications as read:', err);
-    }
-  };
+  
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -95,11 +87,6 @@ const Notifications = () => {
       >
         <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography variant="h6" fontWeight="bold">Notifications</Typography>
-          {notifications.length > 0 && (
-            <Button size="small" onClick={handleMarkAllAsRead} disabled={loading}>
-              Mark All As Read
-            </Button>
-          )}
         </Box>
         <Divider />
         {loading && (
@@ -124,7 +111,6 @@ const Notifications = () => {
         {notifications.map((notification: any) => (
           <MenuItem
             key={notification.id}
-            onClick={() => handleNotificationClick(notification.id)}
             sx={{
               backgroundColor: notification.readAt ? '#fbf82e' : '#474948ff',
               borderBottom: '1px solid #eee',
@@ -133,6 +119,13 @@ const Notifications = () => {
               px: 2,
             }}
           >
+            <Checkbox
+              checked={!!notification.readAt}
+              onChange={(event) => {
+                event.stopPropagation(); // Prevent MenuItem click
+                handleNotificationClick(notification.id);
+              }}
+            />
             <Avatar sx={{ bgcolor: '#ffd700', mr: 2 }}>
               <NotificationsNoneIcon />
             </Avatar>

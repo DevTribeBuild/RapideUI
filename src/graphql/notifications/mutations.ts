@@ -5,9 +5,3 @@ export const MARK_NOTIFICATION_AS_READ = gql`
     markNotificationAsRead(input: $input)
   }
 `;
-
-export const MARK_ALL_NOTIFICATIONS_AS_READ = gql`
-  mutation MarkAllNotificationsAsRead {
-    markAllNotificationsAsRead
-  }
-`;
