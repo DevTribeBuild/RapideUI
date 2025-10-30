@@ -9,6 +9,7 @@ interface FileUploadInputProps {
   label: string;
   onUploadSuccess: (url: string) => void;
   currentFileUrl?: string | null;
+  disabled?: boolean;
 }
 
 type SingleUploadMutationResult = {
@@ -27,6 +28,7 @@ const FileUploadInput: React.FC<FileUploadInputProps> = ({
   label,
   onUploadSuccess,
   currentFileUrl,
+  disabled,
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadFile, { loading, error }] = useMutation<SingleUploadMutationResult, SingleUploadMutationVariables>(
@@ -86,9 +88,10 @@ const FileUploadInput: React.FC<FileUploadInputProps> = ({
         style={{ display: "none" }}
         id={`file-upload-${label.replace(/\s/g, "-")}`}
         onChange={handleFileChange}
+        disabled={disabled}
       />
       <label htmlFor={`file-upload-${label.replace(/\s/g, "-")}`}>
-        <Button variant="outlined" component="span" startIcon={<CloudUploadIcon />} disabled={loading}>
+        <Button variant="outlined" component="span" startIcon={<CloudUploadIcon />} disabled={loading || disabled}>
           {loading ? <CircularProgress size={24} /> : selectedFile ? selectedFile.name : `Choose ${label}`}
         </Button>
       </label>
