@@ -212,6 +212,9 @@ const TrackingPage = () => {
                     <strong>Name:</strong> {rider.firstName} {rider.lastName}
                   </Typography>
                   <Typography variant="body1">
+                    <strong>Email:</strong> {rider.email} {rider.lastName}
+                  </Typography>
+                  <Typography variant="body1">
                     <strong>Phone:</strong> {rider.phone}
                   </Typography>
                 </Grid>
