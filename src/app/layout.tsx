@@ -11,7 +11,29 @@ import createEmotionCache from "@/utils/createEmotionCache";
 import { CacheProvider } from "@emotion/react";
 import useAuthStore from '@/stores/useAuthStore';
 import RiderLocationTracker from '@/components/RiderLocationTracker';
-import { useState, useEffect } from 'react'; // Import useState and useEffect
+import { useState, useEffect, forwardRef } from 'react';
+import {
+  Box,
+  Button,
+  Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Slide,
+  IconButton,
+} from '@mui/material';
+import { TransitionProps } from '@mui/material/transitions';
+import CloseIcon from '@mui/icons-material/Close';
+import Confetti from 'react-confetti'; // Import Confetti
+import useWindowSize from 'react-use/lib/useWindowSize'; // Import useWindowSize
+
+const Transition = forwardRef(function Transition(
+  props: TransitionProps & { children: React.ReactElement<any, any> },
+  ref: React.Ref<unknown>,
+) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const clientSideEmotionCache = createEmotionCache();
 
@@ -26,12 +48,19 @@ export default function RootLayout({
 
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false); // State for confetti
+  const [isClient, setIsClient] = useState(false); // New state for client-side rendering
+
+  const { width, height } = useWindowSize(); // Get window size for confetti
 
   useEffect(() => {
+    setIsClient(true); // Set isClient to true after component mounts on client
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);
       setShowInstallPrompt(true);
+      setDialogOpen(true);
     };
 
     window.addEventListener('beforeinstallprompt', handler);
@@ -40,6 +69,13 @@ export default function RootLayout({
       window.removeEventListener('beforeinstallprompt', handler);
     };
   }, []);
+
+  useEffect(() => {
+    if (dialogOpen && showInstallPrompt) {
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 4000); // confetti lasts 4s
+    }
+  }, [dialogOpen, showInstallPrompt]);
 
   const handleInstallClick = () => {
     if (deferredPrompt) {
@@ -52,8 +88,13 @@ export default function RootLayout({
         }
         setDeferredPrompt(null);
         setShowInstallPrompt(false);
+        setDialogOpen(false);
       });
     }
+  };
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
   };
 
   return (
@@ -73,35 +114,50 @@ export default function RootLayout({
                 position="top-right"
                 reverseOrder={false}
               />
-              {showInstallPrompt && (
-                <div style={{
-                  position: 'fixed',
-                  bottom: 0,
-                  left: 0,
-                  width: '100%',
-                  backgroundColor: '#333',
-                  color: 'white',
-                  padding: '10px',
-                  textAlign: 'center',
-                  zIndex: 1000,
-                }}>
-                  <p>Add RapideUI to your home screen for quick access!</p>
-                  <button
-                    onClick={handleInstallClick}
-                    style={{
-                      backgroundColor: '#007bff',
-                      color: 'white',
-                      border: 'none',
-                      padding: '8px 15px',
-                      borderRadius: '5px',
-                      cursor: 'pointer',
-                      marginLeft: '10px',
-                    }}
-                  >
-                    Install App
-                  </button>
-                </div>
+
+              {isClient && showConfetti && (
+                <Confetti
+                  width={width}
+                  height={height}
+                  numberOfPieces={200}
+                  recycle={false}
+                  gravity={0.3}
+                />
               )}
+
+              <Dialog
+                open={dialogOpen && showInstallPrompt}
+                TransitionComponent={Transition}
+                keepMounted
+                onClose={handleDialogClose}
+                aria-describedby="alert-dialog-slide-description"
+                PaperProps={{
+                  style: {
+                    position: 'fixed',
+                    bottom: 20,
+                    right: 20,
+                    margin: 0,
+                    maxWidth: 'calc(100% - 40px)',
+                  },
+                }}
+              >
+                <DialogTitle>
+                  <Typography sx={{ color: '#ffd700', fontWeight: 'bold' }}>
+                    Install RapideUI !
+                  </Typography>
+                </DialogTitle>
+                <DialogContent>
+                  <Typography id="alert-dialog-slide-description">
+                    We recommend this for a seamless experience.
+                  </Typography>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleDialogClose}>Dismiss</Button>
+                  <Button onClick={handleInstallClick} variant="contained" color="primary">
+                    Install
+                  </Button>
+                </DialogActions>
+              </Dialog>
             </ThemeProvider>
           </ApolloProviderWrapper>
         </CacheProvider>

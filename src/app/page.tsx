@@ -99,7 +99,7 @@ const LandingPage = () => {
       {/* AppBar */}
       <AppBar position="absolute" sx={{ bgcolor: muiTheme.palette.background.paper }} elevation={0}>
         <Toolbar sx={{ maxWidth: "1200px", mx: "auto", width: "100%" }}>
-          <Typography variant="h6" fontWeight="bold" sx={{ flexGrow: 1, color: muiTheme.palette.text.primary }}>
+          <Typography fontWeight="bold" sx={{ flexGrow: 1, color: muiTheme.palette.text.primary }}>
             Swifteroute
           </Typography>
           <Switch
