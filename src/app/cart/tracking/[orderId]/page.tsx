@@ -195,7 +195,7 @@ const TrackingPage = () => {
                     <strong>Email:</strong> {rider.email}
                   </Typography>
                   <Typography variant="body1">
-                    <strong>Phone:</strong> {rider.phone}
+                    <strong>Phone:</strong> <span style={{ filter: (order.status === 'ASSIGNED' || order.status === 'IN_TRANSIT') ? 'none' : 'blur(5px)' }}>{rider.phone}</span>
                   </Typography>
                 </Grid>
 
@@ -235,6 +235,7 @@ const TrackingPage = () => {
                         href={`https://wa.me/${fullPhoneNumber}`}
                         target="_blank"
                         rel="noopener noreferrer"
+                        disabled={!(order.status === 'ASSIGNED' || order.status === 'IN_TRANSIT')}
                         sx={{
                           bgcolor: "#25D366",
                           "&:hover": { bgcolor: "#1DA851" },
@@ -248,6 +249,7 @@ const TrackingPage = () => {
                         color="primary"
                         component="a"
                         href={`tel:+${fullPhoneNumber}`}
+                        disabled={!(order.status === 'ASSIGNED' || order.status === 'IN_TRANSIT')}
                         sx={{
                           bgcolor: "#1976d2",
                           "&:hover": { bgcolor: "#125ea5" },
@@ -265,6 +267,7 @@ const TrackingPage = () => {
         )}
 
         {/* Map Section */}
+      {(order.status === 'ASSIGNED' || order.status === 'IN_TRANSIT') && (
         <Box
           sx={{
             width: "100%",
@@ -276,6 +279,7 @@ const TrackingPage = () => {
         >
           <RouteMap origin={originCoords} destination={destinationCoords} />
         </Box>
+      )}
 
 
 
