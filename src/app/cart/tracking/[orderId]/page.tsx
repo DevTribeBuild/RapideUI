@@ -81,10 +81,13 @@ const TrackingPage = () => {
     rw: "250",
   };
 
-  // sanitize phone and build full international number
-  const sanitizedPhone = rider?.phone?.replace(/\D/g, "").replace(/^0+/, "");
-  const countryCode = countryCodes[rider.locale?.toLowerCase()] || "254";
-  const fullPhoneNumber = `${countryCode}${sanitizedPhone}`;
+  let fullPhoneNumber = "";
+  if (rider) {
+    // sanitize phone and build full international number
+    const sanitizedPhone = rider.phone.replace(/\D/g, "").replace(/^0+/, "");
+    const countryCode = countryCodes[rider.locale?.toLowerCase()] || "254";
+    fullPhoneNumber = `${countryCode}${sanitizedPhone}`;
+  }
 
   console.log(rider, "*&*&^")
 
