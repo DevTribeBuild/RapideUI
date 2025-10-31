@@ -23,6 +23,8 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 const Profile = () => {
   const { clearAuth } = useAppStore();
   const router = useRouter();
+    const user:any = useAppStore((state) => state.user);
+
 
   const logout = () => {
     clearAuth();
@@ -236,7 +238,7 @@ const Profile = () => {
         }}
       >
         <Avatar
-          src="/images/profile/user-1.jpg"
+          src={user?.imageUrl || '/default-profile.png'}
           alt="image"
           sx={{ width: 35, height: 35 }}
         />
@@ -285,3 +287,4 @@ const Profile = () => {
 };
 
 export default Profile;
+
