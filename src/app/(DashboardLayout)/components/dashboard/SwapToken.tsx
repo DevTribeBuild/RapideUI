@@ -19,6 +19,47 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/system';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import { gql, useMutation } from '@apollo/client'; // Import gql and useMutation
+import { toast } from 'react-hot-toast'; // Import toast for notifications
+
+// -----------------------------------------------------------------------------
+// GraphQL Mutation
+// -----------------------------------------------------------------------------
+const SWAP_TOKEN_MUTATION = gql`
+  mutation SwapToken($input: SwapTokenInput!) {
+    swapToken(input: $input) {
+      message
+      status
+      transaction {
+        blockNumber
+        confirmations
+        createdAt
+        errorMessage
+        fee
+        from
+        gas
+        gasPrice
+        gasUsed
+        hash
+        id
+        methodId
+        status
+        timeStamp
+        to
+        toSymbol
+        tokenAddress
+        tokenSymbol
+        transactionIndex
+        txreceipt_status
+        type
+        updatedAt
+        userId
+        value
+      }
+      transactionHash
+    }
+  }
+`;
 
 // -----------------------------------------------------------------------------
 // Type Definitions
@@ -41,6 +82,7 @@ interface SwapDetails {
   outputToken: Asset | null;
   inputAmount: string;
   outputAmount: string;
+  transactionHash?: string; // Add transaction hash
 }
 
 /**
@@ -59,7 +101,7 @@ interface SwapTokenDialogProps {
   open: boolean;
   onClose: () => void;
   assetOptions: Asset[];
-  onSwap: (inputToken: Asset | null, outputToken: Asset | null, inputAmount: string, outputAmount: string) => void;
+  onSwap: (swapDetails: SwapDetails) => void; // Modified to pass SwapDetails
 }
 
 // -----------------------------------------------------------------------------
@@ -146,7 +188,22 @@ const SwapTokenDialog: React.FC<SwapTokenDialogProps> = ({ open, onClose, assetO
   const [outputToken, setOutputToken] = useState<Asset | null>(assetOptions[1] || null);
   const [inputAmount, setInputAmount] = useState<string>('');
   const [estimatedOutputAmount, setEstimatedOutputAmount] = useState<string>('');
-  const [isSwapping, setIsSwapping] = useState<boolean>(false);
+
+  const [swapToken, { loading: isSwapping }] = useMutation(SWAP_TOKEN_MUTATION, {
+    onCompleted: (data) => {
+      toast.success(data.swapToken.message || 'Swap initiated successfully!');
+      onSwap({
+        inputToken,
+        outputToken,
+        inputAmount,
+        outputAmount: estimatedOutputAmount,
+        transactionHash: data.swapToken.transactionHash,
+      });
+    },
+    onError: (error) => {
+      toast.error(`Swap failed: ${error.message}`);
+    },
+  });
 
   // Effect to reset dialog state when it opens or closes
   useEffect(() => {
@@ -156,7 +213,6 @@ const SwapTokenDialog: React.FC<SwapTokenDialogProps> = ({ open, onClose, assetO
       setOutputToken(assetOptions[1] || null);
       setInputAmount('');
       setEstimatedOutputAmount('');
-      setIsSwapping(false);
     }
   }, [open, assetOptions]);
 
@@ -189,11 +245,21 @@ const SwapTokenDialog: React.FC<SwapTokenDialogProps> = ({ open, onClose, assetO
 
   // Handler for confirming the swap (simulates API call)
   const handleConfirmSwap = async () => {
-    setIsSwapping(true);
-    // Simulate an asynchronous API call with a delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    onSwap(inputToken, outputToken, inputAmount, estimatedOutputAmount);
-    setIsSwapping(false);
+    if (!inputToken || !outputToken || !inputAmount) {
+      toast.error('Please select both tokens and enter an amount.');
+      return;
+    }
+
+    await swapToken({
+      variables: {
+        input: {
+          amountIn: inputAmount, // Changed to send as string
+          isTest: false, // Assuming isTest is false, adjust if needed
+          tokenIn: inputToken.currency,
+          tokenOut: outputToken.currency,
+        },
+      },
+    });
   };
 
   // Handler for closing the dialog
@@ -446,9 +512,9 @@ const SwapToken: React.FC<SwapTokenProps> = ({ assetOptions }) => {
   };
 
   // Handler for when the swap is confirmed within the dialog
-  const handleSwap = (inputToken: Asset | null, outputToken: Asset | null, inputAmount: string, outputAmount: string) => {
+  const handleSwap = (swapDetails: SwapDetails) => {
     // Store details for the confirmation message
-    setLastSwapDetails({ inputToken, outputToken, inputAmount, outputAmount });
+    setLastSwapDetails(swapDetails);
     setShowConfirmationMessage(true); // Show the custom confirmation message
     handleCloseSwapDialog(); // Close the swap dialog
   };
