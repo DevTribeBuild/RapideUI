@@ -126,7 +126,8 @@ const CartPage: React.FC = () => {
                             ) : cartItems.length === 0 ? (
                                 <Typography>Your cart is empty.</Typography>
                             ) : (
-                                cartItems.map((item: any) => (
+                                <Box sx={{ maxHeight: { md:'70vh', xs:'calc(50vh - 120px)'}, overflowY: 'auto' }}>
+                                {cartItems.map((item: any) => (
                                     <Card
                                         key={item.product.id}
                                         sx={{
@@ -286,8 +287,12 @@ const CartPage: React.FC = () => {
                                             </Tooltip> */}
                                         </Box>
                                     </Card>
-                                ))
+                                )
                             )}
+                            </Box>
+                            )
+                            
+                            }
                         </Grid>
                         <Grid size={{ xs: 12, md: 4 }}>
                             <Paper

@@ -19,6 +19,7 @@ import {
   Card,
   CardContent,
   CardHeader,
+  IconButton,
 } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useParams } from "next/navigation";
@@ -27,6 +28,9 @@ import OrderStatusStepper from "@/app/(DashboardLayout)/components/shared/OrderS
 import { GET_ORDER_QUERY } from "@/graphql/order/queries";
 import { CONFIRM_ORDER_BY_USER } from "@/graphql/order/mutations";
 import toast from 'react-hot-toast';
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+import PhoneIcon from "@mui/icons-material/Phone";
+import CallIcon from "@mui/icons-material/Call";
 
 
 
@@ -68,7 +72,20 @@ const TrackingPage = () => {
   }
 
   const order = data?.getOrder;
+  console.log(order, "========order details=======");
   const rider = order?.assignedRider;
+  const countryCodes: Record<string, string> = {
+    ke: "254",
+    ug: "256",
+    tz: "255",
+    rw: "250",
+  };
+
+  // sanitize phone and build full international number
+  const sanitizedPhone = rider?.phone?.replace(/\D/g, "").replace(/^0+/, "");
+  const countryCode = countryCodes[rider.locale?.toLowerCase()] || "254";
+  const fullPhoneNumber = `${countryCode}${sanitizedPhone}`;
+
   console.log(rider, "*&*&^")
 
   if (!order) {
@@ -158,7 +175,8 @@ const TrackingPage = () => {
 
             <CardContent>
               <Grid container spacing={2}>
-                <Grid size={{ xs: 12, md: 6 }}>
+                {/* Rider Info */}
+                <Grid size={{ md: 6 }}>
                   <Avatar
                     src={rider.imageUrl}
                     alt={rider.firstName}
@@ -177,35 +195,79 @@ const TrackingPage = () => {
                     <strong>Email:</strong> {rider.email}
                   </Typography>
                   <Typography variant="body1">
-                    <strong>Phone:</strong> {rider.phone}
+                    <strong>Phone:</strong> <span style={{ filter: (order.status === 'ASSIGNED' || order.status === 'IN_TRANSIT') ? 'none' : 'blur(5px)' }}>{rider.phone}</span>
                   </Typography>
                 </Grid>
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Box>
-                    <Button
-                      variant="contained"
-                      onClick={handleMarkAsComplete}
-                      disabled={order.status === 'DELIVERED' || order.status === 'RECEIVED' || confirming}
-                      disableElevation
-                      color="primary"
-                      size="large"
-                      sx={{
-                        borderRadius: 2,
-                        px: 4,
-                        textTransform: "none",
-                        fontWeight: 600,
-                      }}
-                    >
-                      {confirming ? <CircularProgress size={24} /> : 'Mark as Received'}
-                    </Button>
-                  </Box>
+
+                {/* Action Buttons */}
+                <Grid
+                  size={{ md: 6 }}
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: { xs: "flex-start", md: "flex-end" },
+                    justifyContent: "space-between",
+                    gap: 2,
+                  }}
+                >
+                  <Button
+                    variant="contained"
+                    onClick={handleMarkAsComplete}
+                    disabled={order.status === "DELIVERED" || order.status === "RECEIVED" || confirming}
+                    disableElevation
+                    color="primary"
+                    size="large"
+                    sx={{
+                      borderRadius: 2,
+                      px: 4,
+                      textTransform: "none",
+                      fontWeight: 600,
+                    }}
+                  >
+                    {confirming ? <CircularProgress size={24} /> : "Mark as Received"}
+                  </Button>
+
+                  {/* WhatsApp & Call Icons */}
+                  <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
+                    <IconButton
+                        color="success"
+                        component="a"
+                        href={`https://wa.me/${fullPhoneNumber}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        disabled={!(order.status === 'ASSIGNED' || order.status === 'IN_TRANSIT')}
+                        sx={{
+                          bgcolor: "#25D366",
+                          "&:hover": { bgcolor: "#1DA851" },
+                          color: "white",
+                        }}
+                      >
+                        <WhatsAppIcon />
+                      </IconButton>
+
+                      <IconButton
+                        color="primary"
+                        component="a"
+                        href={`tel:+${fullPhoneNumber}`}
+                        disabled={!(order.status === 'ASSIGNED' || order.status === 'IN_TRANSIT')}
+                        sx={{
+                          bgcolor: "#1976d2",
+                          "&:hover": { bgcolor: "#125ea5" },
+                          color: "white",
+                        }}
+                      >
+                        <CallIcon />
+                      </IconButton>
+                    </Box>
                 </Grid>
               </Grid>
             </CardContent>
+
           </Card>
         )}
 
         {/* Map Section */}
+      {(order.status === 'ASSIGNED' || order.status === 'IN_TRANSIT') && (
         <Box
           sx={{
             width: "100%",
@@ -217,6 +279,7 @@ const TrackingPage = () => {
         >
           <RouteMap origin={originCoords} destination={destinationCoords} />
         </Box>
+      )}
 
 
 
@@ -270,7 +333,8 @@ const TrackingPage = () => {
                   {item.quantity} × {item?.product?.name} —{" "}
                   <strong>Kes {item?.product?.price.toFixed(2)}</strong>
                 </Typography>
-              ))}
+              )
+              )}
             </Stack>
             <Divider sx={{ my: 1.5 }} />
             <Typography variant="body1" fontWeight={700}>

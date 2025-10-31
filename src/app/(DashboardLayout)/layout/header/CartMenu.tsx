@@ -95,53 +95,57 @@ const CartMenu = () => {
           )}
         </Box>
         <Divider />
-        {loading && (
-          <Box display="flex" justifyContent="center" my={2}>
-            <CircularProgress />
-          </Box>
-        )}
-        {error && (
-          <Typography variant="body2" color="error" sx={{ p: 2 }}>
-            Error fetching cart items.
-          </Typography>
-        )}
-        {!loading && !error && cartItems.length === 0 && (
-          <Box sx={{ p: 2, textAlign: 'center', color: 'text.secondary' }}>
-            <ShoppingCartIcon sx={{ fontSize: 48, mb: 1 }} />
-            <Typography variant="body2">
-              Your cart is empty. Start shopping!
+        <Box> {/* Adjusted maxHeight for scrollable items */}
+          {loading && (
+            <Box display="flex" justifyContent="center" my={2}>
+              <CircularProgress />
+            </Box>
+          )}
+          {error && (
+            <Typography variant="body2" color="error" sx={{ p: 2 }}>
+              Error fetching cart items.
             </Typography>
+          )}
+          {!loading && !error && cartItems.length === 0 && (
+            <Box sx={{ p: 2, textAlign: 'center', color: 'text.secondary' }}>
+              <ShoppingCartIcon sx={{ fontSize: 48, mb: 1 }} />
+              <Typography variant="body2">
+                Your cart is empty. Start shopping!
+              </Typography>
+            </Box>
+          )}
+          <Box  sx={{ maxHeight: 'calc(60vh - 120px)', overflowY: 'auto' }}>
+          {cartItems.map((item: any, index: number) => (
+            <Box key={`${item?.id}-${item?.product?.id}`}>
+              <MenuItem sx={{ py: 1.5, px: 2, display: 'flex', alignItems: 'center' }}>
+                <Avatar src={item?.product?.imageUrl} alt={item?.product?.name} sx={{ mr: 2 }} />
+                <Box sx={{ flexGrow: 1, overflow: 'hidden' }}>
+                  <Typography variant="subtitle1" fontWeight="bold" noWrap>{item?.product?.name}</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Kes {item?.product?.price?.toFixed(2)} x {item?.quantity}
+                  </Typography>
+                  <Typography variant="body2" fontWeight="bold" sx={{ color: '#FFD700' }}>
+                    Subtotal: Kes {(item?.product?.price * item?.quantity)?.toFixed(2)}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
+                  <IconButton size="small" onClick={() => handleUpdateQuantity(item?.product?.id, item?.quantity - 1)} disabled={item?.quantity <= 1}>
+                    <RemoveCircleOutlineIcon />
+                  </IconButton>
+                  <Typography variant="body2" sx={{ mx: 0.5 }}>{item?.quantity}</Typography>
+                  <IconButton size="small" onClick={() => handleUpdateQuantity(item?.product?.id, item?.quantity + 1)}>
+                    <AddCircleOutlineIcon />
+                  </IconButton>
+                  <IconButton size="small" color="error" onClick={() => handleRemoveItem(item?.product?.id)} sx={{ ml: 1 }}>
+                    <DeleteOutlineIcon />
+                  </IconButton>
+                </Box>
+              </MenuItem>
+              {index < cartItems.length - 1 && <Divider />}
+            </Box>
+          ))}
           </Box>
-        )}
-        {cartItems.map((item: any, index: number) => (
-          <Box key={`${item?.id}-${item?.product?.id}`}>
-            <MenuItem sx={{ py: 1.5, px: 2, display: 'flex', alignItems: 'center' }}>
-              <Avatar src={item?.product?.imageUrl} alt={item?.product?.name} sx={{ mr: 2 }} />
-              <Box sx={{ flexGrow: 1, overflow: 'hidden' }}>
-                <Typography variant="subtitle1" fontWeight="bold" noWrap>{item?.product?.name}</Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Kes {item?.product?.price?.toFixed(2)} x {item?.quantity}
-                </Typography>
-                <Typography variant="body2" fontWeight="bold" sx={{ color: '#FFD700' }}>
-                  Subtotal: Kes {(item?.product?.price * item?.quantity)?.toFixed(2)}
-                </Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
-                <IconButton size="small" onClick={() => handleUpdateQuantity(item?.product?.id, item?.quantity - 1)} disabled={item?.quantity <= 1}>
-                  <RemoveCircleOutlineIcon />
-                </IconButton>
-                <Typography variant="body2" sx={{ mx: 0.5 }}>{item?.quantity}</Typography>
-                <IconButton size="small" onClick={() => handleUpdateQuantity(item?.product?.id, item?.quantity + 1)}>
-                  <AddCircleOutlineIcon />
-                </IconButton>
-                <IconButton size="small" color="error" onClick={() => handleRemoveItem(item?.product?.id)} sx={{ ml: 1 }}>
-                  <DeleteOutlineIcon />
-                </IconButton>
-              </Box>
-            </MenuItem>
-            {index < cartItems.length - 1 && <Divider />}
-          </Box>
-        ))}
+        </Box>
         {cartItems.length > 0 && (
           <Box sx={{ p: 2 }}>
             <Button component={Link} href="/cart" variant="contained" fullWidth>
