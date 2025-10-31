@@ -84,7 +84,7 @@ const Orders = () => {
     const orders = data?.myOrders || [];
 
     return (
-        <PageContainer title="My Orders" description="View your past orders">
+        <PageContainer title="My Orders" description="View your past orders" >
   <Box sx={{ mt: 6, mb: 6 }}>
     {/* Page Header */}
     <Box
@@ -115,7 +115,7 @@ const Orders = () => {
         sx={{
           textAlign: "center",
           mt: 6,
-          p: 4,
+          p: 2,
           borderRadius: 3,
         }}
       >
@@ -129,7 +129,7 @@ const Orders = () => {
     ) : (
       <Grid container spacing={2}>
         {orders.map((order) => (
-          <Grid size={{xs:12, sm:6, md:4}} key={order.id} sx={{ mb: 3 }}>
+          <Grid size={{xs:12, sm:6, md:3}} key={order.id} sx={{ mb: 3 }}>
             <Card
               elevation={2}
               sx={{

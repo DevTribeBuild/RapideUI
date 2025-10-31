@@ -169,13 +169,17 @@ function OrderCards({ status }: { status: string }) {
     }
   });
 
+  const [completingOrderId, setCompletingOrderId] = useState<string | null>(null);
+
   const [completeOrderAdmin, { loading: completeOrderLoading }] = useMutation(COMPLETE_ORDER_ADMIN, {
     refetchQueries: [{ query: ALL_ORDERS_QUERY, variables: { status: status === 'ALL' ? null : status.toUpperCase() } }],
     onCompleted: () => {
       toast.success('Order completed successfully');
+      setCompletingOrderId(null);
     },
     onError: (error) => {
       toast.error(`Failed to complete order: ${error.message}`);
+      setCompletingOrderId(null);
     }
   });
 
@@ -193,6 +197,7 @@ function OrderCards({ status }: { status: string }) {
   };
 
   const handleCompleteOrder = async (orderId: string) => {
+    setCompletingOrderId(orderId);
     await completeOrderAdmin({ variables: { orderId } });
   };
 
@@ -294,7 +299,7 @@ function OrderCards({ status }: { status: string }) {
                     onClick={() => handleCompleteOrder(order.id)}
                     size="small"
                     fullWidth
-                    disabled={completeOrderLoading || order.status !== 'DELIVERED'}
+                    disabled={completingOrderId === order.id || order.status === 'DELIVERED'}
                     sx={{
                       color: '#ffd700',
                       borderColor: '#ffd700',
@@ -304,7 +309,7 @@ function OrderCards({ status }: { status: string }) {
                       },
                     }}
                   >
-                    {completeOrderLoading ? (
+                    {completingOrderId === order.id ? (
                       <CircularProgress size={24} color="inherit" />
                     ) : (
                       'Complete Order'
