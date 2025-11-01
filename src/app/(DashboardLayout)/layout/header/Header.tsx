@@ -22,15 +22,7 @@ const blink = keyframes`
 `;
 
 
-// GraphQL Query for user's orders
-const GET_USER_ORDERS_STATUS = gql`
-  query GetUserOrdersStatus {
-    allOrders(status: null) { # Fetch all orders for the current user
-      id
-      status
-    }
-  }
-`;
+import { MY_ORDERS_QUERY, RIDER_ORDERS_QUERY } from '@/graphql/order/queries'; // Import specific order queries
 
 
 interface ItemType {
@@ -45,16 +37,20 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
     minHeight: '70px',
   }));
 
-  const user = useAuthStore((state) => state.user)
+  const user = useAuthStore((state) => state.user);
 
-  // Fetch user's orders
-  const { data: ordersData } = useQuery(GET_USER_ORDERS_STATUS, {
+  const isRider = user?.userType === 'RIDER';
+
+  const { data: ordersData } = useQuery(isRider ? RIDER_ORDERS_QUERY : MY_ORDERS_QUERY, {
     skip: !user, // Skip query if user is not logged in
     pollInterval: 5000, // Poll every 5 seconds to check for status changes
   });
 
+  // Determine the correct array of orders based on user type
+  const orders = isRider ? ordersData?.riderOrders : ordersData?.myOrders;
+
   // Check for active orders (ASSIGNED or IN_TRANSIT)
-  const hasActiveOrders = ordersData?.allOrders?.some(
+  const hasActiveOrders = orders?.some(
     (order: any) => order.status === 'ASSIGNED' || order.status === 'IN_TRANSIT'
   );
 
@@ -89,7 +85,7 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
           aria-label="show bookmarks"
           color="inherit"
           component={Link}
-          href={hasActiveOrders ? `/cart/tracking/${ordersData.allOrders.find((order: any) => order.status === 'ASSIGNED' || order.status === 'IN_TRANSIT')?.id}` : "/cart/tracking"}
+          href={hasActiveOrders ? `/cart/tracking/${orders.find((order: any) => order.status === 'ASSIGNED' || order.status === 'IN_TRANSIT')?.id}` : "/cart/tracking"}
           sx={{
             ...(hasActiveOrders && {
               animation: `${blink} 1s infinite`,

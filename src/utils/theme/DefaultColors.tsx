@@ -86,6 +86,24 @@ const baselightTheme = createTheme({
         },
       },
     },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          borderRadius: "8px",
+          transition: "all 0.25s ease-in-out",
+          "&.Mui-selected": {
+            backgroundColor: "#FFD700 !important",
+            color: "#000",
+            fontWeight: 600,
+            boxShadow: "0 2px 6px rgba(0, 0, 0, 0.15)",
+          },
+          "&.Mui-selected:hover": {
+            backgroundColor: "#FFD700 !important",
+            transform: "scale(1.02)",
+          },
+        },
+      },
+    },
     MuiCard: {
       styleOverrides: {
         root: {
