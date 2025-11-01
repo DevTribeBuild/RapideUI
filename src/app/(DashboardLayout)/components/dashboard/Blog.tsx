@@ -56,6 +56,31 @@ type Product = {
   quantity: number;
   createdAt: string;
   updatedAt: string;
+  merchant: {
+    id: string;
+    businessName: string;
+    merchantDetails: {
+      businessName: string;
+      id: string;
+    };
+  };
+  category: {
+    createdAt: string;
+    id: string;
+    name: string;
+    parentId: string | null;
+    updatedAt: string;
+  };
+  currency: {
+    code: string;
+    createdAt: string;
+    decimals: number;
+    id: string;
+    name: string;
+    rateToUSD: number;
+    symbol: string;
+    updatedAt: string;
+  };
 };
 
 type AllProductsQuery = {
@@ -246,6 +271,7 @@ const Blog = () => {
         const cartItem = cartItemsMap.get(productId);
         const isInCart = !!cartItem;
         const currentQuantity = cartItem?.quantity || 1;
+        console.log(product, "isInCart:", isInCart, "currentQuantity:", currentQuantity);
 
         return (
           <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={product.id}>
@@ -271,6 +297,9 @@ const Blog = () => {
 
               <CardContent sx={{ p: 3, pt: 2 }}>
                 <Typography variant="h6">{product.name}</Typography>
+                <Typography variant="body2" color="textSecondary">
+                  {product?.merchant?.merchantDetails?.businessName}
+                </Typography>
                 <Stack
                   direction="row"
                   alignItems="center"
