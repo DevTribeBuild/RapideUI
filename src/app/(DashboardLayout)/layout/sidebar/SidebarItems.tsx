@@ -48,7 +48,7 @@ const renderMenuItems = (items: any, pathDirect: any, theme: any, currentTheme: 
     if (item.subheader) {
       // Display Subheader
       return (
-        <Box key={item.subheader} sx={{ border:"1p solid red"}}>
+        <Box key={item.subheader} sx={{ border: "1p solid red" }}>
           {/* <Menu
             subHeading={item.subheader}
             key={item.subheader}
@@ -62,6 +62,7 @@ const renderMenuItems = (items: any, pathDirect: any, theme: any, currentTheme: 
               pl: 3,
               pt: 2,
               pb: 1,
+              mt: 4,
               fontWeight: 'bold',
               color: currentTheme === 'dark' ? '#fff' : '#000000'
             }}
@@ -76,22 +77,65 @@ const renderMenuItems = (items: any, pathDirect: any, theme: any, currentTheme: 
     if (item.children) {
       return (
         <Box key={item.id}>
-        <Submenu
+          <Submenu
+            key={item.id}
+            title={item.title}
+            icon={React.cloneElement(itemIcon, {
+              sx: {
+                color: pathDirect === item?.href ? "#000" : textColor,
+                fontSize: 22,
+              },
+            })}
+            borderRadius="7px"
+            sx={{
+              px: 2.5,
+              py: 1.2,
+              borderRadius: "7px",
+              backgroundColor: pathDirect === item?.href ? "#FFD700" : "transparent",
+              color: pathDirect === item?.href ? "#000" : textColor,
+              transition: "all 0.25s ease-in-out",
+              "&:hover": {
+                backgroundColor: pathDirect === item?.href ? "#FFD700" : "rgba(0, 0, 0, 0.05)",
+                color: "#000",
+                "& svg": {
+                  color: "#000",
+                },
+              },
+              "& .MuiTypography-root": {
+                fontWeight: 600,
+                color: pathDirect === item?.href ? "#000" : textColor,
+              },
+            }}
+          >
+            {renderMenuItems(item.children, pathDirect, theme, currentTheme)}
+          </Submenu>
+        </Box>
+      );
+    }
+
+    // If the item has no children, render a MenuItem
+
+    return (
+      <Box sx={{ borderBottom: '1px solid #383938' }} key={item.id}>
+        <MenuItem
           key={item.id}
-          title={item.title}
+          isSelected={pathDirect === item?.href}
+          borderRadius="8px"
           icon={React.cloneElement(itemIcon, {
             sx: {
               color: pathDirect === item?.href ? "#000" : textColor,
-              fontSize: 22,
+              fontSize: 24,
             },
           })}
-          borderRadius="7px"
+          link={item.href}
+          component={Link}
           sx={{
-            px: 2.5,
+            
+            px: 3,
             py: 1.2,
-            borderRadius: "7px",
-            backgroundColor: pathDirect === item?.href ? "#FFD700" : "transparent",
+            borderRadius: "8px",
             color: pathDirect === item?.href ? "#000" : textColor,
+            backgroundColor: pathDirect === item?.href ? "#FFD700 !improtant" : "transparent",
             transition: "all 0.25s ease-in-out",
             "&:hover": {
               backgroundColor: pathDirect === item?.href ? "#FFD700" : "rgba(0, 0, 0, 0.05)",
@@ -100,60 +144,19 @@ const renderMenuItems = (items: any, pathDirect: any, theme: any, currentTheme: 
                 color: "#000",
               },
             },
-            "& .MuiTypography-root": {
-              fontWeight: 600,
-              color: pathDirect === item?.href ? "#000" : textColor,
-            },
           }}
         >
-          {renderMenuItems(item.children, pathDirect, theme, currentTheme)}
-        </Submenu>
-        </Box>
-      );
-    }
-
-    // If the item has no children, render a MenuItem
-
-    return (
-      <MenuItem
-        key={item.id}
-        isSelected={pathDirect === item?.href}
-        borderRadius="8px"
-        icon={React.cloneElement(itemIcon, {
-          sx: {
-            color: pathDirect === item?.href ? "#000" : textColor,
-            fontSize: 24,
-          },
-        })}
-        link={item.href}
-        component={Link}
-        sx={{
-          px: 3,
-          py: 1.2,
-          borderRadius: "8px",
-          color: pathDirect === item?.href ? "#000" : textColor,
-          backgroundColor: pathDirect === item?.href ? "#FFD700 !improtant" : "transparent",
-          transition: "all 0.25s ease-in-out",
-          "&:hover": {
-            backgroundColor: pathDirect === item?.href ? "#FFD700" : "rgba(0, 0, 0, 0.05)",
-            color: "#000",
-            "& svg": {
-              color: "#000",
-            },
-          },
-        }}
-      >
-        <Typography
-          variant="body1"
-          sx={{
-            fontWeight: 600,
-            color: pathDirect === item?.href ? "#000" : textColor,
-          }}
-        >
-          {item.title}
-        </Typography>
-      </MenuItem>
-
+            <Typography
+              variant="body1"
+              sx={{
+                fontWeight: 600,
+                color: pathDirect === item?.href ? "#000" : textColor,
+              }}
+            >
+              {item.title}
+            </Typography>
+        </MenuItem>
+      </Box>
     );
   });
 };

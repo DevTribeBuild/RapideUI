@@ -73,7 +73,7 @@ const MSidebar = ({
               {/* ------------------------------------------- */}
               {/* Sidebar Items */}
               {/* ------------------------------------------- */}
-              <SidebarItems />
+              <SidebarItems /> 
             </Box>
           </Box>
         </Drawer>

@@ -74,9 +74,9 @@ const renderMenuItems = (items: any, pathDirect: any) => {
         icon={itemIcon}
         link={item.href}
         component={Link}
-        sx={{ px: 3 }}
+        sx={{ px: 3, borderBottom: '1px solid #eee'}}
       >
-        {item.title} 
+        {item.title} **
       </MenuItem >
     );
   });
