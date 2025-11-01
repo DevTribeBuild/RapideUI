@@ -119,33 +119,52 @@ const renderMenuItems = (items: any, pathDirect: any, theme: any, currentTheme: 
       <Box sx={{ borderBottom: '1px solid #383938' }} key={item.id}>
         <MenuItem
           key={item.id}
-          isSelected={pathDirect === item?.href}
-          borderRadius="8px"
-          icon={React.cloneElement(itemIcon, {
-            sx: {
-              color: pathDirect === item?.href ? "#000" : textColor,
-              fontSize: 24,
-            },
-          })}
-          link={item.href}
+          selected={pathDirect === item?.href}
           component={Link}
+          icon={itemIcon}
+          href={item.href}
+          disableRipple
           sx={{
-            
-            px: 3,
-            py: 1.2,
+            p: 0, // Remove default padding to delegate it to Box
             borderRadius: "8px",
-            color: pathDirect === item?.href ? "#000" : textColor,
-            backgroundColor: pathDirect === item?.href ? "#FFD700 !improtant" : "transparent",
-            transition: "all 0.25s ease-in-out",
-            "&:hover": {
-              backgroundColor: pathDirect === item?.href ? "#FFD700" : "rgba(0, 0, 0, 0.05)",
-              color: "#000",
-              "& svg": {
-                color: "#000",
-              },
+            overflow: "hidden",
+            "&.Mui-selected": {
+              backgroundColor: "transparent", // disable default MUI selection color
+            },
+            "&.Mui-selected:hover": {
+              backgroundColor: "transparent",
             },
           }}
         >
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              width: "100%",
+              px: 3,
+              py: 1.2,
+              borderRadius: "8px",
+              color: pathDirect === item?.href ? "#000" : textColor,
+              backgroundColor: pathDirect === item?.href ? "#FFD700" : "transparent",
+              transition: "all 0.25s ease-in-out",
+              "&:hover": {
+                backgroundColor:
+                  pathDirect === item?.href
+                    ? "#FFD700"
+                    : "rgba(0, 0, 0, 0.05)",
+                color: "#000",
+                "& svg": { color: "#000" },
+              },
+            }}
+          >
+            {/* {React.cloneElement(itemIcon, {
+              sx: {
+                color: pathDirect === item?.href ? "#000" : textColor,
+                fontSize: 24,
+              },
+            })} */}
+
             <Typography
               variant="body1"
               sx={{
@@ -155,6 +174,7 @@ const renderMenuItems = (items: any, pathDirect: any, theme: any, currentTheme: 
             >
               {item.title}
             </Typography>
+          </Box>
         </MenuItem>
       </Box>
     );
@@ -183,7 +203,7 @@ const SidebarItems = () => {
     < >
       <MUI_Sidebar width={"100%"} showProfile={false} >
 
-        <Box sx={{ p: 2, display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <Box sx={{ p: 2.5, display: "flex", justifyContent: "center", alignItems: "center" }}>
           <Typography variant="h5" fontWeight="bold" color={theme.palette.primary.main}>
             Swifteroute
           </Typography>

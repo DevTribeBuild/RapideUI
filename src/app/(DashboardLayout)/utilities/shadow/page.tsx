@@ -13,8 +13,48 @@ const Item = styled(Paper)(({ theme }) => ({
   lineHeight: '60px',
 }));
 
-const darkTheme = createTheme({ palette: { mode: 'dark' } });
-const lightTheme = createTheme({ palette: { mode: 'light' } });
+const darkTheme = createTheme({ palette: { mode: 'dark' }, components: {
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          borderRadius: "8px",
+          transition: "all 0.25s ease-in-out",
+          "&.Mui-selected": {
+            backgroundColor: "#FFD700 !important",
+            color: "#000",
+            fontWeight: 600,
+            boxShadow: "0 2px 6px rgba(0, 0, 0, 0.15)",
+          },
+          "&.Mui-selected:hover": {
+            backgroundColor: "#FFD700 !important",
+            transform: "scale(1.02)",
+          },
+        },
+      },
+    },
+  },
+ });
+const lightTheme = createTheme({ palette: { mode: 'light' }, components: {
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          borderRadius: "8px",
+          transition: "all 0.25s ease-in-out",
+          "&.Mui-selected": {
+            backgroundColor: "#FFD700 !important",
+            color: "#000",
+            fontWeight: 600,
+            boxShadow: "0 2px 6px rgba(0, 0, 0, 0.15)",
+          },
+          "&.Mui-selected:hover": {
+            backgroundColor: "#FFD700 !important",
+            transform: "scale(1.02)",
+          },
+        },
+      },
+    },
+  },
+ });
 
 const Shadow = () => {
   return (
