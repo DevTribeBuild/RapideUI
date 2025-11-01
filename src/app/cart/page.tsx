@@ -5,7 +5,7 @@ import { MY_CART_QUERY } from '@/graphql/cart/queries';
 import { UPDATE_CART_ITEM_MUTATION, REMOVE_FROM_CART_MUTATION, CLEAR_CART_MUTATION } from '@/graphql/cart/mutations';
 import toast from 'react-hot-toast';
 import { useRouter } from "next/navigation";
-import { Container, Typography, Paper, Grid, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button, Card, Box, Fab, Divider, Tooltip } from "@mui/material";
+import { Container, Typography, Paper, Grid, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button, Card, Box, Fab, Divider, Tooltip, useTheme } from "@mui/material";
 import OrderStatusStepper from "@/app/(DashboardLayout)/components/shared/OrderStatusStepper";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -43,6 +43,7 @@ import useAuthStore from "@/stores/useAuthStore";
 import { Remove, Add } from "@mui/icons-material";
 
 const CartPage: React.FC = () => {
+    const theme = useTheme();
     const { token } = useAuthStore();
     const router = useRouter();
     const { data, loading, error, refetch } = useQuery<MyCartQuery>(MY_CART_QUERY, {
@@ -126,158 +127,190 @@ const CartPage: React.FC = () => {
                             ) : cartItems.length === 0 ? (
                                 <Typography>Your cart is empty.</Typography>
                             ) : (
-                                <Box sx={{ maxHeight: { md:'70vh', xs:'calc(50vh - 120px)'}, overflowY: 'auto' }}>
-                                {cartItems.map((item: any) => (
-                                    <Card
-                                        key={item.product.id}
-                                        sx={{
-                                            display: 'flex',
-                                            flexWrap: 'wrap',
-                                            alignItems: 'flex-start',
-                                            justifyContent: 'space-between',
-                                            p: 2,
-                                            mb: 2,
-                                            borderRadius: 3,
-                                            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                                            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                                            '&:hover': {
-                                                transform: 'translateY(-2px)',
-                                                boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
-                                            },
-                                        }}
-                                    >
-                                        {/* Product Image */}
-                                        <Box sx={{ flexShrink: 0, mr: 2 }}>
-                                            <Image
-                                                src={item.product.imageUrl}
-                                                alt={item.product.name}
-                                                width={120}
-                                                height={120}
-                                                style={{
-                                                    borderRadius: '8px',
-                                                    objectFit: 'cover',
-                                                }}
-                                            />
-                                        </Box>
 
-                                        {/* Product Details */}
-                                        <Box
+                                <Box
+                                    sx={{
+                                        maxHeight: { md: '70vh', xs: 'calc(50vh - 120px)' },
+                                        overflowY: 'auto',
+                                        pr: 1,
+
+                                        '&::-webkit-scrollbar': {
+                                        width: 8,
+                                        },
+                                        '&::-webkit-scrollbar-track': {
+                                        backgroundColor:
+                                            theme.palette.mode === 'dark'
+                                            ? theme.palette.grey[800]
+                                            : theme.palette.grey[200],
+                                        borderRadius: 8,
+                                        },
+                                        '&::-webkit-scrollbar-thumb': {
+                                        backgroundColor: '#FFD700',
+                                        borderRadius: 8,
+                                        transition: 'background-color 0.3s ease, transform 0.2s ease',
+                                        },
+                                        '&::-webkit-scrollbar-thumb:hover': {
+                                        backgroundColor: '#ffcc00', // slightly darker gold on hover
+                                        transform: 'scale(1.1)',
+                                        },
+
+                                        /* Firefox support */
+                                        scrollbarWidth: 'thin',
+                                        scrollbarColor: '#FFD700 transparent',
+                                    }}
+                                    >
+
+                                    {cartItems.map((item: any) => (
+                                        <Card
+                                            key={item.product.id}
                                             sx={{
                                                 display: 'flex',
-                                                flexDirection: 'column',
-                                                flexGrow: 1,
+                                                flexWrap: 'wrap',
+                                                alignItems: 'flex-start',
                                                 justifyContent: 'space-between',
+                                                p: 2,
+                                                mb: 2,
+                                                borderRadius: 3,
+                                                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                                                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                                                '&:hover': {
+                                                    transform: 'translateY(-2px)',
+                                                    boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+                                                },
                                             }}
                                         >
-                                            {/* Name and Price */}
-                                            <Box>
-                                                <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5 }}>
-                                                    {item.product.name}
-                                                </Typography>
-                                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                                    Price:&nbsp;
-                                                    <Typography component="span" sx={{ fontWeight: 600 }}>
-                                                        KES {item.product.price.toFixed(2)}
-                                                    </Typography>
-                                                </Typography>
+                                            {/* Product Image */}
+                                            <Box sx={{ flexShrink: 0, mr: 2 }}>
+                                                <Image
+                                                    src={item.product.imageUrl}
+                                                    alt={item.product.name}
+                                                    width={120}
+                                                    height={120}
+                                                    style={{
+                                                        borderRadius: '8px',
+                                                        objectFit: 'cover',
+                                                    }}
+                                                />
                                             </Box>
 
-                                            <Divider sx={{ my: 1.5 }} />
-
-                                            {/* Quantity Controls */}
+                                            {/* Product Details */}
                                             <Box
                                                 sx={{
                                                     display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: 2,
+                                                    flexDirection: 'column',
+                                                    flexGrow: 1,
+                                                    justifyContent: 'space-between',
                                                 }}
                                             >
-                                                <IconButton
-                                                    onClick={() => handleUpdateQuantity(item.product.id, item.quantity - 1)}
-                                                    disabled={item.quantity <= 1}
+                                                {/* Name and Price */}
+                                                <Box>
+                                                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5 }}>
+                                                        {item.product.name}
+                                                    </Typography>
+                                                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                                                        Price:&nbsp;
+                                                        <Typography component="span" sx={{ fontWeight: 600 }}>
+                                                            KES {item.product.price.toFixed(2)}
+                                                        </Typography>
+                                                    </Typography>
+                                                </Box>
+
+                                                <Divider sx={{ my: 1.5 }} />
+
+                                                {/* Quantity Controls */}
+                                                <Box
                                                     sx={{
-                                                        border: '2px solid',
-                                                        borderColor: 'primary.main',
-                                                        color: 'primary.main',
-                                                        transition: 'all 0.2s ease',
-                                                        '&:hover': {
-                                                        bgcolor: 'primary.main',
-                                                        color: 'white',
-                                                        },
-                                                        '&.Mui-disabled': {
-                                                        borderColor: 'grey.300',
-                                                        color: 'grey.400',
-                                                        },
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: 2,
                                                     }}
+                                                >
+                                                    <IconButton
+                                                        onClick={() => handleUpdateQuantity(item.product.id, item.quantity - 1)}
+                                                        disabled={item.quantity <= 1}
+                                                        sx={{
+                                                            border: '2px solid',
+                                                            borderColor: 'primary.main',
+                                                            color: 'primary.main',
+                                                            transition: 'all 0.2s ease',
+                                                            '&:hover': {
+                                                                bgcolor: 'primary.main',
+                                                                color: 'white',
+                                                            },
+                                                            '&.Mui-disabled': {
+                                                                borderColor: 'grey.300',
+                                                                color: 'grey.400',
+                                                            },
+                                                        }}
                                                     >
-                                                    <Remove fontSize="small" />
+                                                        <Remove fontSize="small" />
                                                     </IconButton>
 
                                                     <Typography
-                                                    variant="body1"
-                                                    sx={{
-                                                        minWidth: 28,
-                                                        textAlign: 'center',
-                                                        fontWeight: 600,
-                                                    }}
+                                                        variant="body1"
+                                                        sx={{
+                                                            minWidth: 28,
+                                                            textAlign: 'center',
+                                                            fontWeight: 600,
+                                                        }}
                                                     >
-                                                    {item.quantity}
+                                                        {item.quantity}
                                                     </Typography>
 
                                                     <IconButton
-                                                    onClick={() => handleUpdateQuantity(item.product.id, item.quantity + 1)}
-                                                    sx={{
-                                                        border: '2px solid',
-                                                        borderColor: 'primary.main',
-                                                        color: 'primary.main',
-                                                        transition: 'all 0.2s ease',
-                                                        '&:hover': {
-                                                        bgcolor: 'primary.main',
-                                                        color: 'white',
-                                                        },
-                                                    }}
+                                                        onClick={() => handleUpdateQuantity(item.product.id, item.quantity + 1)}
+                                                        sx={{
+                                                            border: '2px solid',
+                                                            borderColor: 'primary.main',
+                                                            color: 'primary.main',
+                                                            transition: 'all 0.2s ease',
+                                                            '&:hover': {
+                                                                bgcolor: 'primary.main',
+                                                                color: 'white',
+                                                            },
+                                                        }}
                                                     >
-                                                    <Add fontSize="small" />
+                                                        <Add fontSize="small" />
                                                     </IconButton>
+                                                </Box>
+
+                                                {/* Subtotal */}
+                                                <Typography
+                                                    variant="body2"
+                                                    sx={{
+                                                        mt: 2,
+                                                        fontWeight: 500,
+                                                        color: 'text.primary',
+                                                    }}
+                                                >
+                                                    Subtotal:&nbsp;
+                                                    <Typography component="span" sx={{ fontWeight: 700 }}>
+                                                        KES {(item.product.price * item.quantity).toFixed(2)}
+                                                    </Typography>
+                                                </Typography>
                                             </Box>
 
-                                            {/* Subtotal */}
-                                            <Typography
-                                                variant="body2"
+                                            {/* Action Buttons */}
+                                            <Box
                                                 sx={{
-                                                    mt: 2,
-                                                    fontWeight: 500,
-                                                    color: 'text.primary',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'space-between',
+                                                    ml: 1,
                                                 }}
                                             >
-                                                Subtotal:&nbsp;
-                                                <Typography component="span" sx={{ fontWeight: 700 }}>
-                                                    KES {(item.product.price * item.quantity).toFixed(2)}
-                                                </Typography>
-                                            </Typography>
-                                        </Box>
+                                                <Tooltip title="Remove from Cart">
+                                                    <IconButton
+                                                        color="error"
+                                                        onClick={() => handleRemoveItem(item.product.id)}
+                                                        sx={{ mb: 1 }}
+                                                    >
+                                                        <DeleteIcon />
+                                                    </IconButton>
+                                                </Tooltip>
 
-                                        {/* Action Buttons */}
-                                        <Box
-                                            sx={{
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                alignItems: 'center',
-                                                justifyContent: 'space-between',
-                                                ml: 1,
-                                            }}
-                                        >
-                                            <Tooltip title="Remove from Cart">
-                                                <IconButton
-                                                    color="error"
-                                                    onClick={() => handleRemoveItem(item.product.id)}
-                                                    sx={{ mb: 1 }}
-                                                >
-                                                    <DeleteIcon />
-                                                </IconButton>
-                                            </Tooltip>
-
-                                            {/* <Tooltip title="Preview Item">
+                                                {/* <Tooltip title="Preview Item">
                                                 <IconButton
                                                     color="primary"
                                                     onClick={() => setPreviewItem(item.product)}
@@ -285,111 +318,111 @@ const CartPage: React.FC = () => {
                                                     <VisibilityIcon />
                                                 </IconButton>
                                             </Tooltip> */}
-                                        </Box>
-                                    </Card>
-                                )
-                            )}
-                            </Box>
+                                            </Box>
+                                        </Card>
+                                    )
+                                    )}
+                                </Box>
                             )
-                            
+
                             }
                         </Grid>
                         <Grid size={{ xs: 12, md: 4 }}>
                             <Paper
                                 elevation={3}
                                 sx={{
-                                p: 3,
-                                borderRadius: 3,
-                                bgcolor: 'background.paper',
-                                boxShadow: '0 2px 10px rgba(0,0,0,0.08)',
-                                transition: 'all 0.3s ease',
-                                '&:hover': {
-                                    boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
-                                },
+                                    p: 3,
+                                    borderRadius: 3,
+                                    bgcolor: 'background.paper',
+                                    boxShadow: '0 2px 10px rgba(0,0,0,0.08)',
+                                    transition: 'all 0.3s ease',
+                                    '&:hover': {
+                                        boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+                                    },
                                 }}
                             >
                                 {/* Header */}
                                 <Typography
-                                variant="h6"
-                                gutterBottom
-                                sx={{ fontWeight: 700, mb: 2, color: 'text.primary' }}
+                                    variant="h6"
+                                    gutterBottom
+                                    sx={{ fontWeight: 700, mb: 2, color: 'text.primary' }}
                                 >
-                                Order Summary
+                                    Order Summary
                                 </Typography>
 
                                 <Divider sx={{ mb: 2 }} />
 
                                 {/* Subtotal */}
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                                <Typography variant="body1" color="text.secondary">
-                                    Subtotal
-                                </Typography>
-                                <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                    KES {total.toFixed(2)}
-                                </Typography>
+                                    <Typography variant="body1" color="text.secondary">
+                                        Subtotal
+                                    </Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                        KES {total.toFixed(2)}
+                                    </Typography>
                                 </Box>
 
                                 {/* Shipping */}
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                                <Typography variant="body1" color="text.secondary">
-                                    Shipping
-                                </Typography>
-                                <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                    KES 0.00
-                                </Typography>
+                                    <Typography variant="body1" color="text.secondary">
+                                        Shipping
+                                    </Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                        KES 0.00
+                                    </Typography>
                                 </Box>
 
                                 <Divider sx={{ my: 2 }} />
 
                                 {/* Total */}
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                                <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                                    Total
-                                </Typography>
-                                <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main' }}>
-                                    KES {total.toFixed(2)}
-                                </Typography>
+                                    <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                                        Total
+                                    </Typography>
+                                    <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                                        KES {total.toFixed(2)}
+                                    </Typography>
                                 </Box>
 
                                 <Divider sx={{ mb: 2 }} />
 
                                 {/* Buttons */}
                                 <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
-                                <Button
-                                    variant="outlined"
-                                    color="error"
-                                    fullWidth
-                                    onClick={handleClearCart}
-                                    sx={{
-                                    textTransform: 'none',
-                                    borderRadius: 2,
-                                    fontWeight: 600,
-                                    py: 1,
-                                    '&:hover': { borderColor: 'error.dark', color: 'error.dark' },
-                                    }}
-                                >
-                                    Clear Cart
-                                </Button>
+                                    <Button
+                                        variant="outlined"
+                                        color="error"
+                                        fullWidth
+                                        onClick={handleClearCart}
+                                        sx={{
+                                            textTransform: 'none',
+                                            borderRadius: 2,
+                                            fontWeight: 600,
+                                            py: 1,
+                                            '&:hover': { borderColor: 'error.dark', color: 'error.dark' },
+                                        }}
+                                    >
+                                        Clear Cart
+                                    </Button>
 
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    fullWidth
-                                    onClick={checkoutProceeed}
-                                    sx={{
-                                    textTransform: 'none',
-                                    borderRadius: 2,
-                                    fontWeight: 600,
-                                    py: 1,
-                                    boxShadow: 'none',
-                                    '&:hover': { boxShadow: 2 },
-                                    }}
-                                >
-                                    Checkout
-                                </Button>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        fullWidth
+                                        onClick={checkoutProceeed}
+                                        sx={{
+                                            textTransform: 'none',
+                                            borderRadius: 2,
+                                            fontWeight: 600,
+                                            py: 1,
+                                            boxShadow: 'none',
+                                            '&:hover': { boxShadow: 2 },
+                                        }}
+                                    >
+                                        Checkout
+                                    </Button>
                                 </Box>
                             </Paper>
-                            </Grid>
+                        </Grid>
                     </Grid>
                 )}
                 <Dialog
