@@ -146,132 +146,89 @@ const TrackingPage = () => {
         <Divider sx={{ my: 3 }} />
 
 
-        {/* Rider Section Accordion */}
-        {rider && (
-          <Card
-            sx={{
-              mb: 2,
-              p: 2,
-              border: "1px solid #ffd700",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-              borderRadius: 2,
-              maxWidth: 600,
-            }}
-          >
-            <CardHeader
-              avatar={
-                // <Avatar
-                //   src={rider.imageUrl}
-                //   alt={rider.firstName}
-                //   sx={{
-                //     width: 64,
-                //     height: 64,
-                //     border: "2px solid #ffd700",
-                //     boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                //   }}
-                // />
-                <></>
-              }
-              title={
-                // <Typography variant="h6" fontWeight={600}>
-                //   Rider Details
-                // </Typography>
-                <></>
-              }
-            />
+        <Grid container spacing={3}>
+          {/* Rider Details Card */}
+          {(user?.userType === 'USER' || user?.userType === 'ADMIN') && rider && (
+            <Grid size={{xs:12, md:6}}>
+              <Card sx={{ mb: 2, p: 2, border: '1px solid #ffd700', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', borderRadius: 2 }}>
+                <CardHeader title={<Typography variant="h6" fontWeight={600}>Rider Details</Typography>} />
+                <CardContent>
+                  <Grid container spacing={2}>
+                    <Grid size={{xs:12, sm:8}}>
+                      <Avatar src={rider.imageUrl} alt={rider.firstName} sx={{ width: 64, height: 64, border: '2px solid #ffd700', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', mb: 2 }} />
+                      <Typography variant="body1"><strong>Name:</strong> {rider.firstName} {rider.lastName}</Typography>
+                      <Typography variant="body1"><strong>Email:</strong> {rider.email}</Typography>
+                      <Typography variant="body1"><strong>Phone:</strong> <span style={{ filter: (order.status === 'ASSIGNED' || order.status === 'IN_TRANSIT') ? 'none' : 'blur(5px)' }}>{rider.phone}</span></Typography>
+                    </Grid>
+                    <Grid size={{xs:12, sm:4}}>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 1 }}>
+                        <IconButton color="success" component="a" href={`https://wa.me/${fullPhoneNumber}`} target="_blank" rel="noopener noreferrer" disabled={!(order.status === 'ASSIGNED' || order.status === 'IN_TRANSIT')} sx={{ bgcolor: "#25D366", "&:hover": { bgcolor: "#1DA851" }, color: "white" }}>
+                          <WhatsAppIcon />
+                        </IconButton>
+                        <IconButton color="primary" component="a" href={`tel:+${fullPhoneNumber}`} disabled={!(order.status === 'ASSIGNED' || order.status === 'IN_TRANSIT')} sx={{ bgcolor: "#1976d2", "&:hover": { bgcolor: "#125ea5" }, color: "white" }}>
+                          <CallIcon />
+                        </IconButton>
+                      </Box>
+                    </Grid>
+                  </Grid>
+                </CardContent>
+              </Card>
+            </Grid>
+          )}
 
-            <CardContent>
-              <Grid container spacing={2}>
-                {/* Rider Info */}
-                <Grid size={{ md: 6 }}>
-                  <Avatar
-                    src={rider.imageUrl}
-                    alt={rider.firstName}
-                    sx={{
-                      width: 64,
-                      height: 64,
-                      border: "2px solid #ffd700",
-                      boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                      mb: 2,
-                    }}
-                  />
-                  <Typography variant="body1">
-                    <strong>Name:</strong> {rider.firstName} {rider.lastName}
-                  </Typography>
-                  <Typography variant="body1">
-                    <strong>Email:</strong> {rider.email}
-                  </Typography>
-                  <Typography variant="body1">
-                    <strong>Phone:</strong> <span style={{ filter: (order.status === 'ASSIGNED' || order.status === 'IN_TRANSIT') ? 'none' : 'blur(5px)' }}>{rider.phone}</span>
-                  </Typography>
-                </Grid>
+          {/* User Details Card */}
+          {(user?.userType === 'RIDER' || user?.userType === 'ADMIN') && order.user && (
+            <Grid size={{xs:12, md:12}}>
+              <Card sx={{ mb: 2, p: 2, border: '1px solid #ffd700', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', borderRadius: 2 }}>
+                <CardHeader title={<Typography variant="h6" fontWeight={600}>User Details</Typography>} />
+                <CardContent>
+                  <Avatar src={order.user.imageUrl} alt={order.user?.firstName} sx={{ width: 64, height: 64, border: '2px solid #ffd700', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', mb: 2 }} />
+                  <Typography variant="body1"><strong>Name:</strong> {order.user?.firstName} {order.user?.lastName}</Typography>
+                  <Typography variant="body1"><strong>Email:</strong> {order.user?.email}</Typography>
+                  <Typography variant="body1"><strong>Phone:</strong> {order.user?.phone}</Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          )}
 
-                {/* Action Buttons */}
-                <Grid
-                  size={{ md: 6 }}
+          {/* Merchant Details Card */}
+          {order.merchant && (
+            <Grid size={{xs:12, md:12}}>
+              <Card sx={{ mb: 2, p: 2, border: '1px solid #ffd700', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', borderRadius: 2 }}>
+                <CardHeader title={<Typography variant="h6" fontWeight={600}>Merchant Details</Typography>} />
+                <CardContent>
+                  <Typography variant="body1"><strong>Business Name:</strong> {order.merchant.merchantDetails?.businessName}</Typography>
+                  <Typography variant="body1"><strong>Name:</strong> {order.merchant.firstName} {order.merchant.lastName}</Typography>
+                  <Typography variant="body1"><strong>Email:</strong> {order.merchant.email}</Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          )}
+
+          {/* Action Card */}
+          <Grid size={{md:4, xs:12}}>
+            <Card sx={{ mb: 2, p: 2, border: '1px solid #ffd700', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', borderRadius: 2 }}>
+              <CardContent>
+                <Button
+                  variant="contained"
+                  onClick={handleMarkAsComplete}
+                  disabled={order.status === "DELIVERED" || order.status === "RECEIVED" || confirming}
+                  disableElevation
+                  color="primary"
+                  size="large"
                   sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: { xs: "flex-start", md: "flex-end" },
-                    justifyContent: "space-between",
-                    gap: 2,
+                    borderRadius: 2,
+                    px: 4,
+                    textTransform: "none",
+                    fontWeight: 500,
                   }}
                 >
-                  <Button
-                    variant="contained"
-                    onClick={handleMarkAsComplete}
-                    disabled={order.status === "DELIVERED" || order.status === "RECEIVED" || confirming}
-                    disableElevation
-                    color="primary"
-                    size="large"
-                    sx={{
-                      borderRadius: 2,
-                      px: 4,
-                      textTransform: "none",
-                      fontWeight: 500,
-                    }}
-                  >
-                    {confirming ? <CircularProgress size={24} /> : (user?.userType === 'RIDER' ? 'Mark as Delivered' : 'Mark as Received')}
-                  </Button>
-
-                  {/* WhatsApp & Call Icons */}
-                  <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
-                    <IconButton
-                        color="success"
-                        component="a"
-                        href={`https://wa.me/${fullPhoneNumber}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        disabled={!(order.status === 'ASSIGNED' || order.status === 'IN_TRANSIT')}
-                        sx={{
-                          bgcolor: "#25D366",
-                          "&:hover": { bgcolor: "#1DA851" },
-                          color: "white",
-                        }}
-                      >
-                        <WhatsAppIcon />
-                      </IconButton>
-
-                      <IconButton
-                        color="primary"
-                        component="a"
-                        href={`tel:+${fullPhoneNumber}`}
-                        disabled={!(order.status === 'ASSIGNED' || order.status === 'IN_TRANSIT')}
-                        sx={{
-                          bgcolor: "#1976d2",
-                          "&:hover": { bgcolor: "#125ea5" },
-                          color: "white",
-                        }}
-                      >
-                        <CallIcon />
-                      </IconButton>
-                    </Box>
-                </Grid>
-              </Grid>
-            </CardContent>
-
-          </Card>
-        )}
+                  {confirming ? <CircularProgress size={24} /> : (user?.userType === 'RIDER' ? 'Mark as Delivered' : 'Mark as Received')}
+                </Button>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
 
         {/* Map Section */}
       {(order.status === 'ASSIGNED' || order.status === 'IN_TRANSIT') && (
