@@ -84,7 +84,7 @@ const TrackingPage = () => {
   let fullPhoneNumber = "";
   if (rider) {
     // sanitize phone and build full international number
-    const sanitizedPhone = rider.phone.replace(/\D/g, "").replace(/^0+/, "");
+    const sanitizedPhone = rider?.phone?.replace(/\D/g, "").replace(/^0+/, "");
     const countryCode = countryCodes[rider.locale?.toLowerCase()] || "254";
     fullPhoneNumber = `${countryCode}${sanitizedPhone}`;
   }
