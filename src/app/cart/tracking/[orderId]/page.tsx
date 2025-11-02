@@ -31,11 +31,13 @@ import toast from 'react-hot-toast';
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import PhoneIcon from "@mui/icons-material/Phone";
 import CallIcon from "@mui/icons-material/Call";
+import useAuthStore from "@/stores/useAuthStore";
 
 
 
 const TrackingPage = () => {
   const { orderId } = useParams();
+  const { user } = useAuthStore();
 
   const { data, loading, error, refetch } = useQuery(GET_ORDER_QUERY, {
     variables: { orderId },
@@ -153,6 +155,7 @@ const TrackingPage = () => {
               border: "1px solid #ffd700",
               boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
               borderRadius: 2,
+              maxWidth: 600,
             }}
           >
             <CardHeader
@@ -225,10 +228,10 @@ const TrackingPage = () => {
                       borderRadius: 2,
                       px: 4,
                       textTransform: "none",
-                      fontWeight: 600,
+                      fontWeight: 500,
                     }}
                   >
-                    {confirming ? <CircularProgress size={24} /> : "Mark as Received"}
+                    {confirming ? <CircularProgress size={24} /> : (user?.userType === 'RIDER' ? 'Mark as Delivered' : 'Mark as Received')}
                   </Button>
 
                   {/* WhatsApp & Call Icons */}
