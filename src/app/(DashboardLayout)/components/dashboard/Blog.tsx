@@ -222,9 +222,9 @@ const Blog = () => {
     <Box>
       {isMobile ? (
         <Accordion elevation={0} sx={{ mb: 3 }}>
-          <AccordionSummary expandIcon={<IconChevronDown color="#ffd700"/>}>
+          <AccordionSummary expandIcon={<IconChevronDown color="#ffd700" />}>
             <Stack direction="row" alignItems="center" spacing={1}>
-              <IconFilter color="#ffd700"/> {/* Yellow filter icon */}
+              <IconFilter color="#ffd700" /> {/* Yellow filter icon */}
               <Typography variant="subtitle1" color="#ffd700">Filter by Category</Typography>
             </Stack>
           </AccordionSummary>
@@ -257,7 +257,7 @@ const Blog = () => {
           variant="scrollable"
           scrollButtons="auto"
           aria-label="category tabs"
-          sx={{ mb: 3, maxWidth:'90vw' }}
+          sx={{ mb: 3, maxWidth: '90vw' }}
         >
           <Tab label="All" value={null} />
           {categories.map((category) => (
@@ -266,210 +266,324 @@ const Blog = () => {
         </Tabs>
       )}
       <Grid container spacing={3}>
-      {productsToDisplay.map((product) => {
-        const productId = product.id;
-        const cartItem = cartItemsMap.get(productId);
-        const isInCart = !!cartItem;
-        const currentQuantity = cartItem?.quantity || 1;
-        console.log(product, "isInCart:", isInCart, "currentQuantity:", currentQuantity);
+        {productsToDisplay.map((product) => {
+          const productId = product.id;
+          const cartItem = cartItemsMap.get(productId);
+          const isInCart = !!cartItem;
+          const currentQuantity = cartItem?.quantity || 1;
+          console.log(product, "isInCart:", isInCart, "currentQuantity:", currentQuantity);
 
-        return (
-          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={product.id}>
-            <BlankCard>
-              <Box
-                sx={{ height: 200, overflow: 'hidden' }}
-                onClick={() => handleOpenPreviewDialog(product)}
-                style={{ cursor: "pointer" }}
-              >
-                <Image
-                  src={product.imageUrl}
-                  alt={product.name}
-                  width={500}
-                  height={400}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    borderRadius: "4px",
-                  }}
-                />
-              </Box>
-
-              <CardContent sx={{ p: 3, pt: 2 }}>
-                <Typography variant="h6">{product.name}</Typography>
-                <Typography variant="body2" color="textSecondary">
-                  {product?.merchant?.merchantDetails?.businessName}
-                </Typography>
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  mt={1}
+          return (
+            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={product.id}>
+              <BlankCard>
+                <Box
+                  sx={{ height: 200, overflow: 'hidden' }}
+                  onClick={() => handleOpenPreviewDialog(product)}
+                  style={{ cursor: "pointer" }}
                 >
-                  <Stack direction="row" alignItems="center">
-                    <Typography variant="h6">${product.price}</Typography>
-                    <Typography
-                      color="textSecondary"
-                      ml={1}
-                      sx={{ textDecoration: "line-through" }}
-                    >
-                      ${product.price}
-                    </Typography>
-                  </Stack>
-                  <Rating
-                    name="read-only"
-                    size="small"
-                    value={5} // Assuming a default rating for now
-                    readOnly
+                  <Image
+                    src={product.imageUrl}
+                    alt={product.name}
+                    width={500}
+                    height={400}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      borderRadius: "4px",
+                    }}
                   />
-                </Stack>
+                </Box>
 
-                <Stack direction="column" alignItems="center" mt={2} spacing={1}>
-                  {token ? ( // Only show cart actions if logged in and cart has no error
-                    product.quantity === 0 ? (
-                      <Typography variant="body2" color="error">Out of Stock</Typography>
-                    ) :
-                    !isInCart ? (
-                      <>
+                <CardContent sx={{ p: 3, pt: 2 , backgroundColor: "#1e1e1e"}}>
+                  <Typography variant="h6">{product.name}</Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    {product?.merchant?.merchantDetails?.businessName}
+                  </Typography>
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    mt={1}
+                  >
+                    <Stack direction="row" alignItems="center">
+                      <Typography variant="h6">${product.price}</Typography>
+                      <Typography
+                        color="textSecondary"
+                        ml={1}
+                        sx={{ textDecoration: "line-through" }}
+                      >
+                        ${product.price}
+                      </Typography>
+                    </Stack>
+                    <Rating
+                      name="read-only"
+                      size="small"
+                      value={5} // Assuming a default rating for now
+                      readOnly
+                    />
+                  </Stack>
+
+                  <Stack direction="column" alignItems="center" mt={2} spacing={1}>
+                    {token ? ( // Only show cart actions if logged in and cart has no error
+                      product.quantity === 0 ? (
+                        <Typography variant="body2" color="error">Out of Stock</Typography>
+                      ) :
+                        !isInCart ? (
+                          <>
+                            <Button
+                              variant="contained"
+                              color="primary"
+                              fullWidth
+                              onClick={() => handleAddToCartClick(product)}
+                              disabled={loadingProductId === product.id || product.quantity === 0}
+                              sx={{ padding: "8px 16px", fontSize: "0.875rem" }}
+                            >
+                              {loadingProductId === product.id ? <CircularProgress size={24} color="inherit" /> : "Add To Cart"}
+                            </Button>
+                          </>
+                        ) : (
+                          <>
+                            {/* <Typography variant="subtitle2">Quantity:</Typography> */}
+                            <QuantityAdjuster
+                              initialQuantity={currentQuantity}
+                              onQuantityChange={(newQuantity) =>
+                                handleProductQuantityChange(productId, newQuantity)
+                              }
+                              loading={updateCartItemLoading && loadingProductId === productId}
+                            />
+                          </>
+                        )
+                    ) : (
                       <Button
                         variant="contained"
                         color="primary"
                         fullWidth
-                        onClick={() => handleAddToCartClick(product)}
-                        disabled={loadingProductId === product.id || product.quantity === 0}
+                        onClick={() => router.push("/authentication/login")}
                         sx={{ padding: "8px 16px", fontSize: "0.875rem" }}
                       >
-                        {loadingProductId === product.id ? <CircularProgress size={24} color="inherit" /> : "Add To Cart"}
+                        Login to Add to Cart
                       </Button>
-                        </>
-                    ) : (
-                      <>
-                        {/* <Typography variant="subtitle2">Quantity:</Typography> */}
-                        <QuantityAdjuster
-                          initialQuantity={currentQuantity}
-                          onQuantityChange={(newQuantity) =>
-                            handleProductQuantityChange(productId, newQuantity)
-                          }
-                          loading={updateCartItemLoading && loadingProductId === productId}
-                        />
-                      </>
-                    )
-                  ) : (
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      fullWidth
-                      onClick={() => router.push("/authentication/login")}
-                      sx={{ padding: "8px 16px", fontSize: "0.875rem" }}
-                    >
-                      Login to Add to Cart
-                    </Button>
-                  )}
-                </Stack>
-
-              </CardContent>
-            </BlankCard>
-          </Grid>
-        );
-      })}
-
-      <Dialog
-        open={openPreviewDialog}
-        onClose={handleClosePreviewDialog}
-        maxWidth="md"
-        fullWidth
-      >
-        {selectedProduct && (
-          <>
-            <DialogTitle>
-              {selectedProduct.name}
-              <IconButton
-                aria-label="close"
-                onClick={handleClosePreviewDialog}
-                sx={{
-                  position: "absolute",
-                  right: 8,
-                  top: 8,
-                  color: (theme) => theme.palette.grey[500],
-                }}
-              >
-                <IconX />
-              </IconButton>
-            </DialogTitle>
-            <DialogContent dividers>
-              <Grid container spacing={2}>
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Box sx={{ height: 400, overflow: 'hidden' }}>
-                    <Image
-                      src={selectedProduct.imageUrl}
-                      alt={selectedProduct.name}
-                      width={500}
-                      height={400}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        borderRadius: "4px",
-                      }}
-                    />
-                  </Box>
-                </Grid>
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant="h5" gutterBottom>
-                    {selectedProduct.name}
-                  </Typography>
-                  <Typography variant="body1" color="textSecondary" gutterBottom>
-                    {selectedProduct.description || "No description available."}
-                  </Typography>
-                  <Stack direction="row" alignItems="center" spacing={2} mt={2}>
-                    <Typography variant="h6" color="primary">
-                      ${selectedProduct.price}
-                    </Typography>
-                    <Typography
-                      color="textSecondary"
-                      sx={{ textDecoration: "line-through" }}
-                    >
-                      ${selectedProduct.price}
-                    </Typography>
+                    )}
                   </Stack>
-                  <Rating
-                    name="read-only"
-                    value={5} // Assuming a default rating for now
-                    readOnly
-                    sx={{ mt: 1 }}
-                  />
-                  <Typography variant="caption" display="block" mt={1}>
-                    Last updated: {new Date(selectedProduct.updatedAt).toLocaleDateString()}
-                  </Typography>
-                </Grid>
-              </Grid>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleClosePreviewDialog}>Close</Button>
-              <Button
-                variant="contained"
-                onClick={async () => {
-                  setLoadingProductId(selectedProduct.id);
-                  try {
-                    await addToCart({ variables: { input: { productId: selectedProduct.id, quantity: 1 } } });
-                    toast.success(`${selectedProduct.name} added to cart!`);
-                    handleClosePreviewDialog();
-                  } catch (err) {
-                    console.error("Error adding to cart from preview:", err);
-                    toast.error(`Failed to add ${selectedProduct.name} to cart.`);
-                  } finally {
-                    setLoadingProductId(null);
-                  }
+
+                </CardContent>
+              </BlankCard>
+            </Grid>
+          );
+        })}
+
+        <Dialog
+          open={openPreviewDialog}
+          onClose={handleClosePreviewDialog}
+          maxWidth="md"
+          fullWidth
+          PaperProps={{
+            sx: {
+              borderRadius: 4,
+              boxShadow: "0 8px 32px rgba(0,0,0,0.15)",
+              overflow: "hidden",
+              backgroundColor: "#1e1e1e",
+            },
+          }}
+        >
+          {selectedProduct && (
+            <>
+              {/* Header */}
+              <DialogTitle
+                sx={{
+                  position: "relative",
+                  fontWeight: 700,
+                  fontSize: "1.5rem",
+                  color: "#ffd700",
+                  borderBottom: "1px solid rgba(0,0,0,0.08)",
+                  pb: 1.5,
+                  backgroundColor: "#1e1e1e",
                 }}
-                disabled={loadingProductId === selectedProduct.id || selectedProduct.quantity === 0}
               >
-                {loadingProductId === selectedProduct.id ? "Adding..." : (selectedProduct.quantity === 0 ? "Out of Stock" : "Add to Cart")}
-              </Button>
-            </DialogActions>
-          </>
-        )}
-      </Dialog>
-    </Grid>
+                {selectedProduct.name}
+                <IconButton
+                  aria-label="close"
+                  onClick={handleClosePreviewDialog}
+                  sx={{
+                    position: "absolute",
+                    right: 12,
+                    top: 12,
+                    color: "grey.600",
+                    transition: "color 0.2s ease",
+                    "&:hover": { color: "#000" },
+                  }}
+                >
+                  <IconX />
+                </IconButton>
+              </DialogTitle>
+
+              {/* Content */}
+              <DialogContent
+                dividers
+                sx={{
+                  px: 3,
+                  py: 3,
+                  backgroundColor: "#1e1e1e",
+                }}
+              >
+                <Grid container spacing={3}>
+                  {/* Left: Product Image */}
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Box
+                      sx={{
+                        height: 400,
+                        borderRadius: 3,
+                        overflow: "hidden",
+                        "& img": {
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          transition: "transform 0.3s ease",
+                        },
+                        "&:hover img": {
+                          transform: "scale(1.05)",
+                        },
+                      }}
+                    >
+                      <Image
+                        src={selectedProduct.imageUrl}
+                        alt={selectedProduct.name}
+                        width={500}
+                        height={400}
+                      />
+                    </Box>
+                  </Grid>
+
+                  {/* Right: Product Info */}
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Stack spacing={2}>
+                      <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                        {selectedProduct.name}
+                      </Typography>
+
+                      <Typography
+                        variant="body1"
+                        color="text.secondary"
+                        sx={{
+                          lineHeight: 1.6,
+                          borderLeft: "3px solid #FFD700",
+                          pl: 1.5,
+                        }}
+                      >
+                        {selectedProduct.description || "No description available."}
+                      </Typography>
+
+                      <Stack direction="row" alignItems="center" spacing={2} mt={1}>
+                        <Typography
+                          variant="h6"
+                          sx={{ color: "#fff", fontWeight: 700 }}
+                        >
+                          KES {selectedProduct.price.toFixed(2)}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ textDecoration: "line-through", opacity: 0.7 }}
+                        >
+                          KES {(selectedProduct.price * 1.2).toFixed(2)}
+                        </Typography>
+                      </Stack>
+
+                      <Rating
+                        name="read-only"
+                        value={5}
+                        readOnly
+                        size="small"
+                        sx={{
+                          mt: 1,
+                          "& .MuiRating-iconFilled": { color: "#FFD700" },
+                        }}
+                      />
+
+                      <Typography
+                        variant="caption"
+                        sx={{ color: "text.secondary", mt: 1 }}
+                      >
+                        Last updated:{" "}
+                        {new Date(selectedProduct.updatedAt).toLocaleDateString()}
+                      </Typography>
+                    </Stack>
+                  </Grid>
+                </Grid>
+              </DialogContent>
+
+              {/* Actions */}
+              <DialogActions
+                sx={{
+                  borderTop: "1px solid rgba(0,0,0,0.08)",
+                  px: 3,
+                  py: 2,
+                  backgroundColor: "#1e1e1e",
+
+                }}
+              >
+                <Button
+                  onClick={handleClosePreviewDialog}
+                  sx={{
+                    textTransform: "none",
+                    fontWeight: 500,
+                    color: "text.secondary",
+                    "&:hover": { color: "#000" },
+                  }}
+                >
+                  Close
+                </Button>
+
+                <Button
+                  variant="contained"
+                  onClick={async () => {
+                    setLoadingProductId(selectedProduct.id);
+                    try {
+                      await addToCart({
+                        variables: { input: { productId: selectedProduct.id, quantity: 1 } },
+                      });
+                      toast.success(`${selectedProduct.name} added to cart!`);
+                      handleClosePreviewDialog();
+                    } catch (err) {
+                      console.error("Error adding to cart:", err);
+                      toast.error(`Failed to add ${selectedProduct.name} to cart.`);
+                    } finally {
+                      setLoadingProductId(null);
+                    }
+                  }}
+                  disabled={
+                    loadingProductId === selectedProduct.id ||
+                    selectedProduct.quantity === 0
+                  }
+                  sx={{
+                    textTransform: "none",
+                    fontWeight: 600,
+                    backgroundColor:
+                      selectedProduct.quantity === 0 ? "grey.400" : "#FFD700",
+                    color:
+                      selectedProduct.quantity === 0 ? "white" : "black",
+                    borderRadius: 3,
+                    px: 3,
+                    boxShadow: "0 3px 10px rgba(0,0,0,0.15)",
+                    "&:hover": {
+                      backgroundColor:
+                        selectedProduct.quantity === 0 ? "grey.500" : "#ffcc00",
+                    },
+                  }}
+                >
+                  {loadingProductId === selectedProduct.id
+                    ? "Adding..."
+                    : selectedProduct.quantity === 0
+                      ? "Out of Stock"
+                      : "Add to Cart"}
+                </Button>
+              </DialogActions>
+            </>
+          )}
+        </Dialog>
+
+      </Grid>
     </Box>
   );
 }

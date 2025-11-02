@@ -4,9 +4,7 @@ import useAppStore from "@/stores/useAuthStore"
 
 import { Box, Typography, Divider, useTheme } from "@mui/material";
 import {
-  Logo,
   Sidebar as MUI_Sidebar,
-  Menu,
   MenuItem,
   Submenu,
 } from "react-mui-sidebar";
@@ -34,8 +32,8 @@ type MenuItemType =
 
 
 const renderMenuItems = (items: any, pathDirect: any, theme: any, currentTheme: 'light' | 'dark') => {
-
   return items.map((item: any) => {
+    console.log("Rendering item:", item.title, "with href:", item.href);
 
     const Icon = item.icon ? item.icon : IconPoint;
 
@@ -121,8 +119,8 @@ const renderMenuItems = (items: any, pathDirect: any, theme: any, currentTheme: 
           key={item.id}
           selected={pathDirect === item?.href}
           component={Link}
+          link={item.href}
           icon={itemIcon}
-          href={item.href}
           disableRipple
           sx={{
             p: 0, // Remove default padding to delegate it to Box

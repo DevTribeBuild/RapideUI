@@ -85,6 +85,7 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
           aria-label="show bookmarks"
           color="inherit"
           component={Link}
+          disabled={!hasActiveOrders}
           href={hasActiveOrders ? `/cart/tracking/${orders.find((order: any) => order.status === 'ASSIGNED' || order.status === 'IN_TRANSIT')?.id}` : "/cart/tracking"}
           sx={{
             ...(hasActiveOrders && {
@@ -106,7 +107,7 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
               }),
             }}
           >
-            <BookmarkBorderIcon />
+            <BookmarkBorderIcon /> 
           </Badge>
         </IconButton>
         <Box flexGrow={1} />
