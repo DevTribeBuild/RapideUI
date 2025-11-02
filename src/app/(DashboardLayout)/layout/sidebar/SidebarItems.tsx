@@ -4,9 +4,7 @@ import useAppStore from "@/stores/useAuthStore"
 
 import { Box, Typography, Divider, useTheme } from "@mui/material";
 import {
-  Logo,
   Sidebar as MUI_Sidebar,
-  Menu,
   MenuItem,
   Submenu,
 } from "react-mui-sidebar";
