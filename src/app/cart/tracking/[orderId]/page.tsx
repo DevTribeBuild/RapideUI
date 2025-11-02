@@ -119,6 +119,7 @@ const TrackingPage = () => {
           width: "100%",
           p: { xs: 2, md: 4 },
           borderRadius: 0,
+          background:"#1e1e1e",
           boxShadow:
             "0 4px 10px rgba(0,0,0,0.05), 0 0 1px rgba(0,0,0,0.1)",
         }}
@@ -290,7 +291,7 @@ const TrackingPage = () => {
 
 
         {/* Order Details Accordion */}
-        <Accordion defaultExpanded sx={{ mb: 2 }}>
+        <Accordion defaultExpanded sx={{ mb: 2, background:"#1e1e1e", border:"1px solid #333332"   }}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography variant="h6" fontWeight={600}>Order Details</Typography>
           </AccordionSummary>
@@ -325,7 +326,7 @@ const TrackingPage = () => {
         </Accordion>
 
         {/* Items Summary Accordion */}
-        <Accordion defaultExpanded sx={{ mb: 2 }}>
+        <Accordion defaultExpanded sx={{ mb: 2,  background:"#1e1e1e", border:"1px solid #333332" }}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography variant="h6" fontWeight={600}>Items Summary</Typography>
           </AccordionSummary>

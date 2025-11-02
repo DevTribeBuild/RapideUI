@@ -23,7 +23,16 @@ const RiderLocationTracker = () => {
     const updateLocation = () => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
+          if (!position || !position.coords) {
+            console.error('Error: Geolocation position or coordinates are null/undefined.');
+            return;
+          }
           const { latitude, longitude } = position.coords;
+
+          if (typeof latitude !== 'number' || typeof longitude !== 'number') {
+            console.error('Error: Latitude or longitude are not valid numbers:', { latitude, longitude });
+            return;
+          }
 
           if (
             !lastLocation.current ||
@@ -45,7 +54,22 @@ const RiderLocationTracker = () => {
           }
         },
         (error) => {
-          console.error('Error getting location:', error);
+          console.error('Error getting location:', error.code, error.message);
+          // Handle specific error codes if necessary
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              console.error("User denied the request for Geolocation.");
+              break;
+            case error.POSITION_UNAVAILABLE:
+              console.error("Location information is unavailable.");
+              break;
+            case error.TIMEOUT:
+              console.error("The request to get user location timed out.");
+              break;
+            // case error.UNKNOWN_ERROR:
+            //   console.error("An unknown error occurred.");
+            //   break;
+          }
         }
       );
     };

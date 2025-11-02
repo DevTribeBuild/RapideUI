@@ -12,7 +12,7 @@ import {
 } from "react-mui-sidebar";
 import { IconPoint } from '@tabler/icons-react';
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Upgrade } from "./Updrade";
 import Image from "next/image";
 
@@ -34,8 +34,9 @@ type MenuItemType =
 
 
 const renderMenuItems = (items: any, pathDirect: any, theme: any, currentTheme: 'light' | 'dark') => {
-
+  const router = useRouter();
   return items.map((item: any) => {
+    console.log("Rendering item:", item.title, "with href:", item.href);
 
     const Icon = item.icon ? item.icon : IconPoint;
 
@@ -113,6 +114,12 @@ const renderMenuItems = (items: any, pathDirect: any, theme: any, currentTheme: 
       );
     }
 
+    const navigateTo = (link: string | undefined) => {
+      const targetLink = link || "/riders/assigned-orders"; // Fallback to '/' if link is undefined or null
+      console.log("Navigating to:", targetLink, "for item:", item.title);
+      router.push(targetLink);
+    };
+
     // If the item has no children, render a MenuItem
 
     return (
@@ -120,9 +127,10 @@ const renderMenuItems = (items: any, pathDirect: any, theme: any, currentTheme: 
         <MenuItem
           key={item.id}
           selected={pathDirect === item?.href}
-          component={Link}
+          // component={Link}
+          onClick={() => navigateTo(item.href)}
           icon={itemIcon}
-          href={item.href}
+          // href={item.href}
           disableRipple
           sx={{
             p: 0, // Remove default padding to delegate it to Box
@@ -172,7 +180,7 @@ const renderMenuItems = (items: any, pathDirect: any, theme: any, currentTheme: 
                 color: pathDirect === item?.href ? "#000" : textColor,
               }}
             >
-              {item.title}
+              {item.title} {item.href}
             </Typography>
           </Box>
         </MenuItem>

@@ -120,7 +120,7 @@ const CheckoutPage = () => {
   }, [cartData]);
 
   const cartItems = cartData?.myCart?.items || [];
-  const total = cartItems.reduce((acc: number, item: any) => acc + item.product.price * item.quantity, 0);
+  const total = cartItems.reduce((acc: number, item: any) => acc + item?.product?.price * item?.quantity, 0) || 0;
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setTab(newValue);
@@ -258,13 +258,15 @@ const CheckoutPage = () => {
   sx={{
     p: 3,
     borderRadius: 3,
+    background:"#1e1e1e",
+    border:"1px solid #333332"
   }}
 >
   <Typography
     variant="h6"
     fontWeight={600}
     gutterBottom
-    sx={{ borderBottom: "2px solid #eee", pb: 1, mb: 2 }}
+    sx={{ borderBottom: "2px solid #333332", pb: 1, mb: 2, color:"#ffd700" }}
   >
     Order Summary
   </Typography>
@@ -291,7 +293,7 @@ const CheckoutPage = () => {
             alignItems: "center",
             py: 1,
             borderBottom:
-              index !== cartItems.length - 1 ? "1px dashed #e0e0e0" : "none",
+              index !== cartItems.length - 1 ? "1px dashed #333332" : "none",
           }}
         >
           <Box>
@@ -407,8 +409,8 @@ const CheckoutPage = () => {
   return (
     <Grid container sx={{ minHeight: "100vh", p: { xs: 2, md: 4 } }}>
       <Grid size={{xs:12}}>
-        <Paper elevation={3} sx={{ width: "100%", p: { xs: 2, md: 4 } }}>
-          <Typography variant="h4" fontWeight="bold" gutterBottom>
+        <Paper elevation={3} sx={{ width: "100%", p: { xs: 2, md: 4 }, background:"#1e1e1e" }}>
+          <Typography variant="h4" fontWeight="bold" gutterBottom sx={{color:"#ffd700"}}>
             Checkout
           </Typography>
  <Stepper

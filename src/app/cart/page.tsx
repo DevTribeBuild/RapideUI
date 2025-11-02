@@ -171,6 +171,7 @@ const CartPage: React.FC = () => {
                                                 p: 2,
                                                 mb: 2,
                                                 borderRadius: 3,
+                                                background: '#1e1e1e',
                                                 boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
                                                 transition: 'transform 0.2s ease, box-shadow 0.2s ease',
                                                 '&:hover': {
@@ -333,7 +334,7 @@ const CartPage: React.FC = () => {
                                 sx={{
                                     p: 3,
                                     borderRadius: 3,
-                                    bgcolor: 'background.paper',
+                                    background: '#1e1e1e',
                                     boxShadow: '0 2px 10px rgba(0,0,0,0.08)',
                                     transition: 'all 0.3s ease',
                                     '&:hover': {

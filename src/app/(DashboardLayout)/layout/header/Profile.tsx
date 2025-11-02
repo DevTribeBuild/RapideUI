@@ -135,7 +135,7 @@ const Profile = () => {
         }}
       >
         <Avatar
-          src={user?.imageUrl || '/default-profile.png'}
+          src={user?.imageUrl || 'https://images.pexels.com/photos/14653174/pexels-photo-14653174.jpeg'}
           alt="image"
           sx={{ width: 35, height: 35 }}
         />

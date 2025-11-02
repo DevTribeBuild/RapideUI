@@ -83,6 +83,7 @@ const CartMenu = () => {
             width: '360px',
             borderRadius: 2,
             boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+            background: '#1e1e1e',
           },
         }}
       >
@@ -116,7 +117,7 @@ const CartMenu = () => {
           )}
           <Box  sx={{ maxHeight: 'calc(60vh - 120px)', overflowY: 'auto' }}>
           {cartItems.map((item: any, index: number) => (
-            <Box key={`${item?.id}-${item?.product?.id}`}>
+            <Box key={index}>
               <MenuItem sx={{ py: 1.5, px: 2, display: 'flex', alignItems: 'center' }}>
                 <Avatar src={item?.product?.imageUrl} alt={item?.product?.name} sx={{ mr: 2 }} />
                 <Box sx={{ flexGrow: 1, overflow: 'hidden' }}>
