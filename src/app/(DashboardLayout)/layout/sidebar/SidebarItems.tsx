@@ -12,7 +12,7 @@ import {
 } from "react-mui-sidebar";
 import { IconPoint } from '@tabler/icons-react';
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Upgrade } from "./Updrade";
 import Image from "next/image";
 
@@ -34,7 +34,6 @@ type MenuItemType =
 
 
 const renderMenuItems = (items: any, pathDirect: any, theme: any, currentTheme: 'light' | 'dark') => {
-  const router = useRouter();
   return items.map((item: any) => {
     console.log("Rendering item:", item.title, "with href:", item.href);
 
