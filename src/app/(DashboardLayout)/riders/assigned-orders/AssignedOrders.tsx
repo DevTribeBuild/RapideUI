@@ -243,7 +243,7 @@ const AssignedOrders = () => {
               disabled={selectedOrder.status === 'DELIVERED' || confirming}
               sx={{ textTransform: 'none', borderRadius: 2 }}
             >
-              {confirming ? <CircularProgress size={24} /> : 'Confirm Delivery'}
+              {confirming ? <CircularProgress size={24} /> : 'Mark as Delivered'}
             </Button>
           </DialogActions>
         </>

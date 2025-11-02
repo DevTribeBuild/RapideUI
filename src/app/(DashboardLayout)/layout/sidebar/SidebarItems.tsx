@@ -114,12 +114,6 @@ const renderMenuItems = (items: any, pathDirect: any, theme: any, currentTheme: 
       );
     }
 
-    const navigateTo = (link: string | undefined) => {
-      const targetLink = link || "/riders/assigned-orders"; // Fallback to '/' if link is undefined or null
-      console.log("Navigating to:", targetLink, "for item:", item.title);
-      router.push(targetLink);
-    };
-
     // If the item has no children, render a MenuItem
 
     return (
@@ -127,10 +121,9 @@ const renderMenuItems = (items: any, pathDirect: any, theme: any, currentTheme: 
         <MenuItem
           key={item.id}
           selected={pathDirect === item?.href}
-          // component={Link}
-          onClick={() => navigateTo(item.href)}
+          component={Link}
+          link={item.href}
           icon={itemIcon}
-          // href={item.href}
           disableRipple
           sx={{
             p: 0, // Remove default padding to delegate it to Box
@@ -180,7 +173,7 @@ const renderMenuItems = (items: any, pathDirect: any, theme: any, currentTheme: 
                 color: pathDirect === item?.href ? "#000" : textColor,
               }}
             >
-              {item.title} {item.href}
+              {item.title}
             </Typography>
           </Box>
         </MenuItem>
