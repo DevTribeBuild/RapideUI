@@ -86,13 +86,14 @@ type DeleteProductMutationVariables = {
 const ProductManagementApp: React.FC = () => {
   const user = useAppStore((state) => state.user);
   const merchantId = user?.id || "";
+  console.log("Merchant ID:", user?.id);
   const theme = useTheme();
   const { data: productsData, loading: productsLoading, error: productsError } = useQuery<ProductsByMerchantQuery>(PRODUCTS_BY_MERCHANT_QUERY, {
     variables: { merchantId },
   });
   const { data: categoriesData, loading: categoriesLoading, error: categoriesError } = useQuery<GetAllCategoriesQuery>(GET_ALL_CATEGORIES);
   const [products, setProducts] = useState<Product[]>([]);
-
+  console.log("Products Data:", productsError, "cat", categoriesError);
   useEffect(() => {
     if (productsData) {
       setProducts(productsData.productsByMerchant); // Changed from allProducts to productsByMerchant
@@ -270,7 +271,7 @@ const ProductManagementApp: React.FC = () => {
         }}
       >
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Typography variant="h5" component="h1" sx={{ fontWeight: 'bold', color: theme.palette.text.primary, fontSize:{md:"1rem", xs:"0.8rem"} }}>
+          <Typography variant="h5" component="h1" sx={{ fontWeight: 'bold', color: theme.palette.text.primary, fontSize: { md: "1rem", xs: "0.8rem" } }}>
             Product Management
           </Typography>
           <Button
@@ -282,7 +283,7 @@ const ProductManagementApp: React.FC = () => {
             Product
           </Button>
         </Box>
-        <TableContainer component={Paper} sx={{ borderRadius: '8px', boxShadow: 'none', border: `1px solid ${theme.palette.divider}`, overflowX: 'auto', maxWidth:"75vw" }}>
+        <TableContainer component={Paper} sx={{ borderRadius: '8px', boxShadow: 'none', border: `1px solid ${theme.palette.divider}`, overflowX: 'auto', maxWidth: "75vw" }}>
           <Table sx={{ minWidth: 650 }} aria-label="product table">
             <TableHead sx={{ bgcolor: theme.palette.background.paper }}>
               <TableRow>
