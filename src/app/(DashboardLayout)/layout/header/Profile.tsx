@@ -156,6 +156,10 @@ const Profile = () => {
           },
         }}
       >
+        <MenuItem>
+          {/* <ListItemIcon><IconUser width={20} /></ListItemIcon> */}
+          <ListItemText>{user.email}</ListItemText>
+        </MenuItem>
         <MenuItem onClick={() => handleNavigate("/profile")}>
           <ListItemIcon><IconUser width={20} /></ListItemIcon>
           <ListItemText>My Profile</ListItemText>
