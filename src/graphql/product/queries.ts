@@ -18,50 +18,50 @@ export const PRODUCT_QUERY = gql`
    }
  `;
 
+//  category {
+//    createdAt
+//    id
+//    name
+//    parentId
+//    updatedAt
+//  }
+// currency {
+//   code
+//   createdAt
+//   decimals
+//   id
+//   name
+//   rateToUSD
+//   symbol
+//   updatedAt
+// }
+// merchant {
+//   createdAt
+//   currencyId
+//   email
+//   firstName
+//   id
+//   imageUrl
+//   lastName
+//   phone
+//   updatedAt
+//   userType
+//   username
+//   walletAddress
+//   merchantDetails {
+//     businessName
+//     id
+//   }
+// }
 export const PRODUCTS_BY_MERCHANT_QUERY = gql`
 query ProductsByMerchant($merchantId: String!) {
   productsByMerchant(merchantId: $merchantId) {
-    category {
-      createdAt
-      id
-      name
-      parentId
-      updatedAt
-    }
     categoryId
     createdAt
-    currency {
-      code
-      createdAt
-      decimals
-      id
-      name
-      rateToUSD
-      symbol
-      updatedAt
-    }
     currencyId
     description
     id
     imageUrl
-    merchant {
-      createdAt
-      currencyId
-      email
-      firstName
-      id
-      imageUrl
-      lastName
-      phone
-      updatedAt
-      userType
-      username
-      walletAddress
-      merchantDetails {
-        businessName
-        id
-      }
-    }
     merchantId
     name
     price

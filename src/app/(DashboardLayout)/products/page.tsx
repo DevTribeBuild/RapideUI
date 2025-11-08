@@ -85,7 +85,8 @@ type DeleteProductMutationVariables = {
 
 const ProductManagementApp: React.FC = () => {
   const user = useAppStore((state) => state.user);
-  const merchantId = user?.id || "";
+  console.log(user, "(*&*&*")
+  const merchantId = user?.id;
   console.log("Merchant ID:", user?.id);
   const theme = useTheme();
   const { data: productsData, loading: productsLoading, error: productsError } = useQuery<ProductsByMerchantQuery>(PRODUCTS_BY_MERCHANT_QUERY, {
@@ -147,7 +148,7 @@ const ProductManagementApp: React.FC = () => {
               description: productToSave.description,
               price: Number(productToSave.price),
               imageUrl: productToSave.imageUrl,
-              categoryId: productToSave.category,
+              categoryId: productToSave?.category,
               quantity: Number(productToSave.quantity),
             },
           },
@@ -155,7 +156,7 @@ const ProductManagementApp: React.FC = () => {
         toast.success('Product updated successfully!');
       } else {
         const createProductInput = {
-          categoryId: productToSave.category,
+          categoryId: productToSave?.category,
           // currencyId: "983ffabb-f015-457a-a02b-b2d91c071edf",
           description: productToSave.description,
           imageUrl: productToSave.imageUrl,
@@ -350,7 +351,7 @@ const ProductManagementApp: React.FC = () => {
                         {product.description.substring(0, 50)}{product.description.length > 50 ? '...' : ''}
                       </Typography>
                     </TableCell>
-                    <TableCell sx={{ color: theme.palette.text.primary }}>{getCategoryName(product.category)}</TableCell>
+                    <TableCell sx={{ color: theme.palette.text.primary }}>{getCategoryName(product?.category)}</TableCell>
                     <TableCell align="right" sx={{ color: theme.palette.text.primary, fontWeight: 'medium' }}>${product.price.toFixed(2)}</TableCell>
                     <TableCell align="right" sx={{ color: product.quantity <= 5 ? theme.palette.error.main : theme.palette.text.primary, fontWeight: 'medium' }}>
                       {product.quantity}
