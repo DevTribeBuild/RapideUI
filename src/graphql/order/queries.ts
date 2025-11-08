@@ -39,89 +39,116 @@ export const UNASSIGNED_ORDERS_QUERY = gql`
 
 export const GET_ORDER_QUERY = gql`
    query GetOrder($orderId: String!) {
-     getOrder(orderId: $orderId) {
-        assignedRider {
+  getOrder(orderId: $orderId) {
+    assignedRider {
+      createdAt
+      currencyId
+      email
+      firstName
+      id
+      imageUrl
+      lastName
+      phone
+      updatedAt
+      userType
+      username
+      walletAddress
+    }
+    assignedRiderId
+    cart {
+      createdAt
+      id
+      items {
         createdAt
-        currencyId
-        email
-        firstName
         id
-        imageUrl
-        lastName
-        phone
-        updatedAt
-        userType
-        username
-        walletAddress
-      }
-      assignedRiderId
-      cart {
-        createdAt
-        id
-        items {
-          createdAt
-          id
-          product {
-            categoryId
-            createdAt
-            currency {
-              code
-              name
-              rateToUSD
-              symbol
-            }
-            currencyId
-            description
-            id
-            imageUrl
-            merchantId
+        product {
+          category {
             name
-            price
-            quantity
+            id
+          }
+          categoryId
+          createdAt
+          currency {
+            code
+            createdAt
+            decimals
+            id
+            name
+            rateToUSD
+            symbol
             updatedAt
           }
+          currencyId
+          description
+          id
+          imageUrl
+          merchant {
+            lastName
+            firstName
+            merchantDetails {
+              businessName
+            }
+          }
+          merchantId
+          name
+          price
           quantity
           updatedAt
         }
-        total
+        quantity
         updatedAt
       }
-      createdAt
-      deliveryAddress
-      deliveryLat
-      deliveryLng
-      id
-      merchant {
-        createdAt
-        currencyId
-        email
-        firstName
-        id
-        imageUrl
-        lastName
-        phone
-        updatedAt
-        userType
-        username
-        walletAddress
-      }
-      notes
-      payment {
-        amount
-        createdAt
-        id
-        method
-        orderId
-        status
-        transactionHash
-        updatedAt
-      }
-      status
       total
       updatedAt
-     }
-   }
- `;
+    }
+    createdAt
+    deliveryAddress
+    deliveryLat
+    deliveryLng
+    id
+    merchant {
+      createdAt
+      currencyId
+      email
+      firstName
+      id
+      imageUrl
+      lastName
+      merchantDetails {
+        businessName
+        id
+      }
+      phone
+      updatedAt
+      userType
+      username
+      walletAddress
+    }
+    notes
+    payment {
+      amount
+      createdAt
+      id
+      method
+      transactionHash
+      status
+    }
+    status
+    total
+    updatedAt
+    }
+    }
+    `;
+    // user {
+    //   firstName
+    //   id
+    //   imageUrl
+    //   lastName
+    //   phone
+    //   userType
+    //   username
+    //   email
+    // }
 
 export const MY_ORDERS_QUERY = gql`
   query MyOrders {
