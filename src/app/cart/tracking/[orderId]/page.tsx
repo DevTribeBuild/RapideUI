@@ -161,11 +161,11 @@ const TrackingPage = () => {
                       <Typography variant="body1"><strong>Phone:</strong> <span style={{ filter: (order.status === 'ASSIGNED' || order.status === 'IN_TRANSIT') ? 'none' : 'blur(5px)' }}>{rider.phone}</span></Typography>
                     </Grid>
                     <Grid size={{xs:12, sm:4}}>
-                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 1 }}>
-                        <IconButton color="success" component="a" href={`https://wa.me/${fullPhoneNumber}`} target="_blank" rel="noopener noreferrer" disabled={!(order.status === 'ASSIGNED' || order.status === 'IN_TRANSIT')} sx={{ bgcolor: "#25D366", "&:hover": { bgcolor: "#1DA851" }, color: "white" }}>
+                      <Box sx={{ display: 'flex', flexDirection: {xs:'column', md:'row'}, gap: 1, mt: 1 }}>
+                        <IconButton color="success" component="a" href={`https://wa.me/${fullPhoneNumber}`} target="_blank" rel="noopener noreferrer" disabled={!(order.status === 'ASSIGNED' || order.status === 'IN_TRANSIT')} sx={{ bgcolor: "#25D366", "&:hover": { bgcolor: "#1DA851" }, color: "white", width:"40px", height:"40px" }}>
                           <WhatsAppIcon />
                         </IconButton>
-                        <IconButton color="primary" component="a" href={`tel:+${fullPhoneNumber}`} disabled={!(order.status === 'ASSIGNED' || order.status === 'IN_TRANSIT')} sx={{ bgcolor: "#1976d2", "&:hover": { bgcolor: "#125ea5" }, color: "white" }}>
+                        <IconButton color="primary" component="a" href={`tel:+${fullPhoneNumber}`} disabled={!(order.status === 'ASSIGNED' || order.status === 'IN_TRANSIT')} sx={{ bgcolor: "#1976d2", "&:hover": { bgcolor: "#125ea5" }, color: "white", width:"40px", height:"40px" }}>
                           <CallIcon />
                         </IconButton>
                       </Box>
