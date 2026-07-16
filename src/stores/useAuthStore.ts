@@ -1,6 +1,5 @@
 // stores/useAppStore.ts
 import {create} from 'zustand'
-import { persist, createJSONStorage } from 'zustand/middleware'
 
 export type User = {
   id: string;
@@ -59,26 +58,18 @@ type AppState = {
   userDetails: UserDetails | null
   setToken: (token: string | null) => void
   setUser: (user: User | null) => void
-  setUserDetails: (user: UserDetails ) => void
+  setUserDetails: (userDetails: UserDetails ) => void
   clearAuth: () => void
 }
 
-const useAppStore = create<AppState>()(
-  persist(
-    (set) => ({
-      token: null,
-      user: null,
-      userDetails: null,
-      setToken: (token) => set({ token }),
-      setUser: (user) => set({ user }),
-      setUserDetails: (userDetails) => set({ userDetails }),
-      clearAuth: () => set({ token: null, user: null }),
-    }),
-    {
-      name: 'app-store-session',
-      storage: createJSONStorage(() => localStorage),
-    }
-  )
-)
+const useAppStore = create<AppState>()((set) => ({
+  token: null,
+  user: null,
+  userDetails: null,
+  setToken: (token) => set({ token }),
+  setUser: (user) => set({ user }),
+  setUserDetails: (userDetails) => set({ userDetails }),
+  clearAuth: () => set({ token: null, user: null }),
+}))
 
 export default useAppStore
