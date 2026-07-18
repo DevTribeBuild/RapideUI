@@ -10,7 +10,7 @@ import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 
 import { IconMenu } from '@tabler/icons-react';
 import useAuthStore from '@/stores/useAuthStore';
-import { useQuery, gql } from '@apollo/client'; // Import useQuery and gql
+import { useQuery } from "@apollo/client/react";
 import { keyframes } from '@emotion/react'; // Import keyframes for animation
 
 // Define the blinking animation
@@ -41,16 +41,19 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
 
   const isRider = user?.userType === 'RIDER';
 
-  const { data: ordersData } = useQuery(isRider ? RIDER_ORDERS_QUERY : MY_ORDERS_QUERY, {
-    skip: !user, // Skip query if user is not logged in
-    pollInterval: 5000, // Poll every 5 seconds to check for status changes
-  });
+  const { data: ordersData } = useQuery<{ riderOrders?: any[]; myOrders?: any[] }>(
+    isRider ? RIDER_ORDERS_QUERY : MY_ORDERS_QUERY,
+    {
+      skip: !user, // Skip query if user is not logged in
+      pollInterval: 5000, // Poll every 5 seconds to check for status changes
+    }
+  );
 
   // Determine the correct array of orders based on user type
-  const orders = isRider ? ordersData?.riderOrders : ordersData?.myOrders;
+  const orders = (isRider ? ordersData?.riderOrders : ordersData?.myOrders) || [];
 
   // Check for active orders (ASSIGNED or IN_TRANSIT)
-  const hasActiveOrders = orders?.some(
+  const hasActiveOrders = orders.some(
     (order: any) => order.status === 'ASSIGNED' || order.status === 'IN_TRANSIT'
   );
 
