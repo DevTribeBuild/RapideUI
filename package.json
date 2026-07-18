@@ -28,7 +28,7 @@
     "eslint-config-next": "15.5.20",
     "graphql": "^16.11.0",
     "lodash": "^4.17.21",
-    "next": "^15.5.20",
+    "next": "15.5.20",
     "next-pwa": "^5.6.0",
     "prop-types": "^15.8.1",
     "react": "19.1.0",
